@@ -6,33 +6,45 @@
 
 namespace FreeWorldEngine {
 
+class XMLNode;
 struct XMLNodePrivate;
+struct XMLDocumentPrivate;
+
+class XMLDocument {
+public:
+	XMLNode *rootNode() const;
+
+	static XMLDocument *openFromFile(const std::string& fileName);
+	static XMLDocument *openFromData(const std::string& xmlData);
+	static void close(XMLDocument*);
+
+private:
+	XMLDocumentPrivate *m_pData;
+};
+
+typedef std::list<XMLNode*> XMLNodeList;
 
 class XMLNode {
 public:
+	typedef std::list<std::string> AttributeList;
+
 	XMLNode();
 	~XMLNode();
 
 	std::string name() const;
 
 	std::string attribute(const std::string& attributeName) const;
-	std::list<std::string> attributeList() const;
+	AttributeList attributes() const;
 
 	std::string text() const;
 
 	XMLNode *child(const std::string& childName) const;
-	std::list<XMLNode*> children() const;
+	XMLNodeList children() const;
 
-	XMLNode *parentNode() const;
-	XMLNode *rootNode() const;
-
-	static XMLNode *openFromFile(const std::string& fileName);
-	static XMLNode *openFromData(const std::string& xmlData);
-	static void close(XMLNode *pXML);
+	XMLNode *parent() const;
 
 private:
-	XMLNodePrivate *m_pPrivateData;
-
+	XMLNodePrivate *m_pData;
 };
 
 } // namespace
