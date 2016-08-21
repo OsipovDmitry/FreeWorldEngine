@@ -1,0 +1,2 @@
+add_subdirectory(WindowManagerPlugin)
+add_subdirectory(GLRendererPlugin)
