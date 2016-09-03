@@ -1,7 +1,8 @@
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
+
 include_directories(../../3rdparty)
 include_directories(../../include)
-
-link_directories(../../bin/Win32/Debug)
+link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(HEADERS ../../include/IWindow.h
             ../../include/IWindowManager.h
@@ -13,8 +14,6 @@ set(SOURCES Window.cpp
             WindowManager.cpp
             WindowManagerPlugin.cpp
             main.cpp)
-
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 
 add_library(WindowManagerPlugin SHARED ${HEADERS} ${SOURCES})
 	

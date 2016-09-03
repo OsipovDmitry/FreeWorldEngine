@@ -40,7 +40,7 @@ void Core::initialize()
 
 	*m_pLog << "Free World Engine created.";*/
 
-	m_pPluginManager->loadPlugins("C:/Users/Dmitry/Documents/plugins.xml");
+	m_pPluginManager->loadPlugins("plugins.xml");
 
 	if (m_pWindowManager)
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::IWindow_Show | IWindow::IWindow_Resizable);
