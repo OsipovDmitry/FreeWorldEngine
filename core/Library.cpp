@@ -45,7 +45,7 @@ void Library::load()
 #ifdef WIN32
 	wchar_t *wname = new wchar_t[m_name.size()+8];
 	mbstowcs(wname, m_name.c_str(), m_name.size()+1);
-	hInstance = LoadLibrary((LPCSTR)wname);
+	hInstance = LoadLibrary((LPCWSTR)wname);
 	delete [] wname;
 #endif
 }
