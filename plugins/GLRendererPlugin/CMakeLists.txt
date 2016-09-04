@@ -1,7 +1,8 @@
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
+
 include_directories(../../3rdparty)
 include_directories(../../include)
-
-link_directories(../../bin/Win32/Debug)
+link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(HEADERS ../../include/renderer/IGLBufferObject.h
             ../../include/renderer/IGLRenderer.h
@@ -13,17 +14,16 @@ set(HEADERS ../../include/renderer/IGLBufferObject.h
             GLShader.h
             GLShaderProgram.h
             GLVertexArrayObject.h
-	    GLRendererPlugin.h)
+			GLRendererPlugin.h)
 
 set(SOURCES GLBufferObject.cpp
             GLRenderer.cpp
             GLShader.cpp
             GLShaderProgram.cpp
             GLVertexArrayObject.cpp
-	    GLRendererPlugin.cpp
+			GLRendererPlugin.cpp
             main.cpp)
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 
 add_library(GLRendererPlugin SHARED ${HEADERS} ${SOURCES})
 	
