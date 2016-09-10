@@ -39,6 +39,8 @@ public:
 	void setMousePos(const int32 x, const int32 y) const;
 
 	void sendEvent(const SDL_WindowEvent& windowEvent) const;
+	SDL_Window *window() const;
+	SDL_GLContext context() const;
 
 private:
 	SDL_Window *m_window;

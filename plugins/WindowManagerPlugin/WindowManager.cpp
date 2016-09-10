@@ -23,9 +23,9 @@ WindowManager::WindowManager() :
 
 WindowManager::~WindowManager()
 {
-	std::list<IWindow*>::const_iterator i;
+	std::list<Window*>::const_iterator i;
 	for (i = m_windows.cbegin(); i != m_windows.cend(); ++i) {
-		destroyWindow(*i);
+		destroyWindow(static_cast<IWindow*>(*i));
 	}
 	m_windows.clear();
 }
@@ -52,15 +52,15 @@ IWindow *WindowManager::createWindow(const std::string& title, const int32 width
 	if (!pSDLWindow)
 		return 0;
 
-	void *pSDLGLContext = SDL_GL_CreateContext(pSDLWindow);
+	SDL_GLContext pSDLGLContext = SDL_GL_CreateContext(pSDLWindow);
 	if (!pSDLGLContext) {
 		SDL_DestroyWindow(pSDLWindow);
 		return 0;
 	}
 
-	IWindow *pWindow = new Window(pSDLWindow, pSDLGLContext);
+	Window *pWindow = new Window(pSDLWindow, pSDLGLContext);
 	m_windows.push_back(pWindow);
-	return pWindow;
+	return static_cast<IWindow*>(pWindow);
 }
 
 void WindowManager::destroyWindow(IWindow *pWindow)
@@ -75,14 +75,13 @@ void WindowManager::destroyWindow(IWindow *pWindow)
 	event.window.windowID = id;
 	event.window.event = SDL_WINDOWEVENT_CLOSE;
 	SDL_PushEvent(&event);
-	delete pWindow;
 }
 
 IWindow *WindowManager::findWindow(const uint32 id) const
 {
-	for (std::list<IWindow*>::const_iterator i = m_windows.cbegin(); i != m_windows.cend(); ++i)
+	for (std::list<Window*>::const_iterator i = m_windows.cbegin(); i != m_windows.cend(); ++i)
 		if ((*i)->id() == id)
-			return *i;
+			return static_cast<IWindow*>(*i);
 	return 0;
 }
 
@@ -90,8 +89,7 @@ void WindowManager::mainLoop() {
 	bool quit = false;
 	static uint32 lastTime = SDL_GetTicks();
 
-	std::list<IWindow*>::const_iterator i;
-	for (std::list<IWindow*>::const_iterator i = m_windows.cbegin(); i != m_windows.cend(); ++i)
+	for (std::list<Window*>::const_iterator i = m_windows.cbegin(); i != m_windows.cend(); ++i)
 		(*i)->resize((*i)->width(), (*i)->height());
 
 	while (true) {
@@ -100,7 +98,7 @@ void WindowManager::mainLoop() {
 		const uint32 dt = time - lastTime;
 		lastTime = time;
 
-		std::list<IWindow*>::const_iterator i;
+		std::list<Window*>::const_iterator i;
 		for (i = m_windows.cbegin(); i != m_windows.cend(); ++i) {
 			(*i)->update(time, dt);
 			(*i)->render();
@@ -114,16 +112,23 @@ void WindowManager::mainLoop() {
 					break;
 				}
 				case SDL_WINDOWEVENT: {
-					std::list<IWindow*>::const_iterator i; // Итератор по окнам. Ищем в него окно с нужным id. 
+					std::list<Window*>::const_iterator i; // Итератор по окнам. Ищем в него окно с нужным id. 
 					for (i = m_windows.cbegin(); i != m_windows.cend(); ++i)
 						if ((*i)->id() == event.window.windowID)
 							break;
 					if (i == m_windows.cend()) // Если не нашли, то событие не нашему окну.
 						break; // Выходим.
-					(reinterpret_cast<Window*>(*i))->sendEvent(event.window); // Пересылаем событие окну.
+					(*i)->sendEvent(event.window); // Пересылаем событие окну.
 					if (event.window.event == SDL_WINDOWEVENT_CLOSE) { // Если событие было на закрытие окна, то дополнительно уничтожаем его и удаляем из менеджера.
+						SDL_Window *pWindow = (*i)->window();
+						SDL_GLContext glContext = (*i)->context();
+						if (glContext)
+							SDL_GL_DeleteContext(glContext);
+						if (pWindow)
+							SDL_DestroyWindow(pWindow);
 						delete *i;
 						m_windows.erase(i);
+
 						if (m_windows.empty()) { // Если последний SDL_WINDOWEVENT_CLOSE посылался искусственно, то SDL_QUIT не придет и нужно его симулировать.
 							SDL_Event quitEvent;
 							quitEvent.type = SDL_QUIT;

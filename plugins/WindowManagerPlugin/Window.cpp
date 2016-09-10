@@ -21,10 +21,6 @@ Window::Window(SDL_Window *pWindow, const SDL_GLContext& context) :
 
 Window::~Window()
 {
-	if (m_glContext)
-		SDL_GL_DeleteContext(m_glContext);
-	if (m_window)
-		SDL_DestroyWindow(m_window);
 }
 
 void Window::move(int32 x, int32 y) const
@@ -147,6 +143,35 @@ void Window::setFuncUpdate(void (*func)(uint32, uint32))
 	m_funcUpdate = func;
 }
 
+uint32 Window::id() const
+{
+	return m_window ? SDL_GetWindowID(m_window) : 0;
+}
+
+uint32 Window::width() const
+{
+	int w, h;
+	SDL_GetWindowSize(m_window, &w, &h);
+	return w;
+}
+
+uint32 Window::height() const
+{
+	int w, h;
+	SDL_GetWindowSize(m_window, &w, &h);
+	return h;
+}
+
+uint64 Window::frameNumber() const
+{
+	return m_frameNumber;
+}
+
+void Window::setMousePos(const int32 x, const int32 y) const
+{
+	SDL_WarpMouseInWindow(m_window, x, y);
+}
+
 void Window::sendEvent(const SDL_WindowEvent& windowEvent) const
 {
 	switch (windowEvent.event) {
@@ -186,33 +211,14 @@ void Window::sendEvent(const SDL_WindowEvent& windowEvent) const
 	}
 }
 
-uint32 Window::id() const
+SDL_Window *Window::window() const
 {
-	return m_window ? SDL_GetWindowID(m_window) : 0;
+	return m_window;
 }
 
-uint32 Window::width() const
+SDL_GLContext Window::context() const
 {
-	int w, h;
-	SDL_GetWindowSize(m_window, &w, &h);
-	return w;
-}
-
-uint32 Window::height() const
-{
-	int w, h;
-	SDL_GetWindowSize(m_window, &w, &h);
-	return h;
-}
-
-uint64 Window::frameNumber() const
-{
-	return m_frameNumber;
-}
-
-void Window::setMousePos(const int32 x, const int32 y) const
-{
-	SDL_WarpMouseInWindow(m_window, x, y);
+	return m_glContext;
 }
 
 } // namespace

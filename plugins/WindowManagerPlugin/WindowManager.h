@@ -6,6 +6,8 @@
 
 namespace FreeWorldEngine {
 
+class Window;
+
 class WindowManager : public IWindowManager {
 public:
 	WindowManager();
@@ -29,7 +31,7 @@ public:
 	uint32 modifiers() const;
 
 private:
-	std::list<IWindow*> m_windows;
+	std::list<Window*> m_windows;
 	void (*m_funcMouseButtonDown)(uint32, MouseButton, uint32, int32, int32);
 	void (*m_funcMouseButtonUp)(uint32, MouseButton, uint32, int32, int32);
 	void (*m_funcMouseMotion)(uint32, uint32, int32, int32, int32, int32);

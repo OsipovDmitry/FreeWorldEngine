@@ -37,7 +37,7 @@ bool GLRendererPlugin::initialize() const
 		return false;
 	}
 
-	IWindow *pWindow = pWindowManager->createWindow("", 0, 0, 0);
+	IWindow *pWindow = pWindowManager->createWindow("", 1, 1, 0);
 	if (!pWindow) {
 		//
 		return false;
