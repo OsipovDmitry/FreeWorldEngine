@@ -1,0 +1,58 @@
+#ifndef __XMLNODE__
+#define __XMLNODE__
+
+#include <string>
+#include <list>
+
+namespace FreeWorldEngine {
+
+struct XMLNodePrivate;
+class XMLNode {
+	friend class XMLRoot;
+
+public:
+	typedef std::list<std::string> AttributeList;
+	typedef std::list<XMLNode*> NodeList;
+
+	std::string name() const;
+
+	std::string attribute(const std::string& attributeName) const;
+	AttributeList attributes() const;
+
+	std::string text() const;
+
+	XMLNode *child(const std::string& childName) const;
+	NodeList children() const;
+
+	XMLNode *parent() const;
+
+protected:
+	XMLNode();
+	virtual ~XMLNode();
+
+private:
+	XMLNodePrivate *const m;
+
+	void generateChildren() const;
+};
+
+struct XMLRootPrivate;
+class XMLRoot : public XMLNode {
+public:
+	static XMLRoot *openFromFile(const std::string& fileName);
+	static XMLRoot *openFromData(const char *xmlData);
+	static XMLRoot *openFromData(const std::string& xmlData);
+	static void close(XMLRoot*);
+
+private:
+	XMLRootPrivate *const m;
+
+	XMLRoot();
+	~XMLRoot();
+
+	bool parseBuffer();
+};
+
+} // namespace
+
+#endif // __XMLNODE__
