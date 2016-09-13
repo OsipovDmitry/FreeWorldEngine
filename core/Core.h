@@ -26,9 +26,11 @@ public:
 
 	void setWindowManager(IWindowManager* const pWindowManager);
 	IWindowManager *windowManager() const;
+
+	void setImageManager(IImageManager* const pImageManager);
+	IImageManager *imageManager() const;
 	
 	IPhysicsManager *physicsManager() const;
-	IImageManager *imageManager() const;
 	ISceneModelManager *sceneModelManager() const;
 
 	IGLRenderer *renderer() const;
@@ -48,9 +50,9 @@ private:
 	IPluginManager *m_pPluginManager;
 	IWindowManager *m_pWindowManager;
 	IGLRenderer *m_pGLRenderer;
+	IImageManager *m_pImageManager;
 
 	IPhysicsManager *m_pPhysicsManager;
-	IImageManager *m_pImageManager;
 	ISceneModelManager *m_pSceneModelManager;
 
 	IWindow *m_pMainWindow;

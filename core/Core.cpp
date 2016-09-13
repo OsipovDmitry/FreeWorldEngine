@@ -1,5 +1,4 @@
 #include "FreeWorldEngine.h"
-#include "IWindowManager.h"
 
 #include "Core.h"
 #include "PluginManager.h"
@@ -131,14 +130,19 @@ IWindowManager *Core::windowManager() const
 	return m_pWindowManager;
 }
 
-IPhysicsManager *Core::physicsManager() const
+void Core::setImageManager(IImageManager* const pImageManager)
 {
-	return m_pPhysicsManager;
+	m_pImageManager = pImageManager;
 }
 
 IImageManager *Core::imageManager() const
 {
 	return m_pImageManager;
+}
+
+IPhysicsManager *Core::physicsManager() const
+{
+	return m_pPhysicsManager;
 }
 
 ISceneModelManager *Core::sceneModelManager() const

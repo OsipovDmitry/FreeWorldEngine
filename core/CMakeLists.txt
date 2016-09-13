@@ -6,7 +6,8 @@ set(HEADERS Core.h
             LibraryManager.h
             Log.h
             PluginManager.h
-            ResourceManager.h)
+            ResourceManager.h
+			XML.h)
 
 set(SOURCES Core.cpp
             Library.cpp

@@ -34,9 +34,11 @@ public:
 
 	virtual void setWindowManager(IWindowManager* const pWindowManager) = 0;
 	virtual IWindowManager *windowManager() const = 0;
+
+	virtual void setImageManager(IImageManager* const pImageManager) = 0;
+	virtual IImageManager *imageManager() const = 0;
 	
 	virtual IPhysicsManager *physicsManager() const = 0;
-	virtual IImageManager *imageManager() const = 0;
 	virtual ISceneModelManager *sceneModelManager() const = 0;
 
 	virtual IGLRenderer *renderer() const = 0;
