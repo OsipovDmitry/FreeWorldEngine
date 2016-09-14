@@ -10,10 +10,13 @@ int main() {
 	initCoreEngine();
 	ICore *p = getCoreEngine();
 	p->initialize();
-	p->mainWindow()->setFuncRender(render);
+
+	IWindow *pMainWindow = p->mainWindow();
+	if (pMainWindow)
+		pMainWindow->setFuncRender(render);
 
 	p->windowManager()->mainLoop();
 	p->deinitialize();
-
+	destroyCoreEngine();
 	return 0;
 }
