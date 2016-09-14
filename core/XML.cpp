@@ -1,10 +1,9 @@
-#include "XML.h"
-
-#include "rapidxml-1.13/rapidxml.hpp"
-
 #include <cstring>
 #include <fstream>
 #include <vector>
+
+#include "XML.h"
+#include "rapidxml/rapidxml.hpp"
 
 namespace FreeWorldEngine {
 using namespace rapidxml;
