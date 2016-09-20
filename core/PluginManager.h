@@ -2,7 +2,7 @@
 #define __PLUGINMANAGER__
 
 #include <list>
-#include <rapidxml-1.13/rapidxml.hpp>
+#include <rapidxml/rapidxml.hpp>
 #include "IPluginManager.h"
 
 namespace FreeWorldEngine {

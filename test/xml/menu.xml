@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu caption="Test menu">
+  <item>New game</item>
+  <item state="disabled">Continue</item>
+  <item>Load</item>
+  <item>Settings</item>
+  <item>Quit</item>
+</menu>

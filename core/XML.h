@@ -16,7 +16,7 @@ public:
 
 	std::string name() const;
 
-	std::string attribute(const std::string& attributeName) const;
+	std::string attributeValue(const std::string& attributeName) const;
 	AttributeList attributes() const;
 
 	std::string text() const;
