@@ -48,8 +48,7 @@ void LibraryManager::unloadLibrary(const std::string& name)
 
 void LibraryManager::unloadLibrary(ILibrary *pLibrary)
 {
-	LOG("Unload library \""+pLibrary->name()+"\"");
-	m_pResourceManager->deleteResource(pLibrary);
+	unloadLibrary(pLibrary->name());
 }
 
 ILibrary *LibraryManager::getByName(const std::string& name) const
