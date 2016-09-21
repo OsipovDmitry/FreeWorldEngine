@@ -21,9 +21,15 @@ struct XMLNodePrivate {
 	{}
 };
 
-std::string XMLNode::attribute(const std::string &attributeName) const
+std::string XMLNode::name() const
 {
-	return m->pData->first_attribute(attributeName.c_str())->value();
+	return m->pData->name();
+}
+
+std::string XMLNode::attributeValue(const std::string &attributeName) const
+{
+	auto attrib = m->pData->first_attribute(attributeName.c_str());
+	return attrib ? attrib->value() : std::string();
 }
 
 XMLNode::AttributeList XMLNode::attributes() const
@@ -121,7 +127,7 @@ XMLRoot *XMLRoot::openFromFile(const std::string& fileName)
 	inFile.seekg(0, std::ios::end);
 	std::ifstream::pos_type len = inFile.tellg();
 	inFile.seekg(0, std::ios::beg);
-	ans->m->xmlBuffer.resize(len, 0);
+	ans->m->xmlBuffer.resize(static_cast<std::vector<char>::size_type>(len), 0);
 	inFile.read(ans->m->xmlBuffer.data(), len);
 	inFile.close();
 
@@ -150,7 +156,8 @@ XMLRoot *XMLRoot::openFromData(const std::string& xmlData)
 
 void XMLRoot::close(XMLRoot *pRoot)
 {
-	delete pRoot;
+	if (pRoot)
+		delete pRoot;
 }
 
 } // namespace

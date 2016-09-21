@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<item_icon_generation>
+	
+	<item_desc category="armor">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="180" pitch="0" fov="60"/>
+		<light angle="0"/>
+		
+		<entity_search_dir path="dlc\bob\data\items\bodyparts\geralt_items\trunk"/>
+	</item_desc>
+
+	<item_desc category="gloves">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="90" pitch="-40" fov="70"/>
+		<light angle="290"/>
+		<entity_search_dir path="dlc\bob\data\items\bodyparts\geralt_items\gloves"/>
+	</item_desc>
+
+	<item_desc category="pants">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="180" pitch="0" fov="70"/>
+		<light angle="0"/>
+		<entity_search_dir path="dlc\bob\data\items\bodyparts\geralt_items\legs"/>
+	</item_desc>
+
+	<item_desc category="boots">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="250" pitch="-20" fov="70"/>
+		<light angle="40"/>
+		<entity_search_dir path="dlc\bob\data\items\bodyparts\geralt_items\shoes"/>
+	</item_desc>
+
+	<item_desc category="steelsword">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="180" pitch="0" fov="60"/>
+		<light angle="0"/>
+		<entity_search_dir path="dlc\bob\data\items\weapons"/>
+	</item_desc>
+
+	<item_desc category="silversword">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="180" pitch="0" fov="60"/>
+		<light angle="0"/>
+		<entity_search_dir path="dlc\bob\data\items\weapons"/>
+	</item_desc>
+
+	<item_desc category="crossbow">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="220" pitch="0" fov="60"/>
+		<light angle="40"/>
+		<entity_search_dir path="dlc\bob\data\items\weapons\ranged\witcher_crossbow"/>
+	</item_desc>
+
+	<item_desc category="horse_saddle">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="210" pitch="-10" fov="70"/>
+		<light angle="45"/>
+		<entity_search_dir path="dlc\bob\data\items\horse_items\saddles"/>
+	</item_desc>
+
+	<item_desc category="horse_bag">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="260" pitch="0" fov="70"/>
+		<light angle="50"/>
+		<entity_search_dir path="dlc\bob\data\items\horse_items\bags"/>
+	</item_desc>
+
+	<item_desc category="horse_blinder">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="220" pitch="-10" fov="70"/>
+		<light angle="50"/>
+		<entity_search_dir path="dlc\bob\data\items\horse_items\champrons"/>
+	</item_desc>
+
+	<item_desc category="trophy">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="310" pitch="0" fov="70"/>
+		<light angle="140"/>
+		<entity_search_dir path="dlc\bob\data\items\horse_items\trophies"/>
+	</item_desc>
+	
+	
+	<item_desc category="misc">
+		<icon_desc width="1024" height="1024"/>
+		<environment name="environment\definitions\test_environments\env_shader_standard_neutral_benchmark.env"/>
+		<camera angle="90" pitch="0" fov="50"/>
+		<light angle="40"/>
+		<entity_search_dir path="dlc\bob\data\items\quest_items"/>
+	</item_desc>
+	
+
+</item_icon_generation>
