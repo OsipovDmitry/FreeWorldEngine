@@ -6,13 +6,13 @@
 
 #include "Core.h"
 #include "PluginManager.h"
+#include "XML.h"
 
 namespace FreeWorldEngine {
 
 PluginManager::PluginManager() :
 	m_pluginsList(0),
-	m_pXmlBuffer(0),
-	m_xmlDoc()
+	m_pXML(0)
 {
 }
 
@@ -25,99 +25,88 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 {
 	unloadPlugins();
 
-	std::ifstream file(pluginsListFileName, std::ios::binary);
-	if (!file.is_open()) {
-		//
-		return;
-	}
-	std::filebuf* pFileBuffer = file.rdbuf();
-	std::size_t size = pFileBuffer->pubseekoff(0, file.end, file.in);
-	pFileBuffer->pubseekpos(0, file.in);
-	m_pXmlBuffer = new char[size+1];
-	pFileBuffer->sgetn(m_pXmlBuffer, size);
-	m_pXmlBuffer[size] = '\0';
-	file.close();
-
-	m_xmlDoc.parse<0>(m_pXmlBuffer);
-	rapidxml::xml_node<> *pNode = m_xmlDoc.first_node();
-	if (std::string(pNode->name()) != "plugins_list") {
-		unloadPlugins();
+	if ((m_pXML = XMLRoot::openFromFile(pluginsListFileName)) == 0) {
+		LOG("Could not open file \"" + pluginsListFileName + "\".");
 		return;
 	}
 
-	pNode = pNode->first_node("plugin");
-	while (pNode) {
-		std::string libraryName = std::string(pNode->first_attribute("library")->value());
-		std::string startFuncName = std::string(pNode->first_attribute("startFunc")->value());
+	if (m_pXML->name() != "plugins_list") {
+		LOG("The document \"" + pluginsListFileName + "\" is damaged.");
+		XMLRoot::close(m_pXML);
+		m_pXML = 0;
+		return;
+	}
+
+	XMLNode::NodeList nodeList = m_pXML->children();
+	for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
+		XMLNode *pNode = *it;
+		if (pNode->name() != "plugin")
+			continue;
+		
+		std::string libraryName = std::string(pNode->attributeValue("library"));
+		std::string startFuncName = std::string(pNode->attributeValue("startFunc"));
 
 		ILibrary *pLibrary = coreEngine->libraryManager()->loadLibrary(libraryName);
 		if (!pLibrary) {
-			//
-			pNode = pNode->next_sibling("plugin");
+			LOG("Unable to load the plugin \"" + libraryName + "\".");
 			continue;
 		}
-		if (!pLibrary->isLoaded()) {
-			//
-			pNode = pNode->next_sibling("plugin");
-			continue;
-		}
+
 		IPlugin *(*pStartFunc)() = (IPlugin*(*)())pLibrary->resolve(startFuncName);
 		if (!pStartFunc) {
-			//
-			pNode = pNode->next_sibling("plugin");
+			LOG("Could not get the function \"" + startFuncName + "\" in \"" + libraryName + "\" plugin.");
 			continue;
 		}
 		IPlugin *pPlugin = pStartFunc();
 		if (pPlugin) {
-			if (!pPlugin->initialize()) {
-			//
-			}
+			if (!pPlugin->initialize())
+				LOG("The initialization function \"" + startFuncName + "\" from \"" + libraryName + "\" plugin returned \"false\".");
 			m_pluginsList.push_back(pPlugin);
 		}
-
-		pNode = pNode->next_sibling("plugin");
 	}
 }
 
 void PluginManager::unloadPlugins()
 {
+	if (!m_pXML)
+		return;
+
 	for (std::list<IPlugin*>::iterator it = m_pluginsList.begin(); it != m_pluginsList.end(); ++it)
 		(*it)->deinitialize();
 	m_pluginsList.clear();
 
-	rapidxml::xml_node<> *pNode = m_xmlDoc.first_node();
-	if (!pNode || std::string(pNode->name()) != "plugins_list") {
-		//
+	if (m_pXML->name() != "plugins_list") {
+		//LOG("The document \"" + pluginsListFileName + "\" is damaged.");
+		XMLRoot::close(m_pXML);
+		m_pXML = 0;
 		return;
 	}
-	pNode = pNode->first_node("plugin");
 
-	while (pNode) {
-		std::string libraryName = std::string(pNode->first_attribute("library")->value());
-		std::string endFuncName = std::string(pNode->first_attribute("endFunc")->value());
+	XMLNode::NodeList nodeList = m_pXML->children();
+	for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
+		XMLNode *pNode = *it;
+		if (pNode->name() != "plugin")
+			continue;
+
+		std::string libraryName = std::string(pNode->attributeValue("library"));
+		std::string endFuncName = std::string(pNode->attributeValue("endFunc"));
 
 		ILibrary *pLibrary = coreEngine->libraryManager()->getByName(libraryName);
 		if (!pLibrary) {
-			//
+			LOG("Plugin \"" + libraryName + "\" closed early.");
 			continue;
 		}
-		if (!pLibrary->isLoaded()) {
-			//
-			continue;
-		}
+
 		IPlugin *(*pEndFunc)() = (IPlugin*(*)())pLibrary->resolve(endFuncName);
 		if (!pEndFunc) {
-			//
+			LOG("Could not get the function \"" + endFuncName + "\" in \"" + libraryName + "\" plugin.");
 			continue;
 		}
 		pEndFunc();
-
-		pNode = pNode->next_sibling("plugin");
 	}
 	
-	m_xmlDoc.clear();
-	delete [] m_pXmlBuffer;
-	m_pXmlBuffer = 0;
+	XMLRoot::close(m_pXML);
+	m_pXML = 0;
 }
 
 } // namespace

@@ -2,12 +2,12 @@
 #define __PLUGINMANAGER__
 
 #include <list>
-#include <rapidxml/rapidxml.hpp>
 #include "IPluginManager.h"
 
 namespace FreeWorldEngine {
 
 class IPlugin;
+class XMLRoot;
 
 class PluginManager : public IPluginManager {
 public:
@@ -19,8 +19,7 @@ public:
 
 private:
 	std::list<IPlugin*> m_pluginsList;
-	char *m_pXmlBuffer;
-	rapidxml::xml_document<> m_xmlDoc;
+	XMLRoot *m_pXML;
 
 }; // class PluginManager
 
