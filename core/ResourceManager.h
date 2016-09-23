@@ -22,12 +22,24 @@ public:
 	void deleteResource(const std::string& name);
 	void deleteResource(IResource *pResource);
 	void deleteAllResources();
-	std::list<IResource*> listResources() const;
+
+	ResourceIterator begin();
+	ResourceIterator end();
 
 private:
 	std::string m_name;
 	std::list<IResource*> m_data;
 
+	class ResourceListIterator : public ResourceIterator::Interface {
+	public:
+		ResourceListIterator(const std::list<IResource*>::iterator& iterator);
+		~ResourceListIterator();
+		ResourceIterator::Interface *clone() const;
+		IResource *operator *();
+
+	private:
+		std::list<IResource*>::iterator m_iter;
+	};
 };
 
 class ResourceManagerHash : public IResourceManager {
@@ -43,12 +55,24 @@ public:
 	void deleteResource(const std::string& name);
 	void deleteResource(IResource *pResource);
 	void deleteAllResources();
-	std::list<IResource*> listResources() const;
+
+	ResourceIterator begin();
+	ResourceIterator end();
 
 private:
 	std::string m_name;
 	std::unordered_map<std::string, IResource*> m_data;
 	
+	class ResourceHashIterator : public ResourceIterator::Interface {
+	public:
+		ResourceHashIterator(const std::unordered_map<std::string, IResource*>::iterator& iterator);
+		~ResourceHashIterator();
+		ResourceIterator::Interface *clone() const;
+		IResource *operator *();
+
+	private:
+		std::unordered_map<std::string, IResource*>::iterator m_iter;
+	};
 };
 
 class ResourceManagerMap : public IResourceManager {
@@ -64,12 +88,24 @@ public:
 	void deleteResource(const std::string& name);
 	void deleteResource(IResource *pResource);
 	void deleteAllResources();
-	std::list<IResource*> listResources() const;
+
+	ResourceIterator begin();
+	ResourceIterator end();
 
 private:
 	std::string m_name;
 	std::map<std::string, IResource*> m_data;
-	
+
+	class ResourceMapIterator : public ResourceIterator::Interface {
+	public:
+		ResourceMapIterator(const std::map<std::string, IResource*>::iterator& iterator);
+		~ResourceMapIterator();
+		ResourceIterator::Interface *clone() const;
+		IResource *operator *();
+
+	private:
+		std::map<std::string, IResource*>::iterator m_iter;
+	};
 };
 
 } // namespace

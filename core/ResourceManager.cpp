@@ -69,9 +69,33 @@ void ResourceManagerList::deleteAllResources()
 	m_data.clear();
 }
 
-std::list<IResource*> ResourceManagerList::listResources() const
+ResourceIterator ResourceManagerList::begin()
 {
-	return m_data;
+	return ResourceIterator(new ResourceListIterator(m_data.begin()));
+}
+
+ResourceIterator ResourceManagerList::end()
+{
+	return ResourceIterator(new ResourceListIterator(m_data.end()));
+}
+
+ResourceManagerList::ResourceListIterator::ResourceListIterator(const std::list<IResource*>::iterator& iterator) :
+	m_iter(iterator)
+{
+}
+
+ResourceManagerList::ResourceListIterator::~ResourceListIterator()
+{
+}
+
+ResourceIterator::Interface *ResourceManagerList::ResourceListIterator::clone() const
+{
+	return new ResourceListIterator(m_iter);
+}
+
+IResource *ResourceManagerList::ResourceListIterator::operator *()
+{
+	return *m_iter;
 }
 
 ResourceManagerHash::ResourceManagerHash(const std::string& resourceManagerName) :
@@ -134,12 +158,33 @@ void ResourceManagerHash::deleteAllResources()
 	m_data.clear();
 }
 
-std::list<IResource*> ResourceManagerHash::listResources() const
+ResourceIterator ResourceManagerHash::begin()
 {
-	std::list<IResource*> listResources(0);
-	for (std::unordered_map<std::string, IResource*>::const_iterator it = m_data.cbegin(); it != m_data.cend(); ++it)
-		listResources.push_back(it->second);
-	return listResources;
+	return ResourceIterator(new ResourceHashIterator(m_data.begin()));
+}
+
+ResourceIterator ResourceManagerHash::end()
+{
+	return ResourceIterator(new ResourceHashIterator(m_data.end()));
+}
+
+ResourceManagerHash::ResourceHashIterator::ResourceHashIterator(const std::unordered_map<std::string, IResource*>::iterator& iterator) :
+	m_iter(iterator)
+{
+}
+
+ResourceManagerHash::ResourceHashIterator::~ResourceHashIterator()
+{
+}
+
+ResourceIterator::Interface *ResourceManagerHash::ResourceHashIterator::clone() const
+{
+	return new ResourceHashIterator(m_iter);
+}
+
+IResource *ResourceManagerHash::ResourceHashIterator::operator *()
+{
+	return (*m_iter).second;
 }
 
 ResourceManagerMap::ResourceManagerMap(const std::string& resourceManagerName) :
@@ -202,12 +247,33 @@ void ResourceManagerMap::deleteAllResources()
 	m_data.clear();
 }
 
-std::list<IResource*> ResourceManagerMap::listResources() const
+ResourceIterator ResourceManagerMap::begin()
 {
-	std::list<IResource*> listResources(0);
-	for (std::map<std::string, IResource*>::const_iterator it = m_data.cbegin(); it != m_data.cend(); ++it)
-		listResources.push_back(it->second);
-	return listResources;
+	return ResourceIterator(new ResourceMapIterator(m_data.begin()));
+}
+
+ResourceIterator ResourceManagerMap::end()
+{
+	return ResourceIterator(new ResourceMapIterator(m_data.end()));
+}
+
+ResourceManagerMap::ResourceMapIterator::ResourceMapIterator(const std::map<std::string, IResource*>::iterator& iterator) :
+	m_iter(iterator)
+{
+}
+
+ResourceManagerMap::ResourceMapIterator::~ResourceMapIterator()
+{
+}
+
+ResourceIterator::Interface *ResourceManagerMap::ResourceMapIterator::clone() const
+{
+	return new ResourceMapIterator(m_iter);
+}
+
+IResource *ResourceManagerMap::ResourceMapIterator::operator *()
+{
+	return (*m_iter).second;
 }
 
 } // namespace
