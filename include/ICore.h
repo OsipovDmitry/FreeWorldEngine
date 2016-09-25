@@ -11,7 +11,7 @@ class IPhysicsManager;
 class IImageManager;
 class ISceneModelManager;
 class IWindow;
-class ILog;
+class ILogger;
 class ICamera;
 class IRenderSystem;
 class IGLRenderer;
@@ -47,7 +47,7 @@ public:
 	virtual IWindow *mainWindow() const = 0;
 	virtual ICamera *mainCamera() const = 0;
 
-	virtual const ILog& log() const = 0;
+	virtual ILogger *logger() = 0;
 
 }; // class ICore
 

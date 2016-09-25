@@ -4,11 +4,12 @@
 #include "PluginManager.h"
 #include "ResourceManager.h"
 #include "LibraryManager.h"
+#include "TextFileLog.h"
 
 namespace FreeWorldEngine {
 
 Core::Core() :
-	m_pLog(0),
+	m_pLogger(0),
 	m_pManagerForOtherManagers(0),
 	m_pLibraryManager(0),
 	m_pPluginManager(0),
@@ -23,9 +24,10 @@ Core::~Core()
 
 void Core::initialize()
 {
-	m_pLog = new Log("log.txt");
-
 	m_pManagerForOtherManagers = new ResourceManagerHash("ResourceManagerForOtherManagers");
+
+	m_pLogger = new Logger;
+	m_pLogger->addLog(new TextFileLog("TextLog.txt", true));
 
 	m_pLibraryManager = new LibraryManager();
 
@@ -37,7 +39,7 @@ void Core::initialize()
 	
 	m_pMainCamera = new Camera;
 
-	*m_pLog << "Free World Engine created.";*/
+	*m_pLogger << "Free World Engine created.";*/
 
 	m_pPluginManager->loadPlugins("plugins.xml");
 
@@ -67,11 +69,11 @@ void Core::deinitialize()
 	delete m_pLibraryManager;
 	m_pLibraryManager = 0;
 
+	delete m_pLogger;
+	m_pLogger = 0;
+
 	delete m_pManagerForOtherManagers;
 	m_pManagerForOtherManagers = 0;
-
-	delete m_pLog;
-	m_pLog = 0;
 }
 
 IResourceManager *Core::createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType)
@@ -170,9 +172,9 @@ ICamera *Core::mainCamera() const
 	return m_pMainCamera;
 }
 
-const ILog& Core::log() const
+ILogger *Core::logger()
 {
-	return *m_pLog;
+	return m_pLogger;
 }
 
 Core *coreEngine = 0;

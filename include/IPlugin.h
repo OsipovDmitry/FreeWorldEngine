@@ -1,16 +1,15 @@
 #ifndef __IPLUGIN__
 #define __IPLUGIN__
 
-#include "IResource.h"
+#include <string>
 
 namespace FreeWorldEngine {
 
-class ILibrary;
-
-class IPlugin : public IResource {
+class IPlugin {
 public:
 	virtual ~IPlugin() = 0 {}
 
+	virtual std::string name() const = 0;
 	virtual std::string info() const = 0;
 
 	virtual bool initialize() const = 0;

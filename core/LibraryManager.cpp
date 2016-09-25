@@ -11,10 +11,8 @@ LibraryManager::LibraryManager() :
 
 LibraryManager::~LibraryManager()
 {
-	std::list<IResource*> librariesList = m_pResourceManager->listResources();
-	for (std::list<IResource*>::iterator it = librariesList.begin(); it != librariesList.end(); ++it)
-		unloadLibrary((*it)->name());
-	m_pResourceManager->deleteAllResources();
+	while (m_pResourceManager->size())
+		unloadLibrary(static_cast<ILibrary*>(*(m_pResourceManager->rbegin())));
 	coreEngine->destroyResourceManager(m_pResourceManager);
 }
 	

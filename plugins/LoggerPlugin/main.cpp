@@ -1,4 +1,4 @@
-#include "GLRendererPlugin.h"
+#include "LoggerPlugin.h"
 
 static FreeWorldEngine::IPlugin *pPlugin = 0;
 
@@ -7,7 +7,7 @@ extern "C" {
 __declspec(dllexport) void startLibrary()
 {
 	if (!pPlugin)
-		pPlugin = new FreeWorldEngine::GLRendererPlugin();
+		pPlugin = new FreeWorldEngine::LoggerPlugin();
 }
 
 __declspec(dllexport) FreeWorldEngine::IPlugin *getLibrary()

@@ -2,9 +2,9 @@
 #define __IRESOURCEMANAGER__
 
 #include <string>
-#include <list>
 
 #include "IResource.h"
+#include "Types.h"
 
 namespace FreeWorldEngine {
 
@@ -14,7 +14,9 @@ public:
 	public:
 		virtual ~Interface() = 0 {}
 		virtual Interface *clone() const = 0;
+		virtual bool operator !=(const Interface& other) const = 0;
 		virtual IResource *operator *() = 0;
+		virtual Interface *operator ++() = 0;
 	};
 
 	ResourceIterator(Interface *pIter) : m_pIter(pIter) {}
@@ -22,7 +24,9 @@ public:
 	~ResourceIterator() { delete m_pIter; }
 	ResourceIterator& operator =(const ResourceIterator& other) { delete m_pIter; m_pIter = other.m_pIter->clone(); }
 
+	bool operator !=(const ResourceIterator& other) const { return m_pIter->operator!=(*(other.m_pIter)); }
 	IResource *operator *() { return m_pIter->operator*(); }
+	ResourceIterator& operator ++() { m_pIter->operator++(); return *this; }
 
 private:
 	Interface *m_pIter;
@@ -45,9 +49,13 @@ public:
 	virtual void deleteResource(const std::string& name) = 0;
 	virtual void deleteResource(IResource *pResource) = 0;
 	virtual void deleteAllResources() = 0;
+	virtual uint32 size() const = 0;
 
 	virtual ResourceIterator begin() = 0;
 	virtual ResourceIterator end() = 0;
+
+	virtual ResourceIterator rbegin() = 0;
+	virtual ResourceIterator rend() = 0;
 
 }; // class IResourceManager
 

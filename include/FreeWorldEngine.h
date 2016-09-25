@@ -2,7 +2,7 @@
 #define __FREEWORLDENGINE__
 
 #include "ICore.h"
-#include "ILog.h"
+#include "ILogger.h"
 #include "IResource.h"
 #include "IResourceManager.h"
 #include "IWindowManager.h"

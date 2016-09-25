@@ -1,3 +1,4 @@
+add_subdirectory(LoggerPlugin)
 add_subdirectory(WindowManagerPlugin)
 add_subdirectory(GLRendererPlugin)
 add_subdirectory(ImageManagerPlugin)

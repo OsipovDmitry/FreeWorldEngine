@@ -12,7 +12,6 @@ public:
 	virtual void loadPlugins(const std::string& pluginsListFileName) = 0;
 	virtual void unloadPlugins() = 0;
 
-
 }; // class IPluginManager
 
 } // namespace

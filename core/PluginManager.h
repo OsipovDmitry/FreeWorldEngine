@@ -1,8 +1,8 @@
 #ifndef __PLUGINMANAGER__
 #define __PLUGINMANAGER__
 
-#include <list>
 #include "IPluginManager.h"
+#include "IResourceManager.h"
 
 namespace FreeWorldEngine {
 
@@ -18,7 +18,6 @@ public:
 	void unloadPlugins();
 
 private:
-	std::list<IPlugin*> m_pluginsList;
 	XMLRoot *m_pXML;
 
 }; // class PluginManager

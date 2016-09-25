@@ -4,6 +4,84 @@
 
 namespace FreeWorldEngine {
 
+/*template <class Container>
+ResourceManager<Container<IResource*> >::ResourceManager(const std::string& resourceManagerName) :
+	m_name(resourceManagerName),
+	m_data(Container<IResource*>())
+{
+}
+
+template <class Container>
+ResourceManager<Container>::~ResourceManager()
+{
+	deleteAllResources();
+}
+
+template <class Container>
+std::string ResourceManager<Container>::name() const
+{
+	return m_name;
+}
+
+template <class Container>
+IResourceManager::StorageType ResourceManager<Container>::storageType() const
+{
+	return -1;
+}
+
+IResourceManager::StorageType ResourceManager<std::list<IResource*> >::storageType() const
+{
+	return IResourceManager::StorageType_List;
+}
+
+IResourceManager::StorageType ResourceManager<std::unordered_map<std::string, IResource*> >::storageType() const
+{
+	return IResourceManager::StorageType_Hash;
+}
+
+IResourceManager::StorageType ResourceManager<std::map<std::string, IResource*> >::storageType() const
+{
+	return IResourceManager::StorageType_Map;
+}
+
+template <class Container>
+IResource *ResourceManager<Container>::getByName(const std::string& name) const
+{
+	return 0;
+}
+
+template <class Container>
+void ResourceManager<Container>::addResource(IResource *pResource)
+{
+}
+
+template <class Container>
+void ResourceManager<Container>::deleteResource(const std::string& name)
+{
+}
+
+template <class Container>
+void ResourceManager<Container>::deleteResource(IResource *pResource)
+{
+}
+
+template <class Container>
+void ResourceManager<Container>::deleteAllResources()
+{
+}
+
+template <class Container>
+ResourceIterator ResourceManager<Container>::begin()
+{
+	return ResourceIterator(0);
+}
+
+template <class Container>
+ResourceIterator ResourceManager<Container>::end()
+{
+	return ResourceIterator(0);
+}*/
+
 ResourceManagerList::ResourceManagerList(const std::string& resourceManagerName) :
 	m_name(resourceManagerName),
 	m_data(0)
@@ -69,6 +147,11 @@ void ResourceManagerList::deleteAllResources()
 	m_data.clear();
 }
 
+uint32 ResourceManagerList::size() const
+{
+	return m_data.size();
+}
+
 ResourceIterator ResourceManagerList::begin()
 {
 	return ResourceIterator(new ResourceListIterator(m_data.begin()));
@@ -79,23 +162,14 @@ ResourceIterator ResourceManagerList::end()
 	return ResourceIterator(new ResourceListIterator(m_data.end()));
 }
 
-ResourceManagerList::ResourceListIterator::ResourceListIterator(const std::list<IResource*>::iterator& iterator) :
-	m_iter(iterator)
+ResourceIterator ResourceManagerList::rbegin()
 {
+	return ResourceIterator(new ResourceListReverseIterator(m_data.rbegin()));
 }
 
-ResourceManagerList::ResourceListIterator::~ResourceListIterator()
+ResourceIterator ResourceManagerList::rend()
 {
-}
-
-ResourceIterator::Interface *ResourceManagerList::ResourceListIterator::clone() const
-{
-	return new ResourceListIterator(m_iter);
-}
-
-IResource *ResourceManagerList::ResourceListIterator::operator *()
-{
-	return *m_iter;
+	return ResourceIterator(new ResourceListReverseIterator(m_data.rend()));
 }
 
 ResourceManagerHash::ResourceManagerHash(const std::string& resourceManagerName) :
@@ -158,6 +232,11 @@ void ResourceManagerHash::deleteAllResources()
 	m_data.clear();
 }
 
+uint32 ResourceManagerHash::size() const
+{
+	return m_data.size();
+}
+
 ResourceIterator ResourceManagerHash::begin()
 {
 	return ResourceIterator(new ResourceHashIterator(m_data.begin()));
@@ -168,23 +247,14 @@ ResourceIterator ResourceManagerHash::end()
 	return ResourceIterator(new ResourceHashIterator(m_data.end()));
 }
 
-ResourceManagerHash::ResourceHashIterator::ResourceHashIterator(const std::unordered_map<std::string, IResource*>::iterator& iterator) :
-	m_iter(iterator)
+ResourceIterator ResourceManagerHash::rbegin()
 {
+	return ResourceIterator(new ResourceHashReverseIterator(m_data.rbegin()));
 }
 
-ResourceManagerHash::ResourceHashIterator::~ResourceHashIterator()
+ResourceIterator ResourceManagerHash::rend()
 {
-}
-
-ResourceIterator::Interface *ResourceManagerHash::ResourceHashIterator::clone() const
-{
-	return new ResourceHashIterator(m_iter);
-}
-
-IResource *ResourceManagerHash::ResourceHashIterator::operator *()
-{
-	return (*m_iter).second;
+	return ResourceIterator(new ResourceHashReverseIterator(m_data.rend()));
 }
 
 ResourceManagerMap::ResourceManagerMap(const std::string& resourceManagerName) :
@@ -247,6 +317,11 @@ void ResourceManagerMap::deleteAllResources()
 	m_data.clear();
 }
 
+uint32 ResourceManagerMap::size() const
+{
+	return m_data.size();
+}
+
 ResourceIterator ResourceManagerMap::begin()
 {
 	return ResourceIterator(new ResourceMapIterator(m_data.begin()));
@@ -257,23 +332,14 @@ ResourceIterator ResourceManagerMap::end()
 	return ResourceIterator(new ResourceMapIterator(m_data.end()));
 }
 
-ResourceManagerMap::ResourceMapIterator::ResourceMapIterator(const std::map<std::string, IResource*>::iterator& iterator) :
-	m_iter(iterator)
+ResourceIterator ResourceManagerMap::rbegin()
 {
+	return ResourceIterator(new ResourceMapReverseIterator(m_data.rbegin()));
 }
 
-ResourceManagerMap::ResourceMapIterator::~ResourceMapIterator()
+ResourceIterator ResourceManagerMap::rend()
 {
-}
-
-ResourceIterator::Interface *ResourceManagerMap::ResourceMapIterator::clone() const
-{
-	return new ResourceMapIterator(m_iter);
-}
-
-IResource *ResourceManagerMap::ResourceMapIterator::operator *()
-{
-	return (*m_iter).second;
+	return ResourceIterator(new ResourceMapReverseIterator(m_data.rend()));
 }
 
 } // namespace

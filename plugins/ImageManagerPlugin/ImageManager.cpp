@@ -43,7 +43,7 @@ IImage *ImageManager::loadImage(const std::string& filename)
 		isOk = false;
 
 	if (!isOk) {
-		getCoreEngine()->log() << "Failed open file \"" << filename << "\"\n"; 
+		getCoreEngine()->logger()->printMessage("Failed open file \"" + filename + "\"", ILog::MessageType_Error); 
 		return 0;
 	}
 

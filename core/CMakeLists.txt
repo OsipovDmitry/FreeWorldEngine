@@ -4,7 +4,8 @@ include_directories(../include)
 set(HEADERS Core.h
             Library.h
             LibraryManager.h
-            Log.h
+            Logger.h
+			TextFileLog.h
             PluginManager.h
             ResourceManager.h
 			XML.h)
@@ -12,7 +13,8 @@ set(HEADERS Core.h
 set(SOURCES Core.cpp
             Library.cpp
             LibraryManager.cpp
-            Log.cpp
+            Logger.cpp
+			TextFileLog.cpp
             PluginManager.cpp
             ResourceManager.cpp
             XML.cpp)

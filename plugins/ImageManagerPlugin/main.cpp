@@ -4,10 +4,14 @@ static FreeWorldEngine::IPlugin *pPlugin = 0;
 
 extern "C" {
 
-__declspec(dllexport) FreeWorldEngine::IPlugin *startLibrary()
+__declspec(dllexport) void startLibrary()
 {
 	if (!pPlugin)
 		pPlugin = new FreeWorldEngine::ImageManagerPlugin();
+}
+
+__declspec(dllexport) FreeWorldEngine::IPlugin *getLibrary()
+{
 	return pPlugin;
 }
 

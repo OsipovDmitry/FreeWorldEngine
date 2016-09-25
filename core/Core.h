@@ -3,8 +3,8 @@
 
 #include "ICore.h"
 
-#include "Log.h"
-#define LOG(text) (coreEngine->log().add(std::string(text).c_str()))
+#include "Logger.h"
+#define LOG(text) (coreEngine->logger()->printMessage(std::string(text)))
 
 namespace FreeWorldEngine {
 
@@ -39,10 +39,10 @@ public:
 	IWindow *mainWindow() const;
 	ICamera *mainCamera() const;
 
-	const ILog& log() const;
+	ILogger *logger();
 
 private:
-	ILog *m_pLog;
+	ILogger *m_pLogger;
 
 	IResourceManager *m_pManagerForOtherManagers;
 
