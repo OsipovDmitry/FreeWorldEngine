@@ -4,7 +4,11 @@
 #include "ICore.h"
 
 #include "Logger.h"
-#define LOG(text) (coreEngine->logger()->printMessage(std::string(text)))
+#define LOG_INFO(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Info))
+#define LOG_WARNING(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Warning))
+#define LOG_ERROR(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Error))
+#define LOG_CRITICAL(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Critical))
+#define LOG(text) LOG_INFO(text)
 
 namespace FreeWorldEngine {
 
