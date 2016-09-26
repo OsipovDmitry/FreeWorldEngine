@@ -4,32 +4,29 @@
 #include <string>
 
 #include "IResource.h"
+#include "CoreSettings.h"
 #include "Types.h"
 
 namespace FreeWorldEngine {
 
-class ResourceIterator {
+class ResourceIteratorPrivate;
+class CORE_FUNC_DLL ResourceIterator {
 public:
-	class Interface {
-	public:
-		virtual ~Interface() = 0 {}
-		virtual Interface *clone() const = 0;
-		virtual bool operator !=(const Interface& other) const = 0;
-		virtual IResource *operator *() = 0;
-		virtual Interface *operator ++() = 0;
-	};
+	ResourceIterator(ResourceIteratorPrivate *pPrivate);
+	~ResourceIterator();
+	ResourceIterator(const ResourceIterator& other);
+	ResourceIterator& operator =(const ResourceIterator& other);
 
-	ResourceIterator(Interface *pIter) : m_pIter(pIter) {}
-	ResourceIterator(const ResourceIterator& other) : m_pIter(other.m_pIter->clone()) {}
-	~ResourceIterator() { delete m_pIter; }
-	ResourceIterator& operator =(const ResourceIterator& other) { delete m_pIter; m_pIter = other.m_pIter->clone(); }
-
-	bool operator !=(const ResourceIterator& other) const { return m_pIter->operator!=(*(other.m_pIter)); }
-	IResource *operator *() { return m_pIter->operator*(); }
-	ResourceIterator& operator ++() { m_pIter->operator++(); return *this; }
+	bool operator !=(const ResourceIterator& other) const;
+	bool operator ==(const ResourceIterator& other) const;
+	IResource *operator *();
+	ResourceIterator& operator ++();
+	ResourceIterator& operator ++(int);
+	ResourceIterator& operator --();
+	ResourceIterator& operator --(int);
 
 private:
-	Interface *m_pIter;
+	ResourceIteratorPrivate *m;
 };
 
 class IResourceManager : public IResource {

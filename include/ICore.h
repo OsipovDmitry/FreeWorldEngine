@@ -3,6 +3,8 @@
 
 #include "IResourceManager.h"
 
+#include "Types.h"
+
 namespace FreeWorldEngine {
 
 class IPluginManager;
@@ -48,6 +50,9 @@ public:
 	virtual ICamera *mainCamera() const = 0;
 
 	virtual ILogger *logger() = 0;
+
+	virtual Date currentDate() const = 0;
+	virtual Time currentTime() const = 0;
 
 }; // class ICore
 

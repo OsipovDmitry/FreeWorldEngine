@@ -177,6 +177,16 @@ ILogger *Core::logger()
 	return m_pLogger;
 }
 
+Date Core::currentDate() const
+{
+	return Date();
+}
+
+Time Core::currentTime() const
+{
+	return Time();
+}
+
 Core *coreEngine = 0;
 
 bool initCoreEngine()

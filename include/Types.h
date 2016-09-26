@@ -2,6 +2,7 @@
 #define __TYPES__
 
 #include <map> 
+#include <string>
 
 typedef signed char            int8;
 typedef signed short int       int16;
@@ -21,6 +22,34 @@ enum Type {
 	TYPE_UNSIGNED_INT_32,
 	TYPE_FLOAT
 }; // enum Type
+
+struct Time {
+	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0, uint16 ms = 0) : hours(h), minutes(m), seconds(s), millisecond(ms) {}
+	std::string toString() const { return std::to_string((_ULonglong)hours) + ":" + std::to_string((_ULonglong)minutes) + ":" + std::to_string((_ULonglong)seconds) + ":" + std::to_string((_ULonglong)millisecond); }
+
+	uint16 millisecond;
+	uint8 hours, minutes, seconds;
+};
+
+struct Date {
+	enum Month { Jan, Feb, Mar, Apr, May, June, July, Aug, Sept, Oct, Nov, Dec };
+
+	// d >= 1, m = [Jan..Dec], y >= 0
+	Date(uint8 d = 29, Month m = Nov, uint16 y = 1992) : day(d-1), month(m), year(y) {}
+	std::string toString() const { return std::to_string((_ULonglong)(day+1)) + "." + std::to_string((_ULonglong)(month-Jan+1)) + "." + std::to_string((_ULonglong)year); }
+
+	uint16 year;
+	Month month;
+	uint8 day;
+};
+
+struct DateTime {
+	DateTime(const Time t = Time(), const Date& d = Date()) : date(d), time(t) {}
+	std::string toString() const { return date.toString() + " " + time.toString(); }
+
+	Date date;
+	Time time;
+};
 
 /*struct VertexFormat { // Все значения указываются в штуках float. Если size == 0, то соответсвующего атрибута нет.
 	uint8 positionSize, positionStride;
@@ -55,7 +84,7 @@ struct TriMesh {
 }; // struct TriMesh
 */
 
-class VertexFormat {
+/*class VertexFormat {
 public:
 	enum AttributeType {
 		AttributeType_Position,
@@ -115,6 +144,6 @@ struct Mesh {
 	PrimitiveFormat primitiveFormat;
 
 	Mesh() : pVertices(0), pIndicesData(0), numVertices(0), numIndices(0), vertexFormat(0), primitiveFormat(PrimitiveFormat_None) {}
-};
+};*/
 
 #endif // __TYPES__

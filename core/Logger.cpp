@@ -17,7 +17,10 @@ Logger::~Logger()
 
 void Logger::addLog(ILog *pLog)
 {
+	std::string date = coreEngine->currentDate().toString();
+	std::string time = coreEngine->currentTime().toString();
 	m_pResourceManager->addResource(pLog);
+	pLog->printMessage(ILog::MessageType_Info, coreEngine->currentTime().toString(), "Start log on " + date + " at " + time);
 }
 
 ILog *Logger::getLogByName(const std::string& name) const
@@ -27,7 +30,13 @@ ILog *Logger::getLogByName(const std::string& name) const
 
 void Logger::deleteLog(const std::string& name)
 {
-	m_pResourceManager->deleteResource(name);
+	ILog *pLog = getLogByName(name);
+	if (pLog) {
+		std::string date = coreEngine->currentDate().toString();
+		std::string time = coreEngine->currentTime().toString();
+		pLog->printMessage(ILog::MessageType_Info, coreEngine->currentTime().toString(), "Finish log on " + date + " at " + time);
+		m_pResourceManager->deleteResource(name);
+	}
 }
 
 void Logger::deleteLog(ILog *pLog)
@@ -38,8 +47,9 @@ void Logger::deleteLog(ILog *pLog)
 
 void Logger::printMessage(const std::string& message, const ILog::MessageType type) const
 {
+	std::string time = coreEngine->currentTime().toString();
 	for (ResourceIterator iter = m_pResourceManager->begin(); iter != m_pResourceManager->end(); ++iter)
-		static_cast<ILog*>(*iter)->printMessage(type, "", message);
+		static_cast<ILog*>(*iter)->printMessage(type, time, message);
 }
 
 } // namespace
