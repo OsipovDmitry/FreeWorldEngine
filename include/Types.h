@@ -82,12 +82,12 @@ public:
         uint8 offset{0};
 
         Attribute() = default;
-        Attribute(const Attribute&) = default;
         Attribute(uint8 size, uint8 offset);
         Attribute(std::initializer_list<uint8>);
 
         bool isNull() const;
 	};
+        Attribute(const Attribute&) = default;
 
     VertexFormat();
     VertexFormat(const VertexFormat&);

@@ -86,7 +86,36 @@ private:
 	std::map<std::string, IResource*> m_data;
 
 };
+/*
+template<class ContainerType>
+class DataManager : public IDataManager<typename ContainerType::value_type> {
+public:
+	typedef typename ContainerType::value_type DataType
+
+	DataManager(const std::string& resourceManagerName);
+	~DataManager();
+
+	IDataManager<DataType>::StorageType storageType() const;
+
+	typename ContainerType::value_type *getByName(const std::string& name) const;
+	void addResource(DataType *pResource);
+	void deleteResource(const std::string& name);
+	void deleteResource(DataType *pResource);
+	void deleteAllResources();
+	uint32 size() const;
+
+	ResourceIterator begin();
+	ResourceIterator end();
+
+	ResourceIterator rbegin();
+	ResourceIterator rend();
+
+private:
+	std::string m_name;
+	ContainerType m_data;
+
+}; // class DataManager
 
 } // namespace
-
+*/
 #endif // __RESOURCEMANAGER__

@@ -415,5 +415,79 @@ ResourceIterator ResourceManagerMap::rend()
 {
 	return ResourceIterator(new ResourceMapReverseIteratorPrivate(m_data.rend()));
 }
+/*
+template<class ContainerType>
+DataManager<ContainerType>::DataManager(const std::string& resourceManagerName) :
+	m_name(resourceManagerName),
+	m_data(ContainerType())
+{
+}
 
+template<class ContainerType>
+DataManager<ContainerType>::~DataManager()
+{
+}
+
+template<class ContainerType>
+IDataManager<>::StorageType DataManager<ContainerType>::storageType() const
+{
+	return StorageType(0);
+}
+
+template<class ContainerType>
+typename ContainerType::value_type *DataManager<ContainerType>::getByName(const std::string& name) const
+{
+	return 0;
+}
+
+template<class ContainerType>
+void DataManager<ContainerType>::addResource(DataType *pResource)
+{
+}
+
+template<class ContainerType>
+void DataManager<ContainerType>::deleteResource(const std::string& name)
+{
+}
+
+template<class ContainerType>
+void DataManager<ContainerType>::deleteResource(DataType *pResource)
+{
+}
+
+template<class ContainerType>
+void DataManager<ContainerType>::deleteAllResources()
+{
+}
+
+template<class ContainerType>
+uint32 DataManager<ContainerType>::size() const
+{
+	return m_data.size();
+}
+
+template<class ContainerType>
+ResourceIterator DataManager<ContainerType>::begin()
+{
+	return ResourceIterator(0);
+}
+
+template<class ContainerType>
+ResourceIterator DataManager<ContainerType>::end()
+{
+	return ResourceIterator(0);
+}
+
+template<class ContainerType>
+ResourceIterator DataManager<ContainerType>::rbegin()
+{
+	return ResourceIterator(0);
+}
+
+template<class ContainerType>
+ResourceIterator DataManager<ContainerType>::rend()
+{
+	return ResourceIterator(0);
+}
+*/
 } // namespace
