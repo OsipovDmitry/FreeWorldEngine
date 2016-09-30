@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include "FreeWorldEngine.h"
 
 #include "Core.h"
@@ -179,12 +181,16 @@ ILogger *Core::logger()
 
 Date Core::currentDate() const
 {
-	return Date();
+	time_t current_time = std::time(0);
+	std::tm *t = localtime(&current_time);
+	return Date(t->tm_mday, (Date::Month)t->tm_mon, t->tm_year+1900);
 }
 
 Time Core::currentTime() const
 {
-	return Time();
+	time_t current_time = std::time(0);
+	std::tm *t = localtime(&current_time);
+	return Time(t->tm_hour, t->tm_min, t->tm_sec);
 }
 
 Core *coreEngine = 0;

@@ -27,10 +27,14 @@ enum Type {
 }; // enum Type
 
 struct Time {
-	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0, uint16 ms = 0) : hours(h), minutes(m), seconds(s), millisecond(ms) {}
-	std::string toString() const { return std::to_string((_ULonglong)hours) + ":" + std::to_string((_ULonglong)minutes) + ":" + std::to_string((_ULonglong)seconds) + ":" + std::to_string((_ULonglong)millisecond); }
+	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0) : hours(h), minutes(m), seconds(s){}
+	std::string toString() const {
+		std::string sHours = ((hours < 10) ? "0" : "") + std::to_string((_ULonglong)(hours));
+		std::string sMinutes = ((minutes < 10) ? "0" : "") + std::to_string((_ULonglong)(minutes));
+		std::string sSeconds = ((seconds < 10) ? "0" : "") + std::to_string((_ULonglong)(seconds));
+		return sHours + ":" + sMinutes + ":" + sSeconds;
+	}
 
-	uint16 millisecond;
 	uint8 hours, minutes, seconds;
 };
 
@@ -39,7 +43,11 @@ struct Date {
 
 	// d >= 1, m = [Jan..Dec], y >= 0
 	Date(uint8 d = 29, Month m = Nov, uint16 y = 1992) : day(d-1), month(m), year(y) {}
-	std::string toString() const { return std::to_string((_ULonglong)(day+1)) + "." + std::to_string((_ULonglong)(month-Jan+1)) + "." + std::to_string((_ULonglong)year); }
+	std::string toString() const { 
+		std::string sDay = ((day < 10) ? "0" : "") + std::to_string((_ULonglong)(day+1));
+		std::string sMonth = ((month < 10) ? "0" : "") + std::to_string((_ULonglong)(month-Jan+1));
+		return sDay + "." + sMonth + "." + std::to_string((_ULonglong)year);
+	}
 
 	uint16 year;
 	Month month;
