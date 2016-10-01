@@ -18,6 +18,7 @@ class ICamera;
 class IRenderSystem;
 class IGLRenderer;
 class ILibraryManager;
+class IThreadManager;
 
 class ICore {
 public:
@@ -33,6 +34,9 @@ public:
 	virtual ILibraryManager *libraryManager() const = 0;
 
 	virtual IPluginManager *pluginManager() const = 0;
+
+	virtual void setThreadManager(IThreadManager* const pThreadManager) = 0;
+	virtual IThreadManager *threadManager() const = 0;
 
 	virtual void setWindowManager(IWindowManager* const pWindowManager) = 0;
 	virtual IWindowManager *windowManager() const = 0;

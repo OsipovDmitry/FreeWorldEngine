@@ -6,7 +6,6 @@
 namespace FreeWorldEngine {
 
 class IImage;
-class IResourceManager;
 
 class IImageManager {
 public:

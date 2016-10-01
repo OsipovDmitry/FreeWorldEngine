@@ -28,6 +28,9 @@ public:
 
 	IPluginManager *pluginManager() const;
 
+	void setThreadManager(IThreadManager* const pThreadManager);
+	IThreadManager *threadManager() const;
+
 	void setWindowManager(IWindowManager* const pWindowManager);
 	IWindowManager *windowManager() const;
 
@@ -55,6 +58,7 @@ private:
 
 	ILibraryManager *m_pLibraryManager;
 	IPluginManager *m_pPluginManager;
+	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;
 	IGLRenderer *m_pGLRenderer;
 	IImageManager *m_pImageManager;

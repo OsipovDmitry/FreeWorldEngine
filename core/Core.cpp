@@ -15,6 +15,7 @@ Core::Core() :
 	m_pManagerForOtherManagers(0),
 	m_pLibraryManager(0),
 	m_pPluginManager(0),
+	m_pThreadManager(0),
 	m_pWindowManager(0),
 	m_pGLRenderer(0)
 {
@@ -122,6 +123,16 @@ ILibraryManager *Core::libraryManager() const
 IPluginManager *Core::pluginManager() const
 {
 	return m_pPluginManager;
+}
+
+void Core::setThreadManager(IThreadManager* const pThreadManager)
+{
+	m_pThreadManager = pThreadManager;
+}
+
+IThreadManager *Core::threadManager() const
+{
+	return m_pThreadManager;
 }
 
 void Core::setWindowManager(IWindowManager* const pWindowManager)

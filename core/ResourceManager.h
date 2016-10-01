@@ -115,7 +115,7 @@ private:
 	ContainerType m_data;
 
 }; // class DataManager
-
-} // namespace
 */
+} // namespace
+
 #endif // __RESOURCEMANAGER__

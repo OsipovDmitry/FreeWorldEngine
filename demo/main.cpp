@@ -6,6 +6,12 @@ void render() {
 	getCoreEngine()->renderer()->clearBuffers(GL_COLOR_BUFFER_BIT);
 }
 
+void task(void *p)
+{
+	int *pi = (int*)p;
+	getCoreEngine()->logger()->printMessage(std::to_string(*pi));
+}
+
 int main() {
 	initCoreEngine();
 	ICore *p = getCoreEngine();
@@ -14,6 +20,16 @@ int main() {
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow)
 		pMainWindow->setFuncRender(render);
+
+	IThread *pThread = getCoreEngine()->threadManager()->createThread("thred0");
+
+	const int N = 100000;
+	int values[N];
+	for (int i = 0; i < N; ++i) {
+		values[i] = i;
+		pThread->pushTaskToQueue(task, values+i);
+	}
+	pThread->start();
 
 	p->windowManager()->mainLoop();
 	p->deinitialize();

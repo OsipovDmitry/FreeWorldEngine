@@ -20,7 +20,7 @@ void Logger::addLog(ILog *pLog)
 	std::string date = coreEngine->currentDate().toString();
 	std::string time = coreEngine->currentTime().toString();
 	m_pResourceManager->addResource(pLog);
-	pLog->printMessage(ILog::MessageType_Info, coreEngine->currentTime().toString(), "Start log on " + date + " at " + time);
+	pLog->printMessage(ILog::MessageType_Info, time, "Start log on " + date + " at " + time);
 }
 
 ILog *Logger::getLogByName(const std::string& name) const

@@ -12,8 +12,8 @@ public:
 	
 	virtual ~IThread() = 0 {}
 
-	virtual void start() const = 0;
-	virtual void finish() const = 0;
+	virtual void start() = 0;
+	virtual void finish() = 0;
 
 	virtual void pushTaskToQueue(TaskType task, void *pParams = 0) = 0;
 	virtual uint32 queueSize() const = 0;
