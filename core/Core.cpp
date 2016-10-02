@@ -42,7 +42,7 @@ void Core::initialize()
 	
 	m_pMainCamera = new Camera;
 
-	*m_pLogger << "Free World Engine created.";*/
+	*m_pLogger << "Free World Engine created";*/
 
 	m_pPluginManager->loadPlugins("plugins.xml");
 
@@ -188,20 +188,6 @@ ICamera *Core::mainCamera() const
 ILogger *Core::logger()
 {
 	return m_pLogger;
-}
-
-Date Core::currentDate() const
-{
-	time_t current_time = std::time(0);
-	std::tm *t = localtime(&current_time);
-	return Date(t->tm_mday, (Date::Month)t->tm_mon, t->tm_year+1900);
-}
-
-Time Core::currentTime() const
-{
-	time_t current_time = std::time(0);
-	std::tm *t = localtime(&current_time);
-	return Time(t->tm_hour, t->tm_min, t->tm_sec);
 }
 
 Core *coreEngine = 0;

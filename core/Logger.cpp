@@ -1,3 +1,5 @@
+#include "utility/DateTime.h"
+
 #include "ILog.h"
 
 #include "Logger.h"
@@ -18,8 +20,8 @@ Logger::~Logger()
 
 void Logger::addLog(ILog *pLog)
 {
-	std::string date = coreEngine->currentDate().toString();
-	std::string time = coreEngine->currentTime().toString();
+	std::string date = Date::current().toString();
+	std::string time = Time::current().toString();
 	m_pResourceManager->addResource(pLog);
 	pLog->printMessage(ILog::MessageType_Info, time, "Start log on " + date + " at " + time);
 }
@@ -33,9 +35,9 @@ void Logger::destroyLog(const std::string& name)
 {
 	ILog *pLog = findLog(name);
 	if (pLog) {
-		std::string date = coreEngine->currentDate().toString();
-		std::string time = coreEngine->currentTime().toString();
-		pLog->printMessage(ILog::MessageType_Info, coreEngine->currentTime().toString(), "Finish log on " + date + " at " + time);
+	std::string date = Date::current().toString();
+	std::string time = Time::current().toString();
+		pLog->printMessage(ILog::MessageType_Info, time, "Finish log on " + date + " at " + time);
 		m_pResourceManager->destroyResource(name);
 	}
 }
@@ -54,7 +56,7 @@ void Logger::destroyAllLogs()
 
 void Logger::printMessage(const std::string& message, const ILog::MessageType type) const
 {
-	std::string time = coreEngine->currentTime().toString();
+	std::string time = Time::current().toString();
 	for (ResourceIterator iter = m_pResourceManager->begin(); iter != m_pResourceManager->end(); ++iter)
 		static_cast<ILog*>(*iter)->printMessage(type, time, message);
 }

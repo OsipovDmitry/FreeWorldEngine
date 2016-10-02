@@ -26,12 +26,12 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 	unloadPlugins();
 
 	if ((m_pXML = XMLRoot::openFromFile(pluginsListFileName)) == 0) {
-		LOG("Could not open file \"" + pluginsListFileName + "\".");
+		LOG_ERROR("Could not open file \"" + pluginsListFileName + "\"");
 		return;
 	}
 
 	if (m_pXML->name() != "plugins_list") {
-		LOG("The document \"" + pluginsListFileName + "\" is damaged.");
+		LOG_ERROR("The document \"" + pluginsListFileName + "\" is damaged");
 		XMLRoot::close(m_pXML);
 		m_pXML = 0;
 		return;
@@ -49,7 +49,7 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 
 		ILibrary *pLibrary = coreEngine->libraryManager()->loadLibrary(libraryName);
 		if (!pLibrary) {
-			LOG("Unable to load the plugin \"" + libraryName + "\".");
+			LOG_ERROR("Unable to load the plugin \"" + libraryName + "\"");
 			continue;
 		}
 
@@ -57,11 +57,11 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 		IPlugin *(*pGetFunc)() = (IPlugin*(*)())pLibrary->resolve(getFuncName);
 
 		if (!pStartFunc) {
-			LOG("Could not get the function \"" + startFuncName + "\" in \"" + libraryName + "\" plugin.");
+			LOG_ERROR("Could not get the function \"" + startFuncName + "\" in \"" + libraryName + "\" plugin");
 			continue;
 		}
 		if (!pGetFunc) {
-			LOG("Could not get the function \"" + getFuncName + "\" in \"" + libraryName + "\" plugin.");
+			LOG_ERROR("Could not get the function \"" + getFuncName + "\" in \"" + libraryName + "\" plugin");
 			continue;
 		}
 
@@ -72,7 +72,7 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 			LOG("Load plugin \"" + pPlugin->name() + "\"");
 			LOG(pPlugin->info());
 			if (!pPlugin->initialize())
-				LOG("The initialization function \"" + startFuncName + "\" from \"" + libraryName + "\" plugin returned \"false\".");
+				LOG_WARNING("The initialization function \"" + startFuncName + "\" from \"" + libraryName + "\" plugin returned \"false\"");
 		}
 	}
 }
@@ -100,7 +100,7 @@ void PluginManager::unloadPlugins()
 
 		ILibrary *pLibrary = coreEngine->libraryManager()->findLibrary(libraryName);
 		if (!pLibrary) {
-			LOG("Plugin \"" + libraryName + "\" closed early.");
+			LOG("Plugin \"" + libraryName + "\" closed early");
 			continue;
 		}
 
@@ -108,11 +108,11 @@ void PluginManager::unloadPlugins()
 		IPlugin *(*pGetFunc)() = (IPlugin*(*)())pLibrary->resolve(getFuncName);
 
 		if (!pEndFunc) {
-			LOG("Could not get the function \"" + endFuncName + "\" in \"" + libraryName + "\" plugin.");
+			LOG_ERROR("Could not get the function \"" + endFuncName + "\" in \"" + libraryName + "\" plugin");
 			continue;
 		}
 		if (!pGetFunc) {
-			LOG("Could not get the function \"" + getFuncName + "\" in \"" + libraryName + "\" plugin.");
+			LOG_ERROR("Could not get the function \"" + getFuncName + "\" in \"" + libraryName + "\" plugin");
 			continue;
 		}
 

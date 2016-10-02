@@ -18,3 +18,4 @@ set(SOURCES TerminalLog.cpp
 add_library(LoggerPlugin SHARED ${HEADERS} ${SOURCES})
 	
 target_link_libraries(LoggerPlugin CoreEngine)
+target_link_libraries(LoggerPlugin FWEUtility)

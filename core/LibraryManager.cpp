@@ -21,19 +21,19 @@ ILibrary *LibraryManager::loadLibrary(const std::string& filename)
 	LOG("Load library \""+filename+"\"");
 	ILibrary *pLibrary = findLibrary(filename);
 	if (pLibrary) {
-		LOG("Library \""+filename+"\" is loaded earlier.");
+		LOG("Library \""+filename+"\" is loaded earlier");
 		return pLibrary;
 	}
 	
 	pLibrary = new Library(filename);
 
 	if (!pLibrary->isLoaded()) {
-		LOG("Loading library \"" + filename + "\" failed.");
+		LOG_ERROR("Loading library \"" + filename + "\" failed");
 		delete pLibrary;
 		return 0;
 	}
 
-	LOG("Loading library \"" + filename + "\" is successful.");
+	LOG("Loading library \"" + filename + "\" is successful");
 	m_pResourceManager->addResource(pLibrary);
 	return pLibrary;
 }

@@ -48,9 +48,6 @@ public:
 
 	ILogger *logger();
 
-	Date currentDate() const;
-	Time currentTime() const;
-
 private:
 	ILogger *m_pLogger;
 

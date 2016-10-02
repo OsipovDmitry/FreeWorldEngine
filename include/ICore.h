@@ -55,9 +55,6 @@ public:
 
 	virtual ILogger *logger() = 0;
 
-	virtual Date currentDate() const = 0;
-	virtual Time currentTime() const = 0;
-
 }; // class ICore
 
 } // namespace
