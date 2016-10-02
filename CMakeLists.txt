@@ -12,6 +12,7 @@ if (FWE_3RDPARTY)
     add_subdirectory(3rdparty)
 endif ()
 
+add_subdirectory(utility)
 add_subdirectory(core)
 add_subdirectory(plugins)
 add_subdirectory(demo)

@@ -112,7 +112,7 @@ ResourceManagerList::ResourceManagerList(const std::string& resourceManagerName)
 
 ResourceManagerList::~ResourceManagerList()
 {
-	deleteAllResources();
+	destroyAllResources();
 }
 
 std::string ResourceManagerList::name() const
@@ -125,7 +125,7 @@ IResourceManager::StorageType ResourceManagerList::storageType() const
 	return IResourceManager::StorageType_List;
 }
 
-IResource *ResourceManagerList::getByName(const std::string& name) const
+IResource *ResourceManagerList::findResource(const std::string& name) const
 {
 	for (std::list<IResource*>::const_iterator it = m_data.cbegin(); it != m_data.cend(); ++it)
 		if ((*it)->name() == name)
@@ -146,7 +146,7 @@ void ResourceManagerList::addResource(IResource *pResource)
 	m_data.push_back(pResource);
 }
 
-void ResourceManagerList::deleteResource(const std::string& name)
+void ResourceManagerList::destroyResource(const std::string& name)
 {
 	for (std::list<IResource*>::iterator it = m_data.begin(); it != m_data.end(); ++it) {
 		if ((*it)->name() == name) {
@@ -157,12 +157,12 @@ void ResourceManagerList::deleteResource(const std::string& name)
 	}
 }
 
-void ResourceManagerList::deleteResource(IResource *pResource)
+void ResourceManagerList::destroyResource(IResource *pResource)
 {
-	deleteResource(pResource->name());
+	destroyResource(pResource->name());
 }
 
-void ResourceManagerList::deleteAllResources()
+void ResourceManagerList::destroyAllResources()
 {
 	for (std::list<IResource*>::iterator it = m_data.begin(); it != m_data.end(); ++it)
 		delete *it;
@@ -228,7 +228,7 @@ ResourceManagerHash::ResourceManagerHash(const std::string& resourceManagerName)
 
 ResourceManagerHash::~ResourceManagerHash()
 {
-	deleteAllResources();
+	destroyAllResources();
 }
 
 std::string ResourceManagerHash::name() const
@@ -241,7 +241,7 @@ IResourceManager::StorageType ResourceManagerHash::storageType() const
 	return IResourceManager::StorageType_Hash;
 }
 
-IResource *ResourceManagerHash::getByName(const std::string& name) const
+IResource *ResourceManagerHash::findResource(const std::string& name) const
 {
 	std::unordered_map<std::string, IResource*>::const_iterator i = m_data.find(name);
 	return i == m_data.cend() ? 0 : i->second;
@@ -259,7 +259,7 @@ void ResourceManagerHash::addResource(IResource *pResource)
 		m_data[name] = pResource;
 }
 
-void ResourceManagerHash::deleteResource(const std::string& name)
+void ResourceManagerHash::destroyResource(const std::string& name)
 {
 	std::unordered_map<std::string, IResource*>::const_iterator i = m_data.find(name);
 	if (i != m_data.cend()) {
@@ -268,12 +268,12 @@ void ResourceManagerHash::deleteResource(const std::string& name)
 	}
 }
 
-void ResourceManagerHash::deleteResource(IResource *pResource)
+void ResourceManagerHash::destroyResource(IResource *pResource)
 {
-	deleteResource(pResource->name());
+	destroyResource(pResource->name());
 }
 
-void ResourceManagerHash::deleteAllResources()
+void ResourceManagerHash::destroyAllResources()
 {
 	for (std::unordered_map<std::string, IResource*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
 		delete i->second;
@@ -339,7 +339,7 @@ ResourceManagerMap::ResourceManagerMap(const std::string& resourceManagerName) :
 
 ResourceManagerMap::~ResourceManagerMap()
 {
-	deleteAllResources();
+	destroyAllResources();
 }
 
 std::string ResourceManagerMap::name() const
@@ -352,7 +352,7 @@ IResourceManager::StorageType ResourceManagerMap::storageType() const
 	return IResourceManager::StorageType_Map;
 }
 
-IResource *ResourceManagerMap::getByName(const std::string& name) const
+IResource *ResourceManagerMap::findResource(const std::string& name) const
 {
 	std::map<std::string, IResource*>::const_iterator i = m_data.find(name);
 	return i == m_data.cend() ? 0 : i->second;
@@ -370,7 +370,7 @@ void ResourceManagerMap::addResource(IResource *pResource)
 		m_data[name] = pResource;
 }
 
-void ResourceManagerMap::deleteResource(const std::string& name)
+void ResourceManagerMap::destroyResource(const std::string& name)
 {
 	std::map<std::string, IResource*>::const_iterator i = m_data.find(name);
 	if (i != m_data.cend()) {
@@ -379,12 +379,12 @@ void ResourceManagerMap::deleteResource(const std::string& name)
 	}
 }
 
-void ResourceManagerMap::deleteResource(IResource *pResource)
+void ResourceManagerMap::destroyResource(IResource *pResource)
 {
-	deleteResource(pResource->name());
+	destroyResource(pResource->name());
 }
 
-void ResourceManagerMap::deleteAllResources()
+void ResourceManagerMap::destroyAllResources()
 {
 	for (std::map<std::string, IResource*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
 		delete i->second;
@@ -435,7 +435,7 @@ IDataManager<>::StorageType DataManager<ContainerType>::storageType() const
 }
 
 template<class ContainerType>
-typename ContainerType::value_type *DataManager<ContainerType>::getByName(const std::string& name) const
+typename ContainerType::value_type *DataManager<ContainerType>::findResource(const std::string& name) const
 {
 	return 0;
 }
@@ -446,17 +446,17 @@ void DataManager<ContainerType>::addResource(DataType *pResource)
 }
 
 template<class ContainerType>
-void DataManager<ContainerType>::deleteResource(const std::string& name)
+void DataManager<ContainerType>::destroyResource(const std::string& name)
 {
 }
 
 template<class ContainerType>
-void DataManager<ContainerType>::deleteResource(DataType *pResource)
+void DataManager<ContainerType>::destroyResource(DataType *pResource)
 {
 }
 
 template<class ContainerType>
-void DataManager<ContainerType>::deleteAllResources()
+void DataManager<ContainerType>::destroyAllResources()
 {
 }
 

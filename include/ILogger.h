@@ -5,16 +5,15 @@
 
 namespace FreeWorldEngine {
 
-class ILog;
-
 class ILogger {
 public:
 	virtual ~ILogger() = 0 {}
 
 	virtual void addLog(ILog *pLog) = 0;
-	virtual ILog *getLogByName(const std::string& name) const = 0;
-	virtual void deleteLog(const std::string& name) = 0;
-	virtual void deleteLog(ILog *pLog) = 0;
+	virtual ILog *findLog(const std::string& name) const = 0;
+	virtual void destroyLog(const std::string& name) = 0;
+	virtual void destroyLog(ILog *pLog) = 0;
+	virtual void destroyAllLogs() = 0;
 
 	virtual void printMessage(const std::string& message, const ILog::MessageType type = ILog::MessageType_Info) const = 0;
 

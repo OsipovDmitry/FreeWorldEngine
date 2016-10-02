@@ -26,10 +26,10 @@ std::string XMLNode::name() const
 	return m->pData->name();
 }
 
-std::string XMLNode::attributeValue(const std::string &attributeName) const
+std::string XMLNode::attributeValue(const std::string &attributeName, const std::string& defaultValue) const
 {
 	auto attrib = m->pData->first_attribute(attributeName.c_str());
-	return attrib ? attrib->value() : std::string();
+	return attrib ? attrib->value() : defaultValue;
 }
 
 XMLNode::AttributeList XMLNode::attributes() const

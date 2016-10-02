@@ -4,10 +4,12 @@
 #include <string>
 #include <list>
 
+#include "UtilitySettings.h"
+
 namespace FreeWorldEngine {
 
 struct XMLNodePrivate;
-class XMLNode {
+class UTILITY_DLL XMLNode {
 	friend class XMLRoot;
 
 public:
@@ -16,7 +18,7 @@ public:
 
 	std::string name() const;
 
-	std::string attributeValue(const std::string& attributeName) const;
+	std::string attributeValue(const std::string& attributeName, const std::string& defaultValue = std::string()) const;
 	AttributeList attributes() const;
 
 	std::string text() const;
@@ -37,7 +39,7 @@ private:
 };
 
 struct XMLRootPrivate;
-class XMLRoot : public XMLNode {
+class UTILITY_DLL XMLRoot : public XMLNode {
 public:
 	static XMLRoot *openFromFile(const std::string& fileName);
 	static XMLRoot *openFromData(const char *xmlData);

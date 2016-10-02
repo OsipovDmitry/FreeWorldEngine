@@ -17,7 +17,7 @@ ThreadManager::~ThreadManager()
 
 IThread *ThreadManager::findThread(const std::string& name) const
 {
-	return static_cast<IThread*>(m_pResourceManager->getByName(name));
+	return static_cast<IThread*>(m_pResourceManager->findResource(name));
 }
 
 IThread *ThreadManager::createThread(const std::string& name)
@@ -33,12 +33,12 @@ IThread *ThreadManager::createThread(const std::string& name)
 
 void ThreadManager::destroyThread(const std::string& name)
 {
-	m_pResourceManager->deleteResource(name);
+	m_pResourceManager->destroyResource(name);
 }
 
 void ThreadManager::destroyThread(IThread *pThread)
 {
-	m_pResourceManager->deleteResource(pThread);
+	m_pResourceManager->destroyResource(pThread);
 }
 
 

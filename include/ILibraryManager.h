@@ -13,7 +13,7 @@ public:
 	virtual ILibrary *loadLibrary(const std::string& filename) = 0;
 	virtual void unloadLibrary(const std::string& name) = 0;
 	virtual void unloadLibrary(ILibrary *pLibrary) = 0;
-	virtual ILibrary *getByName(const std::string& name) const = 0;
+	virtual ILibrary *findLibrary(const std::string& name) const = 0;
 
 }; // class ILibraryManager
 

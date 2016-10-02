@@ -7,9 +7,11 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 set(HEADERS ../../include/ILog.h
             ../../include/ILogger.h
 			TerminalLog.h
+			HtmlLog.h
             LoggerPlugin.h)
 
 set(SOURCES TerminalLog.cpp
+			HtmlLog.cpp
 			LoggerPlugin.cpp
             main.cpp)
 

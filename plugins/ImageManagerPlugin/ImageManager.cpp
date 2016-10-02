@@ -23,7 +23,7 @@ ImageManager::~ImageManager()
 
 IImage *ImageManager::loadImage(const std::string& filename)
 {
-	IImage *pImage = getByName(filename);
+	IImage *pImage = findImage(filename);
 	if (pImage)
 		return pImage;
 
@@ -58,9 +58,19 @@ IImage *ImageManager::loadImage(const std::string& filename)
 	return pImage;
 }
 
-IImage *ImageManager::getByName(const std::string& name) const
+IImage *ImageManager::findImage(const std::string& name) const
 {
-	return reinterpret_cast<IImage*>(m_pResourceManager->getByName(name));
+	return reinterpret_cast<IImage*>(m_pResourceManager->findResource(name));
+}
+
+void ImageManager::destoryImage(const std::string& name)
+{
+	m_pResourceManager->destroyResource(name);
+}
+
+void ImageManager::destoryImage(IImage *pImage)
+{
+	m_pResourceManager->destroyResource(pImage);
 }
 
 std::string ImageManager::fileExtension(const std::string& filename)

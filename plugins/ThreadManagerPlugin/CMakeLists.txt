@@ -9,7 +9,8 @@ set(HEADERS ../../include/IThread.h
 	    ThreadManager.h
             ThreadManagerPlugin.h)
 
-set(SOURCES ThreadManager.cpp
+set(SOURCES Thread.cpp
+		ThreadManager.cpp
 	    ThreadManagerPlugin.cpp
             main.cpp)
 

@@ -107,12 +107,12 @@ IResourceManager *Core::createResourceManager(const std::string& resourceManager
 
 void Core::destroyResourceManager(IResourceManager *pResourceManager)
 {
-	m_pManagerForOtherManagers->deleteResource(pResourceManager);
+	m_pManagerForOtherManagers->destroyResource(pResourceManager);
 }
 
 void Core::destroyResourceManager(const std::string& resourceManagerName)
 {
-	m_pManagerForOtherManagers->deleteResource(resourceManagerName);
+	m_pManagerForOtherManagers->destroyResource(resourceManagerName);
 }
 
 ILibraryManager *Core::libraryManager() const

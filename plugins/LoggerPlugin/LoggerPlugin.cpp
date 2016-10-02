@@ -2,6 +2,7 @@
 
 #include "LoggerPlugin.h"
 #include "TerminalLog.h"
+#include "HtmlLog.h"
 
 namespace FreeWorldEngine {
 
@@ -30,7 +31,12 @@ bool LoggerPlugin::initialize() const
 	if (!pCore)
 		return false;
 
+
+
 	m_logsList.push_back(new TerminalLog());
+	pCore->logger()->addLog(m_logsList.back());
+
+	m_logsList.push_back(new HtmlLog("log.htm"));
 	pCore->logger()->addLog(m_logsList.back());
 
 	return true;
@@ -43,7 +49,7 @@ void LoggerPlugin::deinitialize() const
 		return;
 
 	for (std::list<ILog*>::iterator it = m_logsList.begin(); it != m_logsList.end(); ++it)
-		pCore->logger()->deleteLog(*it);
+		pCore->logger()->destroyLog(*it);
 	m_logsList.clear();
 }
 

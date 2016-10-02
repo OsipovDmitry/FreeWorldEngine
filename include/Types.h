@@ -44,8 +44,8 @@ struct Date {
 	// d >= 1, m = [Jan..Dec], y >= 0
 	Date(uint8 d = 29, Month m = Nov, uint16 y = 1992) : day(d-1), month(m), year(y) {}
 	std::string toString() const { 
-		std::string sDay = ((day < 10) ? "0" : "") + std::to_string((_ULonglong)(day+1));
-		std::string sMonth = ((month < 10) ? "0" : "") + std::to_string((_ULonglong)(month-Jan+1));
+		std::string sDay = ((day+1 < 10) ? "0" : "") + std::to_string((_ULonglong)(day+1));
+		std::string sMonth = ((month-Jan+1 < 10) ? "0" : "") + std::to_string((_ULonglong)(month-Jan+1));
 		return sDay + "." + sMonth + "." + std::to_string((_ULonglong)year);
 	}
 

@@ -12,9 +12,10 @@ public:
 	~Logger();
 
 	void addLog(ILog *pLog);
-	ILog *getLogByName(const std::string& name) const;
-	void deleteLog(const std::string& name);
-	void deleteLog(ILog *pLog);
+	ILog *findLog(const std::string& name) const;
+	void destroyLog(const std::string& name);
+	void destroyLog(ILog *pLog);
+	void destroyAllLogs();
 
 	void printMessage(const std::string& message, const ILog::MessageType type = ILog::MessageType_Info) const;
 

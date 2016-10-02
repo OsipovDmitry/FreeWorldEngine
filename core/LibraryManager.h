@@ -15,7 +15,7 @@ public:
 	ILibrary *loadLibrary(const std::string& filename);
 	void unloadLibrary(const std::string& name);
 	void unloadLibrary(ILibrary *pLibrary);
-	ILibrary *getByName(const std::string& name) const;
+	ILibrary *findLibrary(const std::string& name) const;
 
 private:
 	IResourceManager *m_pResourceManager;

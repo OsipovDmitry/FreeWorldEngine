@@ -17,11 +17,11 @@ public:
 	std::string name() const;
 	IResourceManager::StorageType storageType() const;
 
-	IResource *getByName(const std::string& name) const;
+	IResource *findResource(const std::string& name) const;
 	void addResource(IResource *pResource);
-	void deleteResource(const std::string& name);
-	void deleteResource(IResource *pResource);
-	void deleteAllResources();
+	void destroyResource(const std::string& name);
+	void destroyResource(IResource *pResource);
+	void destroyAllResources();
 	uint32 size() const;
 
 	ResourceIterator begin();
@@ -43,11 +43,11 @@ public:
 	std::string name() const;
 	IResourceManager::StorageType storageType() const;
 
-	IResource *getByName(const std::string& name) const;
+	IResource *findResource(const std::string& name) const;
 	void addResource(IResource *pResource);
-	void deleteResource(const std::string& name);
-	void deleteResource(IResource *pResource);
-	void deleteAllResources();
+	void destroyResource(const std::string& name);
+	void destroyResource(IResource *pResource);
+	void destroyAllResources();
 	uint32 size() const;
 
 	ResourceIterator begin();
@@ -69,11 +69,11 @@ public:
 	std::string name() const;
 	IResourceManager::StorageType storageType() const;
 
-	IResource *getByName(const std::string& name) const;
+	IResource *findResource(const std::string& name) const;
 	void addResource(IResource *pResource);
-	void deleteResource(const std::string& name);
-	void deleteResource(IResource *pResource);
-	void deleteAllResources();
+	void destroyResource(const std::string& name);
+	void destroyResource(IResource *pResource);
+	void destroyAllResources();
 	uint32 size() const;
 
 	ResourceIterator begin();
@@ -97,11 +97,11 @@ public:
 
 	IDataManager<DataType>::StorageType storageType() const;
 
-	typename ContainerType::value_type *getByName(const std::string& name) const;
+	typename ContainerType::value_type *findResource(const std::string& name) const;
 	void addResource(DataType *pResource);
-	void deleteResource(const std::string& name);
-	void deleteResource(DataType *pResource);
-	void deleteAllResources();
+	void destroyResource(const std::string& name);
+	void destroyResource(DataType *pResource);
+	void destroyAllResources();
 	uint32 size() const;
 
 	ResourceIterator begin();

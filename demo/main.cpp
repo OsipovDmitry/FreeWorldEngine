@@ -9,7 +9,7 @@ void render() {
 void task(void *p)
 {
 	int *pi = (int*)p;
-	getCoreEngine()->logger()->printMessage(std::to_string(*pi));
+	getCoreEngine()->logger()->printMessage(std::to_string(*pi), ILog::MessageType(rand()%4));
 }
 
 int main() {

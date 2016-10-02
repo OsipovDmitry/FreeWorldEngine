@@ -19,7 +19,7 @@ LibraryManager::~LibraryManager()
 ILibrary *LibraryManager::loadLibrary(const std::string& filename)
 {
 	LOG("Load library \""+filename+"\"");
-	ILibrary *pLibrary = getByName(filename);
+	ILibrary *pLibrary = findLibrary(filename);
 	if (pLibrary) {
 		LOG("Library \""+filename+"\" is loaded earlier.");
 		return pLibrary;
@@ -41,7 +41,7 @@ ILibrary *LibraryManager::loadLibrary(const std::string& filename)
 void LibraryManager::unloadLibrary(const std::string& name)
 {
 	LOG("Unload library \""+name+"\"");
-	m_pResourceManager->deleteResource(name);
+	m_pResourceManager->destroyResource(name);
 }
 
 void LibraryManager::unloadLibrary(ILibrary *pLibrary)
@@ -49,9 +49,9 @@ void LibraryManager::unloadLibrary(ILibrary *pLibrary)
 	unloadLibrary(pLibrary->name());
 }
 
-ILibrary *LibraryManager::getByName(const std::string& name) const
+ILibrary *LibraryManager::findLibrary(const std::string& name) const
 {
-	return reinterpret_cast<ILibrary*>(m_pResourceManager->getByName(name));
+	return reinterpret_cast<ILibrary*>(m_pResourceManager->findResource(name));
 }
 
 } // namespace

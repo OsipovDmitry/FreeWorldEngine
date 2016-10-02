@@ -1,12 +1,13 @@
 #include <fstream>
 
+#include "utility/XML.h"
+
 #include "ILibraryManager.h"
 #include "ILibrary.h"
 #include "IPlugin.h"
 
 #include "Core.h"
 #include "PluginManager.h"
-#include "XML.h"
 
 namespace FreeWorldEngine {
 
@@ -97,7 +98,7 @@ void PluginManager::unloadPlugins()
 		std::string endFuncName = std::string(pNode->attributeValue("endFunc"));
 		std::string getFuncName = std::string(pNode->attributeValue("getFunc"));
 
-		ILibrary *pLibrary = coreEngine->libraryManager()->getByName(libraryName);
+		ILibrary *pLibrary = coreEngine->libraryManager()->findLibrary(libraryName);
 		if (!pLibrary) {
 			LOG("Plugin \"" + libraryName + "\" closed early.");
 			continue;

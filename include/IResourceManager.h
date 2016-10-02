@@ -41,11 +41,11 @@ public:
 
 	virtual StorageType storageType() const = 0;
 
-	virtual IResource *getByName(const std::string& name) const = 0;
+	virtual IResource *findResource(const std::string& name) const = 0;
 	virtual void addResource(IResource *pResource) = 0;
-	virtual void deleteResource(const std::string& name) = 0;
-	virtual void deleteResource(IResource *pResource) = 0;
-	virtual void deleteAllResources() = 0;
+	virtual void destroyResource(const std::string& name) = 0;
+	virtual void destroyResource(IResource *pResource) = 0;
+	virtual void destroyAllResources() = 0;
 	virtual uint32 size() const = 0;
 
 	virtual ResourceIterator begin() = 0;

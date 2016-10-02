@@ -12,6 +12,7 @@ Logger::Logger() :
 
 Logger::~Logger()
 {
+	destroyAllLogs();
 	coreEngine->destroyResourceManager(m_pResourceManager);
 }
 
@@ -23,26 +24,32 @@ void Logger::addLog(ILog *pLog)
 	pLog->printMessage(ILog::MessageType_Info, time, "Start log on " + date + " at " + time);
 }
 
-ILog *Logger::getLogByName(const std::string& name) const
+ILog *Logger::findLog(const std::string& name) const
 {
-	return reinterpret_cast<ILog*>(m_pResourceManager->getByName(name));
+	return reinterpret_cast<ILog*>(m_pResourceManager->findResource(name));
 }
 
-void Logger::deleteLog(const std::string& name)
+void Logger::destroyLog(const std::string& name)
 {
-	ILog *pLog = getLogByName(name);
+	ILog *pLog = findLog(name);
 	if (pLog) {
 		std::string date = coreEngine->currentDate().toString();
 		std::string time = coreEngine->currentTime().toString();
 		pLog->printMessage(ILog::MessageType_Info, coreEngine->currentTime().toString(), "Finish log on " + date + " at " + time);
-		m_pResourceManager->deleteResource(name);
+		m_pResourceManager->destroyResource(name);
 	}
 }
 
-void Logger::deleteLog(ILog *pLog)
+void Logger::destroyLog(ILog *pLog)
 {
 	if (pLog)
-		deleteLog(pLog->name());
+		destroyLog(pLog->name());
+}
+
+void Logger::destroyAllLogs()
+{
+	while (m_pResourceManager->size())
+		destroyLog(static_cast<ILog*>(*(m_pResourceManager->begin())));
 }
 
 void Logger::printMessage(const std::string& message, const ILog::MessageType type) const

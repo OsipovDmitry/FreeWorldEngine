@@ -13,7 +13,9 @@ public:
 	ImageManager();
 	~ImageManager();
 	IImage *loadImage(const std::string& filename);
-	IImage *getByName(const std::string& name) const;
+	IImage *findImage(const std::string& name) const;
+	void destoryImage(const std::string& name);
+	void destoryImage(IImage *pImage);
 
 private:
 	IResourceManager *m_pResourceManager;
