@@ -65,6 +65,9 @@ bool LoggerPlugin::initialize() const
 
 		ILog *pLog = 0;
 		if (logType == "text") {
+			const std::string filename = pNode->attributeValue("file");
+			pLog = pCore->logger()->addTextFileLog(filename);
+			continue; // текстовый лог не нужно добавлять в логер, так как он уже там есть
 		}
 		else if (logType == "terminal") {
 			pLog = new TerminalLog();

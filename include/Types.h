@@ -3,7 +3,6 @@
 
 #include <map> 
 #include <string>
-#include <initializer_list>
 
 #include "CoreSettings.h"
 
@@ -17,7 +16,7 @@ typedef unsigned int           uint32;
 typedef unsigned long long int uint64;
 
 enum Type {
-	TYPE_SIGNED_INT_8 = 0,
+	TYPE_SIGNED_INT_8,
 	TYPE_SIGNED_INT_16,
 	TYPE_SIGNED_INT_32,
 	TYPE_UNSIGNED_INT_8,
@@ -25,42 +24,6 @@ enum Type {
 	TYPE_UNSIGNED_INT_32,
 	TYPE_FLOAT
 }; // enum Type
-
-struct Time {
-	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0) : hours(h), minutes(m), seconds(s){}
-	std::string toString() const {
-		std::string sHours = ((hours < 10) ? "0" : "") + std::to_string((_ULonglong)(hours));
-		std::string sMinutes = ((minutes < 10) ? "0" : "") + std::to_string((_ULonglong)(minutes));
-		std::string sSeconds = ((seconds < 10) ? "0" : "") + std::to_string((_ULonglong)(seconds));
-		return sHours + ":" + sMinutes + ":" + sSeconds;
-	}
-
-	uint8 hours, minutes, seconds;
-};
-
-struct Date {
-	enum Month { Jan, Feb, Mar, Apr, May, June, July, Aug, Sept, Oct, Nov, Dec };
-
-	// d >= 1, m = [Jan..Dec], y >= 0
-	Date(uint8 d = 29, Month m = Nov, uint16 y = 1992) : day(d-1), month(m), year(y) {}
-	std::string toString() const { 
-		std::string sDay = ((day+1 < 10) ? "0" : "") + std::to_string((_ULonglong)(day+1));
-		std::string sMonth = ((month-Jan+1 < 10) ? "0" : "") + std::to_string((_ULonglong)(month-Jan+1));
-		return sDay + "." + sMonth + "." + std::to_string((_ULonglong)year);
-	}
-
-	uint16 year;
-	Month month;
-	uint8 day;
-};
-
-struct DateTime {
-	DateTime(const Time t = Time(), const Date& d = Date()) : date(d), time(t) {}
-	std::string toString() const { return date.toString() + " " + time.toString(); }
-
-	Date date;
-	Time time;
-};
 
 struct VertexFormatPrivate;
 class /*CORE_FUNC_DLL*/ VertexFormat {

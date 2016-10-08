@@ -9,6 +9,7 @@ class ILogger {
 public:
 	virtual ~ILogger() = 0 {}
 
+	virtual ILog *addTextFileLog(const std::string& filename) = 0;
 	virtual void addLog(ILog *pLog) = 0;
 	virtual ILog *findLog(const std::string& name) const = 0;
 	virtual void destroyLog(const std::string& name) = 0;

@@ -3,6 +3,7 @@
 #include "ILog.h"
 
 #include "Logger.h"
+#include "TextFileLog.h"
 #include "Core.h"
 
 namespace FreeWorldEngine {
@@ -16,6 +17,17 @@ Logger::~Logger()
 {
 	destroyAllLogs();
 	coreEngine->destroyResourceManager(m_pResourceManager);
+}
+
+ILog *Logger::addTextFileLog(const std::string& filename)
+{
+	ILog *pLog = findLog(filename);
+	if (pLog)
+		return pLog;
+
+	pLog = new TextFileLog(filename);
+	addLog(pLog);
+	return pLog;
 }
 
 void Logger::addLog(ILog *pLog)
