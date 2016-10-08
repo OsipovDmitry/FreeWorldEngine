@@ -1,10 +1,10 @@
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/include)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR})
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(SOURCES main.cpp
-            ${CMAKE_SOURCE_DIR}/core/XML.cpp)
+            ${CMAKE_SOURCE_DIR}/utility/XML.cpp)
 
 add_executable(test_xml ${SOURCES})
 
