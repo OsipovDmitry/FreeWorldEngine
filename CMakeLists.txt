@@ -18,5 +18,5 @@ add_subdirectory(plugins)
 add_subdirectory(demo)
 
 if (FWE_TESTS)
-    add_subdirectory(test)
+    add_subdirectory(test/xml)
 endif ()
