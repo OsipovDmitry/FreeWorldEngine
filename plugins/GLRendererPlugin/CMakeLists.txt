@@ -4,7 +4,9 @@ include_directories(../../3rdparty/include)
 include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
-set(HEADERS ../../include/renderer/IGLBufferObject.h
+set(HEADERS ../../include/renderer/IGPURenderer.h
+			../../include/renderer/IGPUBuffer.h
+			../../include/renderer/IGLBufferObject.h
             ../../include/renderer/IGLRenderer.h
             ../../include/renderer/IGLShader.h
             ../../include/renderer/IGLShaderProgram.h

@@ -1,7 +1,7 @@
 #ifndef __IGLRESOURCE__
 #define __IGLRESOURCE__
 
-#include "glew-1.13.0/include/gl/glew.h"
+#include "glew/glew.h"
 
 namespace FreeWorldEngine {
 
