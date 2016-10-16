@@ -20,7 +20,6 @@ public:
 private:
 	IResourceManager *m_pResourceManager;
 
-	static std::string fileExtension(const std::string& filename);
 	static bool loadJPEGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data);
 	static bool loadPNGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data);
 };

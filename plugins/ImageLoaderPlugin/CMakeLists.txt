@@ -18,5 +18,6 @@ set(SOURCES Image.cpp
 add_library(ImageLoaderPlugin SHARED ${HEADERS} ${SOURCES})
 	
 target_link_libraries(ImageLoaderPlugin CoreEngine)
+target_link_libraries(ImageLoaderPlugin FWEUtility)
 target_link_libraries(ImageLoaderPlugin libjpeg)
 target_link_libraries(ImageLoaderPlugin libpng)

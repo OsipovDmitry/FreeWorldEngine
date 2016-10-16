@@ -3,10 +3,12 @@ include_directories(../include/utility)
 
 set(HEADERS ../include/utility/UtilitySettings.h
 			../include/utility/XML.h
-			../include/utility/DateTime.h)
+			../include/utility/DateTime.h
+			../include/utility/File.h)
 
 set(SOURCES XML.cpp
-			DateTime.cpp)
+			DateTime.cpp
+			File.cpp)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 

@@ -1,5 +1,6 @@
 #include <FreeWorldEngine.h>
-#include <algorithm>
+
+#include <utility/File.h>
 
 #include "Image.h"
 #include "ImageLoader.h"
@@ -30,7 +31,7 @@ IImage *ImageLoader::loadImage(const std::string& filename)
 	uint32 imageWidth, imageHeight, imageDepth, imageNumComponents;
 	Type imageType;
 	void *imageData;
-	std::string fileExt = fileExtension(filename);
+	std::string fileExt = File(filename).fileExtension();
 	
 	bool isOk = false;
 	if (fileExt == "jpg" || fileExt == "jpeg") {
@@ -71,17 +72,6 @@ void ImageLoader::destoryImage(const std::string& name)
 void ImageLoader::destoryImage(IImage *pImage)
 {
 	m_pResourceManager->destroyResource(pImage);
-}
-
-std::string ImageLoader::fileExtension(const std::string& filename)
-{
-	const std::string::size_type dotPos = filename.find_last_of(".");
-	if (dotPos != std::string::npos) {
-		std::string ext = filename.substr(dotPos+1);
-		std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
-		return ext;
-	}
-    return "";
 }
 
 bool ImageLoader::loadJPEGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data)
