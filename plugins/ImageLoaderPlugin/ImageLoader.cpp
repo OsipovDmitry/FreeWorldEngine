@@ -2,7 +2,7 @@
 #include <algorithm>
 
 #include "Image.h"
-#include "ImageManager.h"
+#include "ImageLoader.h"
 
 #include "libjpeg/jpeglib.h"
 #include "libjpeg/jerror.h"
@@ -11,17 +11,17 @@
 
 namespace FreeWorldEngine {
 
-ImageManager::ImageManager() :
+ImageLoader::ImageLoader() :
 	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForImages"))
 {
 }
 
-ImageManager::~ImageManager()
+ImageLoader::~ImageLoader()
 {
 	getCoreEngine()->destroyResourceManager(m_pResourceManager);
 }
 
-IImage *ImageManager::loadImage(const std::string& filename)
+IImage *ImageLoader::loadImage(const std::string& filename)
 {
 	IImage *pImage = findImage(filename);
 	if (pImage)
@@ -58,22 +58,22 @@ IImage *ImageManager::loadImage(const std::string& filename)
 	return pImage;
 }
 
-IImage *ImageManager::findImage(const std::string& name) const
+IImage *ImageLoader::findImage(const std::string& name) const
 {
 	return reinterpret_cast<IImage*>(m_pResourceManager->findResource(name));
 }
 
-void ImageManager::destoryImage(const std::string& name)
+void ImageLoader::destoryImage(const std::string& name)
 {
 	m_pResourceManager->destroyResource(name);
 }
 
-void ImageManager::destoryImage(IImage *pImage)
+void ImageLoader::destoryImage(IImage *pImage)
 {
 	m_pResourceManager->destroyResource(pImage);
 }
 
-std::string ImageManager::fileExtension(const std::string& filename)
+std::string ImageLoader::fileExtension(const std::string& filename)
 {
 	const std::string::size_type dotPos = filename.find_last_of(".");
 	if (dotPos != std::string::npos) {
@@ -84,7 +84,7 @@ std::string ImageManager::fileExtension(const std::string& filename)
     return "";
 }
 
-bool ImageManager::loadJPEGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data)
+bool ImageLoader::loadJPEGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data)
 {
 	FILE *file;
 	if (!(file = fopen(filename.c_str(), "rb")))
@@ -117,7 +117,7 @@ bool ImageManager::loadJPEGFile(const std::string& filename, uint32& width, uint
 	return true;
 }
 
-bool ImageManager::loadPNGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data)
+bool ImageLoader::loadPNGFile(const std::string& filename, uint32& width, uint32& height, uint32& depth, uint32& numComponents, Type& type, void *&data)
 {
 	png_structp png_ptr;
     png_infop info_ptr;

@@ -1,4 +1,4 @@
-#include "ImageManagerPlugin.h"
+#include "ImageLoaderPlugin.h"
 
 static FreeWorldEngine::IPlugin *pPlugin = 0;
 
@@ -7,7 +7,7 @@ extern "C" {
 __declspec(dllexport) void startLibrary()
 {
 	if (!pPlugin)
-		pPlugin = new FreeWorldEngine::ImageManagerPlugin();
+		pPlugin = new FreeWorldEngine::ImageLoaderPlugin();
 }
 
 __declspec(dllexport) FreeWorldEngine::IPlugin *getLibrary()

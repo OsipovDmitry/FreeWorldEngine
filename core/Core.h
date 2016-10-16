@@ -34,8 +34,8 @@ public:
 	void setWindowManager(IWindowManager* const pWindowManager);
 	IWindowManager *windowManager() const;
 
-	void setImageManager(IImageManager* const pImageManager);
-	IImageManager *imageManager() const;
+	void setImageLoader(IImageLoader* const pImageLoader);
+	IImageLoader *imageLoader() const;
 	
 	IPhysicsManager *physicsManager() const;
 	ISceneModelManager *sceneModelManager() const;
@@ -58,7 +58,7 @@ private:
 	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;
 	IGLRenderer *m_pGLRenderer;
-	IImageManager *m_pImageManager;
+	IImageLoader *m_pImageLoader;
 
 	IPhysicsManager *m_pPhysicsManager;
 	ISceneModelManager *m_pSceneModelManager;

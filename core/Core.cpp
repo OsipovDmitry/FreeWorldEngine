@@ -16,6 +16,7 @@ Core::Core() :
 	m_pLibraryManager(0),
 	m_pPluginManager(0),
 	m_pThreadManager(0),
+	m_pImageLoader(0),
 	m_pWindowManager(0),
 	m_pGLRenderer(0)
 {
@@ -65,6 +66,9 @@ void Core::deinitialize()
 
 	delete m_pWindowManager;
 	m_pWindowManager = 0;
+
+	delete m_pImageLoader;
+	m_pImageLoader = 0;
 
 	delete m_pPluginManager;
 	m_pPluginManager = 0;
@@ -145,14 +149,14 @@ IWindowManager *Core::windowManager() const
 	return m_pWindowManager;
 }
 
-void Core::setImageManager(IImageManager* const pImageManager)
+void Core::setImageLoader(IImageLoader* const pImageLoader)
 {
-	m_pImageManager = pImageManager;
+	m_pImageLoader = pImageLoader;
 }
 
-IImageManager *Core::imageManager() const
+IImageLoader *Core::imageLoader() const
 {
-	return m_pImageManager;
+	return m_pImageLoader;
 }
 
 IPhysicsManager *Core::physicsManager() const

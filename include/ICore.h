@@ -10,7 +10,7 @@ namespace FreeWorldEngine {
 class IPluginManager;
 class IWindowManager;
 class IPhysicsManager;
-class IImageManager;
+class IImageLoader;
 class ISceneModelManager;
 class IWindow;
 class ILogger;
@@ -41,8 +41,8 @@ public:
 	virtual void setWindowManager(IWindowManager* const pWindowManager) = 0;
 	virtual IWindowManager *windowManager() const = 0;
 
-	virtual void setImageManager(IImageManager* const pImageManager) = 0;
-	virtual IImageManager *imageManager() const = 0;
+	virtual void setImageLoader(IImageLoader* const pImageLoader) = 0;
+	virtual IImageLoader *imageLoader() const = 0;
 	
 	virtual IPhysicsManager *physicsManager() const = 0;
 	virtual ISceneModelManager *sceneModelManager() const = 0;

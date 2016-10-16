@@ -14,7 +14,7 @@
 #include "IThread.h"
 #include "IWindowManager.h"
 #include "IWindow.h"
-#include "IImageManager.h"
+#include "IImageLoader.h"
 #include "IImage.h"
 #include "renderer/IGLRenderer.h"
 #include "CoreSettings.h"

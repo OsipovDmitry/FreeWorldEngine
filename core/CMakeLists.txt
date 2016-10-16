@@ -8,7 +8,7 @@ set(INTERFACE_HEADERS
     ../include/ICamera.h
     ../include/ICore.h
     ../include/IImage.h
-    ../include/IImageManager.h
+    ../include/IImageLoader.h
     ../include/ILibrary.h
     ../include/ILibraryManager.h
     ../include/ILog.h

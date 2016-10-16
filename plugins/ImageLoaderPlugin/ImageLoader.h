@@ -1,17 +1,17 @@
 #ifndef __IMAGEMANAGER__
 #define __IMAGEMANAGER__
 
-#include <IImageManager.h>
+#include <IImageLoader.h>
 #include <Types.h>
 
 namespace FreeWorldEngine {
 
 class IResourceManager;
 
-class ImageManager : public IImageManager {
+class ImageLoader : public IImageLoader {
 public:
-	ImageManager();
-	~ImageManager();
+	ImageLoader();
+	~ImageLoader();
 	IImage *loadImage(const std::string& filename);
 	IImage *findImage(const std::string& name) const;
 	void destoryImage(const std::string& name);

@@ -5,12 +5,12 @@
 
 namespace FreeWorldEngine {
 
-class IImageManager;
+class IImageLoader;
 
-class ImageManagerPlugin : public IPlugin {
+class ImageLoaderPlugin : public IPlugin {
 public:
-	ImageManagerPlugin();
-	~ImageManagerPlugin();
+	ImageLoaderPlugin();
+	~ImageLoaderPlugin();
 
 	std::string name() const;
 	std::string info() const;
@@ -18,7 +18,7 @@ public:
 	void deinitialize() const;
 
 private:
-	static IImageManager *pImageManager;
+	static ImageLoaderPlugin *pImageLoader;
 
 }; // class IPlugin
 
