@@ -5,6 +5,7 @@ include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(HEADERS ../../include/renderer/IGPURenderer.h
+			../../include/renderer/IGPUTexture.h
 			../../include/renderer/IGPUBuffer.h
 			../../include/renderer/IGLBufferObject.h
             ../../include/renderer/IGLRenderer.h
