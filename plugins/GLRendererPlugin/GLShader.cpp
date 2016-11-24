@@ -2,7 +2,7 @@
 
 namespace FreeWorldEngine {
 
-GLShader::GLShader(GLuint id) :
+GLShader::GLShader(const GLuint id) :
 	m_id(id)
 {
 }
@@ -11,29 +11,94 @@ GLShader::~GLShader()
 {
 }
 
-GLuint GLShader::id() const
+IGPUShader::IGPUShaderType GLShader::type() const
 {
-	return m_id;
+    GLenum val = GLtype();
+
+    switch (val) {
+	case GL_VERTEX_SHADER: return IGPUShader::IGPUShaderType_Vertex;
+    case GL_GEOMETRY_SHADER: return IGPUShader::IGPUShaderType_Geometry;
+    case GL_FRAGMENT_SHADER: return IGPUShader::IGPUShaderType_Fragment;
+    }
+
+    return IGPUShader::IGPUShaderType_None;
 }
 
-IGLResource::IGLResourceType GLShader::type() const
+void GLShader::loadFromData(const std::string &data)
 {
-	return IGLResource::IGLResourceType_Shader;
+
 }
 
-void GLShader::setSource(GLsizei count, const GLchar **string, const GLint *length) const
+void GLShader::loadFromFile(const File &file)
 {
-	glShaderSource(m_id, count, string, length);
+
 }
 
-void GLShader::compile() const
+bool GLShader::compile() const
 {
-	glCompileShader(m_id);
+    glCompileShader(m_id);
+
+    GLint res;
+    glGetShaderiv(m_id, GL_COMPILE_STATUS, &res);
+    return res != GL_FALSE;
 }
 
-void GLShader::getInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, char *infoLog) const
+GLuint GLShader::GLid() const
 {
-	glGetShaderInfoLog(m_id, bufSize, length, infoLog);
+    return m_id;
 }
+
+GLenum GLShader::GLtype() const
+{
+    GLint val;
+    glGetShaderiv(m_id, GL_SHADER_TYPE, &val);
+    return (GLenum)val;
+}
+
+GLProgram::GLProgram(const GLuint id) :
+    m_id(id)
+{
+}
+
+GLProgram::~GLProgram()
+{
+}
+
+void GLProgram::attachShader(IGPUShader *pShader)
+{
+    GLShader *pGLShader = static_cast<GLShader*>(pShader);
+    glAttachShader(m_id, pGLShader->GLid());
+}
+
+void GLProgram::detachShader(IGPUShader *pShader)
+{
+    GLShader *pGLShader = static_cast<GLShader*>(pShader);
+    glDetachShader(m_id, pGLShader->GLid());
+}
+
+bool GLProgram::link() const
+{
+    glLinkProgram(m_id);
+
+    GLint res;
+    glGetProgramiv(m_id, GL_LINK_STATUS, &res);
+    return res != GL_FALSE;
+}
+
+int32 GLProgram::attributeLocationByName(const std::string &name)
+{
+	return -1;
+}
+
+int32 GLProgram::uniformLocationByName(const std::string &name)
+{
+	return -1;
+}
+
+GLuint GLProgram::GLid() const
+{
+    return m_id;
+}
+
 
 } // namespace

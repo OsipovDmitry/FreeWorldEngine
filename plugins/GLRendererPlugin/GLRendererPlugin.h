@@ -5,8 +5,6 @@
 
 namespace FreeWorldEngine {
 
-class IGLRenderer;
-
 class GLRendererPlugin : public IPlugin {
 public:
 	GLRendererPlugin();
@@ -16,9 +14,6 @@ public:
 	std::string info() const;
 	bool initialize() const;
 	void deinitialize() const;
-
-private:
-	static IGLRenderer *pGLRenderer;
 
 }; // class GLRendererPlugin
 

@@ -1,50 +1,56 @@
 #ifndef __GLRENDERER__
 #define __GLRENDERER__
 
-#include <list>
+#include <glew-1.13.0/include/GL/glew.h>
 
-#include "renderer/IGLRenderer.h"
-#include "renderer/IGLResource.h"
+#include "renderer/IGPURenderer.h"
 
 namespace FreeWorldEngine {
 
-class GLRenderer : public IGLRenderer {
+class GLBuffer;
+class GLBufferContainer;
+class GLTexture;
+class GLProgram;
+
+class GLRenderer : public IGPURenderer {
 public:
 	GLRenderer();
 	~GLRenderer();
 
-	void enable(GLenum cap, bool state = true) const;
-	void disable(GLenum cap) const;
-	bool isEnabled(GLenum cap) const;
+	IGPUBuffer *createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage = IGPUBuffer::IGPUBufferUsage_StaticDraw, void *pData = 0);
+	void destroyBuffer(IGPUBuffer *pBuffer);
 
-	IGLBufferObject *generateBufferObject() const;
-	IGLVertexArrayObject *generateVertexArrayObject() const;
-	IGLShader *generateShader(const GLenum shaderType) const;
-	IGLShaderProgram *generateShaderProgram() const;
+	IGPUBufferContainer *createBufferContainer();
+	void destroyBufferContainer(IGPUBufferContainer *pBufferContainer);
 
-	void setViewport(GLint x, GLint y, GLsizei width, GLsizei height) const;
-	void getViewport(GLint& x, GLint& y, GLsizei& width, GLsizei& height) const;
+    IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, int *size, TextureFormat format, const void *pData = 0);
+    void destroyTexture(IGPUTexture *pTexture);
 
-	void setClearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a) const;
-	void getClearColor(GLclampf& r, GLclampf& g, GLclampf& b, GLclampf& a) const;
+    IGPUShader *createShader(IGPUShader::IGPUShaderType type);
+    void destroyShader(IGPUShader *pShader);
 
-	void setClearDepth(GLclampd value) const;
-	void getClearDepth(GLclampd& value) const;
+    IGPUProgram *createProgram();
+    void destroyProgram(IGPUShader *pProgram);
 
-	void clearBuffers(GLbitfield mask) const;
-	void drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices) const;
+	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const;
+	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;
+	void bindTexture(const GLTexture *pTexture, uint32 unit) const;
+    void bindProgram(const GLProgram *pProgram) const;
 
 private:
-	static const int CACHE_CAPABILITIES_SIZE = 33 + 5;
-	static bool m_cacheCapabilities[CACHE_CAPABILITIES_SIZE];
+	static const uint32 TEXTURE_UNITS_COUNT = 16;
+	mutable const GLTexture* m_cachedTextures[TEXTURE_UNITS_COUNT];
 
-	static std::list<IGLResource*> m_cacheResources;
-	static IGLResource *generateResource(const IGLResource::IGLResourceType resourceType, GLenum userData = 0);
-	static void destroyResource(IGLResource *pResource);
+	mutable const GLBufferContainer *m_cachedBufferConatiner;
 
-	static int mapGLCapability(GLenum cap);
+	static const uint32 BUFFER_UNITS_COUNT = 10;
+	mutable const GLBuffer* m_cachedBuffers[BUFFER_UNITS_COUNT];
+
+    mutable const GLProgram* m_cachedProgram;
 
 }; // class GLRenderer
+
+extern GLRenderer *pGLRenderer;
 
 }
 

@@ -5,8 +5,6 @@
 
 namespace FreeWorldEngine {
 
-IGLRenderer *GLRendererPlugin::pGLRenderer = 0;
-
 GLRendererPlugin::GLRendererPlugin()
 {
 }

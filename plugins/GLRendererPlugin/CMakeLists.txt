@@ -1,29 +1,26 @@
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 
-include_directories(../../3rdparty/include)
+include_directories(../../3rdparty)
 include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(HEADERS ../../include/renderer/IGPURenderer.h
 			../../include/renderer/IGPUTexture.h
+			../../include/renderer/IGPUShader.h
 			../../include/renderer/IGPUBuffer.h
-			../../include/renderer/IGLBufferObject.h
-            ../../include/renderer/IGLRenderer.h
-            ../../include/renderer/IGLShader.h
-            ../../include/renderer/IGLShaderProgram.h
-            ../../include/renderer/IGLVertexArrayObject.h
-            GLBufferObject.h
-            GLRenderer.h
-            GLShader.h
-            GLShaderProgram.h
-            GLVertexArrayObject.h
-			GLRendererPlugin.h)
+			../../include/renderer/IGPUBufferContainer.h
+			GLTexture.h
+			GLBuffer.h
+			GLBufferContainer.h
+			GLShader.h
+			GLRenderer.h)
 
-set(SOURCES GLBufferObject.cpp
-            GLRenderer.cpp
-            GLShader.cpp
-            GLShaderProgram.cpp
-            GLVertexArrayObject.cpp
+set(SOURCES GLTexture.cpp
+			GLBuffer.cpp
+			GLBufferContainer.cpp
+			GLShader.cpp
+			GLRenderer.cpp
+			
 			GLRendererPlugin.cpp
             main.cpp)
 

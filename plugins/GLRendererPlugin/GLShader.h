@@ -1,26 +1,52 @@
 #ifndef __GLSHADER__
 #define __GLSHADER__
 
-#include "renderer/IGLShader.h"
+#include <glew-1.13.0/include/GL/glew.h>
+
+#include "renderer/IGPUShader.h"
 
 namespace FreeWorldEngine {
 
-class GLShader : public IGLShader {
+class GLShader : public IGPUShader {
 public:
-	GLShader(GLuint id);
-	~GLShader();
+    GLShader(const GLuint id);
+    ~GLShader();
 
-	GLuint id() const;
-	IGLResource::IGLResourceType type() const;
+    IGPUShaderType type() const;
 
-	void setSource(GLsizei count, const GLchar **string, const GLint *length) const;
-	void compile() const;
-	void getInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, char *infoLog) const;
+    void loadFromData(const std::string& data);
+    void loadFromFile(const File& file);
+
+    bool compile() const;
+
+    GLuint GLid() const;
+    GLenum GLtype() const;
 
 private:
-	GLuint m_id;
+    GLuint m_id;
 
 }; // class GLShader
+
+
+class GLProgram : public IGPUProgram {
+public:
+    GLProgram(const GLuint id);
+    ~GLProgram();
+
+    void attachShader(IGPUShader *pShader);
+    void detachShader(IGPUShader *pShader);
+
+    bool link() const;
+
+    int32 attributeLocationByName(const std::string& name);
+    int32 uniformLocationByName(const std::string& name);
+
+    GLuint GLid() const;
+
+private:
+    GLuint m_id;
+
+}; // class GLProgram
 
 } // namespace
 
