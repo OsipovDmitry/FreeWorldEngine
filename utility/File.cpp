@@ -42,6 +42,9 @@ bool File::open(const File::OpenMode openMode)
 	case OpenMode_BinaryReadOnly: { modeStr = "rb"; break; }
 	case OpenMode_BinaryWriteOnly: { modeStr = "wb"; break; }
 	case OpenMode_BinaryAppend: { modeStr = "ab"; break; }
+	case OpenMode_TextReadOnly: { modeStr = "r"; break; }
+	case OpenMode_TextWriteOnly: { modeStr = "w"; break; }
+	case OpenMode_TextAppend: { modeStr = "a"; break; }
 	default: break;
 	};
 
