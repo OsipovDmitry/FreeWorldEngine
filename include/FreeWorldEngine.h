@@ -16,7 +16,7 @@
 #include "IWindow.h"
 #include "IImageLoader.h"
 #include "IImage.h"
-#include "renderer/IGLRenderer.h"
+#include "renderer/IGPURenderer.h"
 #include "CoreSettings.h"
 
 namespace FreeWorldEngine {

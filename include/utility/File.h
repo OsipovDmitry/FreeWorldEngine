@@ -16,7 +16,7 @@ public:
 	std::string filename() const;
 	void setFilename(const std::string& filename);
 
-	enum OpenMode { OpenMode_BinaryReadOnly, OpenMode_BinaryWriteOnly, OpenMode_BinaryAppend };
+	enum OpenMode { OpenMode_BinaryReadOnly, OpenMode_BinaryWriteOnly, OpenMode_BinaryAppend, OpenMode_TextReadOnly, OpenMode_TextWriteOnly, OpenMode_TextAppend };
 	bool open(const OpenMode openMode);
 	void close();
 	bool isOpened() const;

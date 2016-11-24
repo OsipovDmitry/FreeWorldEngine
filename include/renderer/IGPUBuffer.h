@@ -21,19 +21,16 @@ public:
 		IGPUBufferUsage_DynamicCopy,
 		IGPUBufferUsage_OldValue,
 	};
-	virtual uint32 size() const = 0;
-	virtual void resize(uint32 newSize, IGPUBufferUsage usage = IGPUBufferUsage_OldValue) = 0;
-
-	virtual uint32 capacity() const = 0;
-	virtual void reserved(uint32 reservedSize) = 0;
+	virtual uint64 size() const = 0;
+	virtual void resize(uint64 newSize, IGPUBufferUsage usage = IGPUBufferUsage_OldValue) = 0;
 
 	enum IGPUBufferAccess {
 		IGPUBufferAccess_ReadOnly,
 		IGPUBufferAccess_WriteOnly,
-		IGPUBufferAccess_ReadWrite
+		IGPUBufferAccess_ReadWrite,
 	};
-	virtual void *map(IGPUBufferAccess access, uint32 offset = 0, int32 length = -1) = 0;
-	virtual bool unmap();
+	virtual void *map(IGPUBufferAccess access, uint64 offset = 0, uint64 length = 0) = 0;
+	virtual bool unmap() = 0;
 
 }; // class IGPUBuffer
 

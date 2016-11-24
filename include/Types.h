@@ -22,11 +22,20 @@ enum Type {
 	TYPE_UNSIGNED_INT_8,
 	TYPE_UNSIGNED_INT_16,
 	TYPE_UNSIGNED_INT_32,
-	TYPE_FLOAT
+    TYPE_FLOAT
 }; // enum Type
 
+struct Raster {
+    uint32 size[3]; // width, height, depth
+    uint32 numComponents;
+    Type type;
+    void *pData;
+
+    Raster() : numComponents(0), type(TYPE_SIGNED_INT_8), pData(0) { size[0] = 0; size[1] = size[2] = 1; }
+}; // struct Raster
+
 struct VertexFormatPrivate;
-class /*CORE_FUNC_DLL*/ VertexFormat {
+class CORE_FUNC_DLL VertexFormat {
 public:
     enum class AttributeType {
         Position,

@@ -16,7 +16,7 @@ class IWindow;
 class ILogger;
 class ICamera;
 class IRenderSystem;
-class IGLRenderer;
+class IGPURenderer;
 class ILibraryManager;
 class IThreadManager;
 
@@ -47,8 +47,8 @@ public:
 	virtual IPhysicsManager *physicsManager() const = 0;
 	virtual ISceneModelManager *sceneModelManager() const = 0;
 
-	virtual IGLRenderer *renderer() const = 0;
-	virtual void setRenderer(IGLRenderer *pGLRenderer) = 0;
+	virtual IGPURenderer *renderer() const = 0;
+	virtual void setRenderer(IGPURenderer *pGPURenderer) = 0;
 
 	virtual IWindow *mainWindow() const = 0;
 	virtual ICamera *mainCamera() const = 0;
