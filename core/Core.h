@@ -40,8 +40,8 @@ public:
 	IPhysicsManager *physicsManager() const;
 	ISceneModelManager *sceneModelManager() const;
 
-	IGLRenderer *renderer() const;
-	void setRenderer(IGLRenderer *pGLRenderer);
+	IGPURenderer *renderer() const;
+	void setRenderer(IGPURenderer *pGPURenderer);
 
 	IWindow *mainWindow() const;
 	ICamera *mainCamera() const;
@@ -57,7 +57,7 @@ private:
 	IPluginManager *m_pPluginManager;
 	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;
-	IGLRenderer *m_pGLRenderer;
+	IGPURenderer *m_pGPURenderer;
 	IImageLoader *m_pImageLoader;
 
 	IPhysicsManager *m_pPhysicsManager;

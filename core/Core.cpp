@@ -18,7 +18,7 @@ Core::Core() :
 	m_pThreadManager(0),
 	m_pImageLoader(0),
 	m_pWindowManager(0),
-	m_pGLRenderer(0)
+	m_pGPURenderer(0)
 {
 }
 
@@ -61,8 +61,8 @@ void Core::deinitialize()
 	delete m_pImageManager;
 	delete m_pPhysicsManager;*/
 
-	delete m_pGLRenderer;
-	m_pGLRenderer = 0;
+	delete m_pGPURenderer;
+	m_pGPURenderer = 0;
 
 	delete m_pWindowManager;
 	m_pWindowManager = 0;
@@ -169,14 +169,14 @@ ISceneModelManager *Core::sceneModelManager() const
 	return m_pSceneModelManager;
 }
 
-IGLRenderer *Core::renderer() const
+IGPURenderer *Core::renderer() const
 {
-	return m_pGLRenderer;
+	return m_pGPURenderer;
 }
 
-void Core::setRenderer(IGLRenderer *pGLRenderer)
+void Core::setRenderer(IGPURenderer *pGPURenderer)
 {
-	m_pGLRenderer = pGLRenderer;
+	m_pGPURenderer = pGPURenderer;
 }
 
 IWindow *Core::mainWindow() const
