@@ -98,7 +98,7 @@ public:
 	};
 
 	virtual ~IWindowManager() = 0 {}
-	virtual IWindow *createWindow(const std::string& title, const int32 width, const int32 height, const uint32 flags = IWindow::IWindow_Show) = 0;
+	virtual IWindow *createWindow(const std::string& title, const int32 width, const int32 height, const uint32 flags = IWindow::Flags_Show) = 0;
 	virtual void destroyWindow(IWindow *pWindow) = 0;
 	virtual IWindow *findWindow(const uint32 id) const = 0;
 	virtual void mainLoop() = 0;

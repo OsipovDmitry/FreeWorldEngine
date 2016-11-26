@@ -26,7 +26,8 @@ IGPUShader::IGPUShaderType GLShader::type() const
 
 void GLShader::loadFromData(const std::string &data)
 {
-
+	const char *p = data.c_str();
+	glShaderSource(m_id, 1, &p, 0);
 }
 
 void GLShader::loadFromFile(const File &file)
@@ -53,6 +54,16 @@ GLenum GLShader::GLtype() const
     GLint val;
     glGetShaderiv(m_id, GL_SHADER_TYPE, &val);
     return (GLenum)val;
+}
+
+GLenum GLShader::GLtype(const IGPUShaderType type)
+{
+	switch (type) {
+	case IGPUShader::IGPUShaderType_Vertex: return GL_VERTEX_SHADER;
+	case IGPUShader::IGPUShaderType_Geometry: return GL_GEOMETRY_SHADER;
+	case IGPUShader::IGPUShaderType_Fragment: return GL_FRAGMENT_SHADER;
+	}
+	return 0;
 }
 
 GLProgram::GLProgram(const GLuint id) :

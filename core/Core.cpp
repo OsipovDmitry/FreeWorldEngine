@@ -48,7 +48,7 @@ void Core::initialize()
 	m_pPluginManager->loadPlugins("plugins.xml");
 
 	if (m_pWindowManager)
-		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::IWindow_Show | IWindow::IWindow_Resizable);
+		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::Flags_Show | IWindow::Flags_Resizable);
 }
 
 void Core::deinitialize()

@@ -4,11 +4,11 @@
 
 namespace FreeWorldEngine {
 
-void sdlKeysymToKeyCode(const SDL_Keysym& sdlKey, IWindowManager::KeyCode& keyCode, uint32& modifiers);
-uint32 sdlMouseButtonsStateToMask(Uint32 buttonsState);
-IWindowManager::MouseButton sdlMouseButtonToMouseButton(Uint8 sdlMouseButton);
-uint32 sdlKeyModifiersToMask(SDL_Keymod mod);
-SDL_Scancode keyCodeToSDLScancode(IWindowManager::KeyCode keyCode);
+//void sdlKeysymToKeyCode(const SDL_Keysym& sdlKey, IWindowManager::KeyCode& keyCode, uint32& modifiers);
+//uint32 sdlMouseButtonsStateToMask(Uint32 buttonsState);
+//IWindowManager::MouseButton sdlMouseButtonToMouseButton(Uint8 sdlMouseButton);
+//uint32 sdlKeyModifiersToMask(SDL_Keymod mod);
+//SDL_Scancode keyCodeToSDLScancode(IWindowManager::KeyCode keyCode);
 
 WindowManager::WindowManager() :
 	m_windows(),
@@ -32,33 +32,15 @@ WindowManager::~WindowManager()
 
 IWindow *WindowManager::createWindow(const std::string& title, const int32 width, const int32 height, const uint32 flags)
 {
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetSwapInterval(0);
-
 	const bool fullscreen = flags & IWindow::Flags_Fullscreen;
 	const bool show = flags & IWindow::Flags_Show;
 	const bool resizable = flags & IWindow::Flags_Resizable;
 
-	SDL_Window *pSDLWindow = SDL_CreateWindow(
-		title.c_str(),
-		fullscreen ? 0 : SDL_WINDOWPOS_CENTERED,
-		fullscreen ? 0 : SDL_WINDOWPOS_CENTERED,
-		width,
-		height,
-		SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | (show ? SDL_WINDOW_SHOWN : SDL_WINDOW_HIDDEN) | (resizable ? SDL_WINDOW_RESIZABLE : 0));
-	if (!pSDLWindow)
-		return 0;
+	Window *pWindow = new Window();
 
-	SDL_GLContext pSDLGLContext = SDL_GL_CreateContext(pSDLWindow);
-	if (!pSDLGLContext) {
-		SDL_DestroyWindow(pSDLWindow);
-		return 0;
-	}
+	if (show)
+		pWindow->show();
 
-	Window *pWindow = new Window(pSDLWindow, pSDLGLContext);
 	m_windows.push_back(pWindow);
 	return static_cast<IWindow*>(pWindow);
 }

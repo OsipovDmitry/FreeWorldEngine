@@ -21,6 +21,7 @@ public:
 
     GLuint GLid() const;
     GLenum GLtype() const;
+	static GLenum GLtype(const IGPUShaderType type);
 
 private:
     GLuint m_id;

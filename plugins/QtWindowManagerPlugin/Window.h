@@ -1,15 +1,17 @@
 #ifndef __WINDOW__
 #define __WINDOW__
 
-#include "IWindow.h"
+#include <QtOpenGL/QGLWidget>
 
-#include "SDL2/include/SDL.h"
+#include <IWindow.h>
 
 namespace FreeWorldEngine {
 
-class Window : public IWindow {
+class Window : public QGLWidget, public IWindow {
+	Q_OBJECT
+
 public:
-	Window(SDL_Window *pWindow, const SDL_GLContext& context);
+	Window();
 	~Window();
 	void show();
 	void hide();
@@ -36,15 +38,15 @@ public:
 	uint64 frameNumber() const;
 	void setMousePos(const int32 x, const int32 y) const;
 
-	void render() const;
 	void update(uint32 time, uint32 dt) const;
-	void sendEvent(const SDL_WindowEvent& windowEvent) const;
-	SDL_Window *window() const;
-	SDL_GLContext context() const;
+	// void sendEvent(const SDL_WindowEvent& windowEvent) const;
+
+protected:
+	void initializeGL();
+	void resizeGL(int w, int h);
+	void paintGL();
 
 private:
-	SDL_Window *m_window;
-	SDL_GLContext m_glContext;
 	mutable uint64 m_frameNumber;
 
 	void (*m_funcShown)();

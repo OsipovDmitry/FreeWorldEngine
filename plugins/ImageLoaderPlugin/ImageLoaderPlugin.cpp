@@ -45,7 +45,7 @@ void ImageLoaderPlugin::deinitialize() const
 {
 	ICore *pCore = getCoreEngine();
 
-	if (pCore->ImageLoader() == pImageLoader)
+	if (pCore->imageLoader() == pImageLoader)
 		pCore->setImageLoader(0);
 
 	delete pImageLoader;

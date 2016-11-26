@@ -30,7 +30,11 @@ public:
     void destroyShader(IGPUShader *pShader);
 
     IGPUProgram *createProgram();
-    void destroyProgram(IGPUShader *pProgram);
+    void destroyProgram(IGPUProgram *pProgram);
+
+	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer) const;
+
+	void tmp() const;
 
 	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const;
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;

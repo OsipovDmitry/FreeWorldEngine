@@ -11,6 +11,10 @@ public:
 	GLBufferContainer(const GLuint id);
 	~GLBufferContainer();
 
+	void setVertexAttribute(const IGPUBuffer *pGPUBuffer, uint32 indexAttribute, uint32 numComponents, int32 offsetAttribute, int32 strideAttribute, Type type) const;
+	void enableVertexAttribute(uint32 indexAttribute) const;
+	void disableVertexAttribute(uint32 indexAttribute) const;
+
 	GLuint id() const;
 
 private:

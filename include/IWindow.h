@@ -8,22 +8,20 @@ namespace FreeWorldEngine {
 
 class IWindow {
 public:
-	enum IWindowFlags {
-		IWindow_Fullscreen = 0x00000001,
-		IWindow_Show       = 0x00000002,
-		IWindow_Resizable  = 0x00000004,
+	enum Flags {
+		Flags_Fullscreen = 0x00000001,
+		Flags_Show       = 0x00000002,
+		Flags_Resizable  = 0x00000004,
 	};
 
 	virtual ~IWindow() = 0 {}
-	virtual void show() const = 0;
-	virtual void hide() const = 0;
-	virtual void move(int32 x, int32 y) const = 0;
-	virtual void resize(int32 width, int32 height) const = 0;
-	virtual void minimize() const = 0;
-	virtual void restore() const = 0;
-	virtual void maximize() const = 0;
-	virtual void render() const = 0;
-	virtual void update(uint32 time, uint32 dt) const = 0;
+	virtual void show() = 0;
+	virtual void hide() = 0;
+	virtual void move(int32 x, int32 y) = 0;
+	virtual void resize(int32 width, int32 height) = 0;
+	virtual void minimize() = 0;
+	virtual void restore() = 0;
+	virtual void maximize() = 0;
 
 	virtual void setFuncShown(void (*)()) = 0;
 	virtual void setFuncHidden(void (*)()) = 0;

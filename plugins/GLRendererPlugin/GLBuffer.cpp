@@ -35,7 +35,7 @@ void GLBuffer::resize(uint64 newSize, IGPUBufferUsage usage)
 	if (newSize) {
 		GLenum newGLUsage;
 		if (usage == IGPUBuffer::IGPUBufferUsage_OldValue)
-			glGetTexParameteriv(GL_COPY_READ_BUFFER, GL_BUFFER_USAGE, (GLint*)&newGLUsage);
+			glGetBufferParameteriv(GL_COPY_READ_BUFFER, GL_BUFFER_USAGE, (GLint*)&newGLUsage);
 		else {
 			newGLUsage = toGLUsage(usage);
 			if (!newGLUsage)

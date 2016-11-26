@@ -91,22 +91,52 @@ void GLRenderer::destroyTexture(IGPUTexture *pTexture)
 
 IGPUShader *GLRenderer::createShader(IGPUShader::IGPUShaderType type)
 {
-    return 0;
+	GLenum GLtype = GLShader::GLtype(type);
+	if (!GLtype)
+		return 0;
+
+	GLuint id = glCreateShader(GLtype);
+	if (!id)
+		return 0;
+
+	return new GLShader(id);
 }
 
 void GLRenderer::destroyShader(IGPUShader *pShader)
 {
-
+	GLShader *pGLShader = static_cast<GLShader*>(pShader);
+	glDeleteShader(pGLShader->GLid());
+	delete pShader;
 }
 
 IGPUProgram *GLRenderer::createProgram()
 {
-	return 0;
+	GLuint id = glCreateProgram();
+	if (!id)
+		return 0;
+
+	return new GLProgram(id);
 }
 
-void GLRenderer::destroyProgram(IGPUShader *pProgram)
+void GLRenderer::destroyProgram(IGPUProgram *pProgram)
 {
+	GLProgram *pGLProgram = static_cast<GLProgram*>(pProgram);
+	glDeleteProgram(pGLProgram->GLid());
+	delete pProgram;
+}
 
+void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer) const
+{
+	bindProgram(static_cast<const GLProgram*>(pProgram));
+	bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void GLRenderer::tmp() const
+{
+	glViewport(0,0,500,500);
+	glClearColor(1,0,0,1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const

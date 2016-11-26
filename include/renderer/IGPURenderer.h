@@ -25,7 +25,11 @@ public:
     virtual void destroyShader(IGPUShader *pShader) = 0;
 
     virtual IGPUProgram *createProgram() = 0;
-    virtual void destroyProgram(IGPUShader *pProgram) = 0;
+    virtual void destroyProgram(IGPUProgram *pProgram) = 0;
+
+	virtual void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer) const = 0;
+
+	virtual void tmp() const = 0;
 
 };
 

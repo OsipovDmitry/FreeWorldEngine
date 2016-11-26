@@ -40,6 +40,7 @@ bool GLRendererPlugin::initialize() const
 		//
 		return false;
 	}
+	glewExperimental = GL_TRUE;
 	bool GLRendererIsOk = glewInit() == GLEW_OK;
 	pCore->windowManager()->destroyWindow(pWindow);
 	if (!GLRendererIsOk) {

@@ -23,7 +23,7 @@ Window::~Window()
 {
 }
 
-void Window::move(int32 x, int32 y) const
+void Window::move(int32 x, int32 y)
 {
 	if (m_window) {
 		SDL_SetWindowPosition(m_window, x, y);
@@ -31,7 +31,7 @@ void Window::move(int32 x, int32 y) const
 	}
 }
 
-void Window::resize(int32 width, int32 height) const
+void Window::resize(int32 width, int32 height)
 {
 	if (m_window) {
 		SDL_SetWindowSize(m_window, width, height);
@@ -39,7 +39,7 @@ void Window::resize(int32 width, int32 height) const
 	}
 }
 
-void Window::show() const
+void Window::show()
 {
 	if (m_window) {
 		SDL_ShowWindow(m_window);
@@ -47,7 +47,7 @@ void Window::show() const
 	}
 }
 
-void Window::hide() const
+void Window::hide()
 {
 	if (m_window) {
 		SDL_HideWindow(m_window);
@@ -55,7 +55,7 @@ void Window::hide() const
 	}
 }
 
-void Window::minimize() const
+void Window::minimize()
 {
 	if (m_window) {
 		SDL_MinimizeWindow(m_window);
@@ -63,7 +63,7 @@ void Window::minimize() const
 	}
 }
 
-void Window::restore() const
+void Window::restore()
 {
 	if (m_window) {
 		SDL_RestoreWindow(m_window);
@@ -71,26 +71,12 @@ void Window::restore() const
 	}
 }
 
-void Window::maximize() const
+void Window::maximize()
 {
 	if (m_window) {
 		SDL_MaximizeWindow(m_window);
 		if (m_funcMaximized) m_funcMaximized();
 	}
-}
-
-void Window::render() const
-{
-	m_frameNumber++;
-	if (m_funcRender)
-		m_funcRender();
-	SDL_GL_SwapWindow(m_window);
-}
-
-void Window::update(uint32 time, uint32 dt) const
-{
-	if (m_funcUpdate)
-		m_funcUpdate(time, dt);
 }
 
 void Window::setFuncShown(void (*func)())
@@ -170,6 +156,20 @@ uint64 Window::frameNumber() const
 void Window::setMousePos(const int32 x, const int32 y) const
 {
 	SDL_WarpMouseInWindow(m_window, x, y);
+}
+
+void Window::render() const
+{
+	m_frameNumber++;
+	if (m_funcRender)
+		m_funcRender();
+	SDL_GL_SwapWindow(m_window);
+}
+
+void Window::update(uint32 time, uint32 dt) const
+{
+	if (m_funcUpdate)
+		m_funcUpdate(time, dt);
 }
 
 void Window::sendEvent(const SDL_WindowEvent& windowEvent) const

@@ -22,7 +22,7 @@ TextureFormat GLTexture::format() const
 {
 	pGLRenderer->bindTexture(this, 0);
     GLenum internalFormat;
-    glGetTexLevelParameteriv(GLTexture::GLtarget(m_type), 0, GL_TEXTURE_INTERNAL_FORMAT, (GLint*)&internalFormat);
+	glGetTexLevelParameteriv(GLTexture::GLtarget(m_type), 0, GL_TEXTURE_INTERNAL_FORMAT, (GLint*)&internalFormat);
     return fromGLinternalFormat(internalFormat);
 }
 
