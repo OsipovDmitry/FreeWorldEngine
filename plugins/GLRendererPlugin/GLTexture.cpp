@@ -1,4 +1,5 @@
 #include "GLTexture.h"
+#include "GLBuffer.h"
 #include "GLRenderer.h"
 
 namespace FreeWorldEngine {
@@ -47,13 +48,61 @@ void GLTexture::size(int32 *result) const
     glGetTexLevelParameteriv(target, 0, GL_TEXTURE_DEPTH, &(result[2]));
 }
 
-void GLTexture::setSubData(void *data, uint32 *offset, uint32 *size)
+void GLTexture::setSubData(const uint32 *offset, const uint32 *size, TextureFormat::ChannelsCount dataChannelsCount, Type dataType, const void *data)
 {
+	GLenum target = GLtarget(m_type);
+	GLenum format = GLformat(dataChannelsCount);
+	GLenum type = GLRenderer::GLType(dataType);
+
+	if (!target || !format || !type)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+
+    switch (m_type) {
+
+	case IGPUTexture::IGPUTextureType_2DArray:
+	case IGPUTexture::IGPUTextureType_3D: {
+		glTexSubImage3D(target, 0, offset[0], offset[1], offset[2], size[0], size[1], size[2], format, type, data);
+		break;
+	}
+	
+	case IGPUTexture::IGPUTextureType_1DArray:
+	case IGPUTexture::IGPUTextureType_2D:
+	case IGPUTexture::IGPUTextureType_Rectangle: {
+		glTexSubImage2D(target, 0, offset[0], offset[1], size[0], size[1], format, type, data);
+		break;
+	}
+
+	case IGPUTexture::IGPUTextureType_CubeMap: {
+		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+offset[2], 0, offset[0], offset[1], size[0], size[1], format, type, data);
+		break;
+	}
+
+    case IGPUTexture::IGPUTextureType_1D: {
+        glTexSubImage1D(target, 0, offset[0], size[0], format, type, data);
+		break;
+    }
+	
+    }
 }
 
-void *GLTexture::subData(uint32 *offset, uint32 *size) const
+void *GLTexture::subData(const uint32 *offset, const uint32 *size) const
 {
 	return 0;
+}
+
+void GLTexture::setBuffer(const IGPUBuffer* pBuffer) const
+{
+	if (m_type != IGPUTextureType_Buffer) // только для IGPUTextureType_Buffer типа текстур
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+
+	GLenum internalFormat;
+	glGetTexLevelParameteriv(GL_TEXTURE_BUFFER, 0, GL_TEXTURE_INTERNAL_FORMAT, (GLint*)&internalFormat);
+
+	glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, static_cast<const GLBuffer*>(pBuffer)->GLid());
 }
 
 GLuint GLTexture::GLid() const
@@ -122,9 +171,9 @@ TextureFormat GLTexture::fromGLinternalFormat(GLenum format)
 	}
 }
 
-GLenum GLTexture::GLformat(TextureFormat& format)
+GLenum GLTexture::GLformat(TextureFormat::ChannelsCount channelsCount)
 {
-    switch (format.channelsCount) {
+    switch (channelsCount) {
     case TextureFormat::ChannelsCount_1: return GL_RED;
     case TextureFormat::ChannelsCount_2: return GL_RG;
     case TextureFormat::ChannelsCount_3: return GL_RGB;
@@ -282,39 +331,6 @@ GLenum GLTexture::GLinternalFormat(TextureFormat& format)
     return 0;
 }
 
-GLenum GLTexture::GLtype(TextureFormat& format)
-{
-    switch (format.pixelFormat) {
-    case TextureFormat::PixelFormat_NormalizeUnsigned:
-    case TextureFormat::PixelFormat_UnnormalizeUnsigned: {
-        switch (format.channelSize) {
-        case TextureFormat::ChannelSize_8: return GL_UNSIGNED_BYTE;
-        case TextureFormat::ChannelSize_16: return GL_UNSIGNED_SHORT;
-        case TextureFormat::ChannelSize_32: return GL_UNSIGNED_INT;
-        }
-        break;
-    }
-    case TextureFormat::PixelFormat_NormalizeSigned:
-    case TextureFormat::PixelFormat_UnnormalizeSigned: {
-        switch (format.channelSize) {
-        case TextureFormat::ChannelSize_8: return GL_BYTE;
-        case TextureFormat::ChannelSize_16: return GL_SHORT;
-        case TextureFormat::ChannelSize_32: return GL_INT;
-        }
-        break;
-    }
-    case TextureFormat::PixelFormat_UnnormalizeFloat: {
-        switch (format.channelSize) {
-        case TextureFormat::ChannelSize_8: break;
-        case TextureFormat::ChannelSize_16: return GL_HALF_FLOAT;
-        case TextureFormat::ChannelSize_32: return GL_FLOAT;
-        }
-        break;
-    }
-    }
-    return 0;
-}
-
 GLenum GLTexture::GLtarget(IGPUTextureType type)
 {
     switch (type) {
@@ -324,7 +340,6 @@ GLenum GLTexture::GLtarget(IGPUTextureType type)
 	case IGPUTextureType_CubeMap: return GL_TEXTURE_CUBE_MAP;
 	case IGPUTextureType_1DArray: return GL_TEXTURE_1D_ARRAY;
 	case IGPUTextureType_2DArray: return GL_TEXTURE_2D_ARRAY;
-	case IGPUTextureType_CubeMapArray: return GL_TEXTURE_CUBE_MAP_ARRAY;
 	case IGPUTextureType_Rectangle: return GL_TEXTURE_RECTANGLE;
 	case IGPUTextureType_Buffer: return GL_TEXTURE_BUFFER;
 	}

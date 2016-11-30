@@ -80,7 +80,7 @@ bool GLBuffer::unmap()
 	return glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-GLuint GLBuffer::id() const
+GLuint GLBuffer::GLid() const
 {
 	return m_id;
 }

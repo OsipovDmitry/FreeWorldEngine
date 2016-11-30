@@ -22,15 +22,7 @@ void GLBufferContainer::setVertexAttribute(const IGPUBuffer *pGPUBuffer, uint32 
 		glVertexAttribPointer(indexAttribute, numComponents, GL_FLOAT, GL_FALSE, strideAttribute, (const void*)offsetAttribute);
 	}
 	else {
-		GLenum GLtype = 0;
-		switch (type) {
-		case TYPE_SIGNED_INT_8: { GLtype = GL_BYTE; break; }
-		case TYPE_SIGNED_INT_16: { GLtype = GL_SHORT; break; }
-		case TYPE_SIGNED_INT_32: { GLtype = GL_INT; break; }
-		case TYPE_UNSIGNED_INT_8: { GLtype = GL_UNSIGNED_BYTE; break; }
-		case TYPE_UNSIGNED_INT_16: { GLtype = GL_UNSIGNED_SHORT; break; }
-		case TYPE_UNSIGNED_INT_32: { GLtype = GL_UNSIGNED_INT; break; }
-		}
+		GLenum GLtype = GLRenderer::GLType(type);
 		if (GLtype)
 			glVertexAttribIPointer(indexAttribute, numComponents, GLtype, strideAttribute, (const void*)offsetAttribute);
 	}
@@ -46,6 +38,12 @@ void GLBufferContainer::disableVertexAttribute(uint32 indexAttribute) const
 {
 	pGLRenderer->bindBufferContainer(this);
 	glDisableVertexAttribArray(indexAttribute);
+}
+
+void GLBufferContainer::setIndexBuffer(const IGPUBuffer *pGPUBuffer) const
+{
+	pGLRenderer->bindBufferContainer(this);
+	pGLRenderer->bindBuffer(static_cast<const GLBuffer*>(pGPUBuffer), GL_ELEMENT_ARRAY_BUFFER);
 }
 
 GLuint GLBufferContainer::id() const

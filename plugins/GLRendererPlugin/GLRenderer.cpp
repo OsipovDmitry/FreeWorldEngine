@@ -42,7 +42,7 @@ IGPUBuffer *GLRenderer::createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage us
 
 void GLRenderer::destroyBuffer(IGPUBuffer *pBuffer)
 {
-	GLuint id = static_cast<GLBuffer*>(pBuffer)->id();
+	GLuint id = static_cast<GLBuffer*>(pBuffer)->GLid();
 	glDeleteBuffers(1, &id);
 	delete pBuffer;
 }
@@ -63,23 +63,50 @@ void GLRenderer::destroyBufferContainer(IGPUBufferContainer *pBufferContainer)
 }
 
 
-IGPUTexture *GLRenderer::createTexture(IGPUTexture::IGPUTextureType type, int *size, TextureFormat format, const void *pData)
+IGPUTexture *GLRenderer::createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, TextureFormat internalFormat)
 {
     GLenum GLtarget = GLTexture::GLtarget(type);
-    GLenum GLformat = GLTexture::GLformat(format);
-    GLenum GLinternalFormat = GLTexture::GLinternalFormat(format);
+    GLenum GLinternalFormat = GLTexture::GLinternalFormat(internalFormat);
 
-    if (!GLtarget || !GLformat || !GLinternalFormat)
+    if (!GLtarget || !GLinternalFormat)
         return 0;
 
     GLuint id;
     glGenTextures(1, &id);
 
     GLTexture *pTexture = new GLTexture(type, id);
+	bindTexture(pTexture, 0);
+
+	glTexParameteri(GLtarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GLtarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     switch (type) {
+
+	case IGPUTexture::IGPUTextureType_2DArray:
+	case IGPUTexture::IGPUTextureType_3D: {
+		glTexImage3D(GLtarget, 0, GLinternalFormat, size[0], size[1], size[2], 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		break;
+	}
+	
+	case IGPUTexture::IGPUTextureType_1DArray:
+	case IGPUTexture::IGPUTextureType_2D:
+	case IGPUTexture::IGPUTextureType_Rectangle: {
+		glTexImage2D(GLtarget, 0, GLinternalFormat, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		break;
+	}
+
+	case IGPUTexture::IGPUTextureType_CubeMap: {
+		for (GLenum target = GL_TEXTURE_CUBE_MAP_POSITIVE_X; target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z; ++target)
+			glTexImage2D(target, 0, GLinternalFormat, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		break;
+	}
+
     case IGPUTexture::IGPUTextureType_1D: {
-        //glTexImage1D(GLtarget, 0, GLinternalFormat, size[0], 0, GLformat, )
+        glTexImage1D(GLtarget, 0, GLinternalFormat, size[0], 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		break;
     }
+	
     }
 
     return pTexture;
@@ -87,6 +114,15 @@ IGPUTexture *GLRenderer::createTexture(IGPUTexture::IGPUTextureType type, int *s
 
 void GLRenderer::destroyTexture(IGPUTexture *pTexture)
 {
+	GLTexture *pGLTexture = static_cast<GLTexture*>(pTexture);
+	GLuint id = pGLTexture->GLid();
+	glDeleteTextures(1, &id);
+	delete pTexture;
+}
+
+void GLRenderer::setTexture(const uint32 slot, const IGPUTexture *pTexture) const
+{
+	bindTexture(static_cast<const GLTexture*>(pTexture), slot);
 }
 
 IGPUShader *GLRenderer::createShader(IGPUShader::IGPUShaderType type)
@@ -125,11 +161,25 @@ void GLRenderer::destroyProgram(IGPUProgram *pProgram)
 	delete pProgram;
 }
 
-void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer) const
+void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const
 {
-	bindProgram(static_cast<const GLProgram*>(pProgram));
-	bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	GLenum mode = GLPrimitiveFormat(primitiveFormat);
+	if (mode) {
+		bindProgram(static_cast<const GLProgram*>(pProgram));
+		bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
+		glDrawArrays(mode, firstVertex, numVertices);
+	}
+}
+
+void GLRenderer::renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset) const
+{
+	GLenum mode = GLPrimitiveFormat(primitiveFormat);
+	GLenum type = GLType(indicesType);
+	if (mode && type) {
+		bindProgram(static_cast<const GLProgram*>(pProgram));
+		bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
+		glDrawElements(mode, numIndices, type, (const void*)offset);
+	}
 }
 
 void GLRenderer::tmp() const
@@ -160,7 +210,7 @@ void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const
 			return;
 		m_cachedBuffers[cacheIdx] = pBuffer;
 	}
-	glBindBuffer(GLTarget, pBuffer ? pBuffer->id() : 0);
+	glBindBuffer(GLTarget, pBuffer ? pBuffer->GLid() : 0);
 }
 
 void GLRenderer::bindBufferContainer(const GLBufferContainer *pBufferContainer) const
@@ -186,6 +236,34 @@ void GLRenderer::bindProgram(const GLProgram *pProgram) const
         return;
     m_cachedProgram = pProgram;
     glUseProgram(pProgram ? pProgram->GLid() : 0);
+}
+
+GLenum GLRenderer::GLPrimitiveFormat(PrimitiveFormat primitiveFormat)
+{
+	switch (primitiveFormat) {
+	case PrimitiveFormat_Points: return GL_POINTS;
+	case PrimitiveFormat_Lines: return GL_LINES;
+	case PrimitiveFormat_LineStrip: return GL_LINE_STRIP;
+	case PrimitiveFormat_LineLoop: return GL_LINE_LOOP;
+	case PrimitiveFormat_Trangles: return GL_TRIANGLES;
+	case PrimitiveFormat_TriangleStrip: return GL_TRIANGLE_STRIP;
+	case PrimitiveFormat_TrangleFan: return GL_TRIANGLE_FAN;
+	}
+	return 0;
+}
+
+GLenum GLRenderer::GLType(Type type)
+{
+	switch (type) {
+	case TYPE_SIGNED_INT_8: return GL_BYTE;
+	case TYPE_SIGNED_INT_16: return GL_SHORT;
+	case TYPE_SIGNED_INT_32: return GL_INT;
+	case TYPE_UNSIGNED_INT_8: return GL_UNSIGNED_BYTE;
+	case TYPE_UNSIGNED_INT_16: return GL_UNSIGNED_SHORT;
+	case TYPE_UNSIGNED_INT_32: return GL_UNSIGNED_INT;
+	case TYPE_FLOAT: return GL_FLOAT;
+	}
+	return 0;
 }
 
 } // namespace

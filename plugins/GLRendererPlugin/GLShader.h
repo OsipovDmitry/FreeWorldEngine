@@ -17,7 +17,7 @@ public:
     void loadFromData(const std::string& data);
     void loadFromFile(const File& file);
 
-    bool compile() const;
+    bool compile(std::string *pLogString = 0) const;
 
     GLuint GLid() const;
     GLenum GLtype() const;
@@ -37,10 +37,26 @@ public:
     void attachShader(IGPUShader *pShader);
     void detachShader(IGPUShader *pShader);
 
-    bool link() const;
+    bool link(std::string *pLogString = 0) const;
 
-    int32 attributeLocationByName(const std::string& name);
-    int32 uniformLocationByName(const std::string& name);
+    int32 attributeLocationByName(const std::string& name) const;
+    int32 uniformLocationByName(const std::string& name) const;
+
+	void setUniform(const int32 location, const float value) const;
+	void setUniform(const int32 location, const int32 value) const;
+	void setUniform(const int32 location, const uint32 value) const;
+	void setUniform(const int32 location, const glm::vec2& value) const;
+	void setUniform(const int32 location, const glm::ivec2& value) const;
+	void setUniform(const int32 location, const glm::uvec2& value) const;
+	void setUniform(const int32 location, const glm::vec3& value) const;
+	void setUniform(const int32 location, const glm::ivec3& value) const;
+	void setUniform(const int32 location, const glm::uvec3& value) const;
+	void setUniform(const int32 location, const glm::vec4& value) const;
+	void setUniform(const int32 location, const glm::ivec4& value) const;
+	void setUniform(const int32 location, const glm::uvec4& value) const;
+	void setUniform(const int32 location, const glm::mat2& value, const bool transpose = false) const;
+	void setUniform(const int32 location, const glm::mat3& value, const bool transpose = false) const;
+	void setUniform(const int32 location, const glm::mat4& value, const bool transpose = false) const;
 
     GLuint GLid() const;
 

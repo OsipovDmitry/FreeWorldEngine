@@ -7,7 +7,7 @@
 
 namespace FreeWorldEngine {
 
-class IScene : public IResource {
+/*class IScene : public IResource {
 public:
 	struct Material {
 		std::string name;
@@ -34,7 +34,7 @@ public:
 	const std::vector<Materials*>& materials() const;
 
 }; // class IScene
-
+*/
 } // namespace
 
 #endif // __ISCENE__

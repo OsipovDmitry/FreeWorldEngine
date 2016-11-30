@@ -54,8 +54,10 @@ bool File::open(const File::OpenMode openMode)
 
 void File::close()
 {
-	fclose(m->pHandle);
-	m->pHandle = 0;
+	if (m->pHandle) {
+		fclose(m->pHandle);
+		m->pHandle = 0;
+	}
 }
 
 bool File::isOpened() const

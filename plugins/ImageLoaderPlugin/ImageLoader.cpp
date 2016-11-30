@@ -51,7 +51,7 @@ IImage *ImageLoader::loadImage(const std::string& filename)
     Raster *pRaster = new Raster;
     pRaster->size[0] = imageWidth;
     pRaster->size[1] = imageHeight;
-    pRaster->size[1] = imageDepth;
+    pRaster->size[2] = imageDepth;
     pRaster->numComponents = imageNumComponents;
     pRaster->type = imageType;
     pRaster->pData = imageData;

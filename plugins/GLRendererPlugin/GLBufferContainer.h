@@ -15,6 +15,8 @@ public:
 	void enableVertexAttribute(uint32 indexAttribute) const;
 	void disableVertexAttribute(uint32 indexAttribute) const;
 
+	void setIndexBuffer(const IGPUBuffer *pGPUBuffer) const;
+
 	GLuint id() const;
 
 private:

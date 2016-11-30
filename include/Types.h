@@ -25,6 +25,16 @@ enum Type {
     TYPE_FLOAT
 }; // enum Type
 
+enum PrimitiveFormat {
+    PrimitiveFormat_Points,
+    PrimitiveFormat_Lines,
+    PrimitiveFormat_LineStrip,
+    PrimitiveFormat_LineLoop,
+    PrimitiveFormat_Trangles,
+    PrimitiveFormat_TriangleStrip,
+    PrimitiveFormat_TrangleFan
+}; //enum PrimitiveFormat
+
 struct Raster {
     uint32 size[3]; // width, height, depth
     uint32 numComponents;
@@ -34,7 +44,7 @@ struct Raster {
     Raster() : numComponents(0), type(TYPE_SIGNED_INT_8), pData(0) { size[0] = 0; size[1] = size[2] = 1; }
 }; // struct Raster
 
-struct VertexFormatPrivate;
+/*struct VertexFormatPrivate;
 class CORE_FUNC_DLL VertexFormat {
 public:
     enum class AttributeType {
@@ -78,23 +88,12 @@ private:
 };
 
 struct Mesh {
-    enum class PrimitiveFormat {
-        None,
-        Points,
-        Lines,
-        LineStrip,
-        LineLoop,
-        Trangles,
-        TriangleStrip,
-        TrangleFan
-	};
-
     float *pVertexData{nullptr};
     uint32 *pIndicesData{nullptr};
     uint32 numVertices{0};
     uint32 numIndices{0};
 	VertexFormat vertexFormat;
     PrimitiveFormat primitiveFormat{PrimitiveFormat::None};
-};
+};*/
 
 #endif // __TYPES__

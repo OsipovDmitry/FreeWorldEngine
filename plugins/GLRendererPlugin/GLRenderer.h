@@ -23,8 +23,9 @@ public:
 	IGPUBufferContainer *createBufferContainer();
 	void destroyBufferContainer(IGPUBufferContainer *pBufferContainer);
 
-    IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, int *size, TextureFormat format, const void *pData = 0);
+    IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, TextureFormat internalFormat);
     void destroyTexture(IGPUTexture *pTexture);
+	void setTexture(const uint32 slot, const IGPUTexture *pTexture) const;
 
     IGPUShader *createShader(IGPUShader::IGPUShaderType type);
     void destroyShader(IGPUShader *pShader);
@@ -32,7 +33,8 @@ public:
     IGPUProgram *createProgram();
     void destroyProgram(IGPUProgram *pProgram);
 
-	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer) const;
+	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
+	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
 
 	void tmp() const;
 
@@ -40,6 +42,9 @@ public:
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;
 	void bindTexture(const GLTexture *pTexture, uint32 unit) const;
     void bindProgram(const GLProgram *pProgram) const;
+
+	static GLenum GLPrimitiveFormat(PrimitiveFormat primitiveFormat);
+	static GLenum GLType(Type type);
 
 private:
 	static const uint32 TEXTURE_UNITS_COUNT = 16;

@@ -16,6 +16,8 @@ public:
 	virtual void enableVertexAttribute(uint32 indexAttribute) const = 0;
 	virtual void disableVertexAttribute(uint32 indexAttribute) const = 0;
 
+	virtual void setIndexBuffer(const IGPUBuffer *pGPUBuffer) const = 0;
+
 }; // class IGPUBufferContainer
 
 } // namespace

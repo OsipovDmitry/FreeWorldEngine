@@ -18,7 +18,7 @@ public:
 	void *map(IGPUBufferAccess access, uint64 offset = 0, uint64 length = 0);
 	bool unmap();
 
-	GLuint id() const;
+	GLuint GLid() const;
 	
 	static GLenum toGLUsage(IGPUBufferUsage usage);
 

@@ -1,4 +1,7 @@
+#include <glm/gtc/type_ptr.hpp>
+
 #include "GLShader.h"
+#include "GLRenderer.h"
 
 namespace FreeWorldEngine {
 
@@ -35,12 +38,19 @@ void GLShader::loadFromFile(const File &file)
 
 }
 
-bool GLShader::compile() const
+bool GLShader::compile(std::string *pLogString) const
 {
     glCompileShader(m_id);
 
     GLint res;
     glGetShaderiv(m_id, GL_COMPILE_STATUS, &res);
+
+	if (pLogString && (res == GL_FALSE)) {
+		char buf[1024];
+		glGetShaderInfoLog(m_id, 1024, 0, buf);
+		*pLogString = buf;
+	}
+
     return res != GL_FALSE;
 }
 
@@ -87,23 +97,120 @@ void GLProgram::detachShader(IGPUShader *pShader)
     glDetachShader(m_id, pGLShader->GLid());
 }
 
-bool GLProgram::link() const
+bool GLProgram::link(std::string *pLogString) const
 {
     glLinkProgram(m_id);
 
     GLint res;
     glGetProgramiv(m_id, GL_LINK_STATUS, &res);
+
+	if (pLogString && (res == GL_FALSE)) {
+		char buf[1024];
+		glGetProgramInfoLog(m_id, 1024, 0, buf);
+		*pLogString = buf;
+	}
+
     return res != GL_FALSE;
 }
 
-int32 GLProgram::attributeLocationByName(const std::string &name)
+int32 GLProgram::attributeLocationByName(const std::string &name) const
 {
 	return -1;
 }
 
-int32 GLProgram::uniformLocationByName(const std::string &name)
+int32 GLProgram::uniformLocationByName(const std::string &name) const
 {
-	return -1;
+	return glGetUniformLocation(m_id, name.c_str());
+}
+
+void GLProgram::setUniform(const int32 location, const float value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform1f(location, value);
+}
+
+void GLProgram::setUniform(const int32 location, const int32 value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform1i(location, value);
+}
+
+void GLProgram::setUniform(const int32 location, const uint32 value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform1ui(location, value);
+}
+
+void GLProgram::setUniform(const int32 location, const glm::vec2& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform2fv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::ivec2& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform2iv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::uvec2& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform2uiv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::vec3& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform3fv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::ivec3& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform3iv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::uvec3& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform3uiv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::vec4& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform4fv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::ivec4& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform4iv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::uvec4& value) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniform4uiv(location, 1, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::mat2& value, const bool transpose) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniformMatrix2fv(location, 1, transpose, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::mat3& value, const bool transpose) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniformMatrix3fv(location, 1, transpose, glm::value_ptr(value));
+}
+
+void GLProgram::setUniform(const int32 location, const glm::mat4& value, const bool transpose) const
+{
+	pGLRenderer->bindProgram(this);
+	glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(value));
 }
 
 GLuint GLProgram::GLid() const

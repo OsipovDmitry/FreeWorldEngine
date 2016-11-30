@@ -16,15 +16,16 @@ public:
     TextureFormat format() const;
     void size(int32 *result) const;
 
-	void setSubData(void *data, uint32 *offset = 0, uint32 *size = 0);
-	void *subData(uint32 *offset = 0, uint32 *size = 0) const;
+	void setSubData(const uint32 *offset, const uint32 *size, TextureFormat::ChannelsCount dataChannelsCount, Type dataType, const void *data);
+	void *subData(const uint32 *offset = 0, const uint32 *size = 0) const;
+
+	void setBuffer(const IGPUBuffer* pBuffer) const;
 
     GLuint GLid() const;
 
     static TextureFormat fromGLinternalFormat(GLenum format);
-    static GLenum GLformat(TextureFormat& format);
+	static GLenum GLformat(TextureFormat::ChannelsCount channelsCount);
     static GLenum GLinternalFormat(TextureFormat& format);
-    static GLenum GLtype(TextureFormat& format);
     static GLenum GLtarget(IGPUTextureType type);
 
 private:

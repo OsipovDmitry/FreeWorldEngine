@@ -1,6 +1,13 @@
 #ifndef __IGPUSHADER__
 #define __IGPUSHADER__
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat2x2.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+
 #include <string>
 #include "Types.h"
 
@@ -24,7 +31,7 @@ public:
     virtual void loadFromData(const std::string& data) = 0;
     virtual void loadFromFile(const File& file) = 0;
 
-    virtual bool compile() const = 0;
+    virtual bool compile(std::string *pLogString = 0) const = 0;
 
 }; // class IGPUShader
 
@@ -36,10 +43,26 @@ public:
     virtual void attachShader(IGPUShader *pShader) = 0;
     virtual void detachShader(IGPUShader *pShader) = 0;
 
-    virtual bool link() const = 0;
+    virtual bool link(std::string *pLogString = 0) const = 0;
 
-    virtual int32 attributeLocationByName(const std::string& name) = 0;
-    virtual int32 uniformLocationByName(const std::string& name) = 0;
+    virtual int32 attributeLocationByName(const std::string& name) const = 0;
+    virtual int32 uniformLocationByName(const std::string& name) const = 0;
+
+	virtual void setUniform(const int32 location, const float value) const = 0;
+	virtual void setUniform(const int32 location, const int32 value) const = 0;
+	virtual void setUniform(const int32 location, const uint32 value) const = 0;
+	virtual void setUniform(const int32 location, const glm::vec2& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::ivec2& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::uvec2& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::vec3& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::ivec3& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::uvec3& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::vec4& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::ivec4& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::uvec4& value) const = 0;
+	virtual void setUniform(const int32 location, const glm::mat2& value, const bool transpose = false) const = 0;
+	virtual void setUniform(const int32 location, const glm::mat3& value, const bool transpose = false) const = 0;
+	virtual void setUniform(const int32 location, const glm::mat4& value, const bool transpose = false) const = 0;
 
 }; // class IGPUProgram
 

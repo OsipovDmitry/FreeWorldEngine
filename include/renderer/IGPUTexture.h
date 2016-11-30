@@ -41,6 +41,8 @@ struct TextureFormat {
 
 };
 
+class IGPUBuffer;
+
 class IGPUTexture {
 public:
 
@@ -51,7 +53,6 @@ public:
         IGPUTextureType_CubeMap,
         IGPUTextureType_1DArray,
         IGPUTextureType_2DArray,
-        IGPUTextureType_CubeMapArray,
         IGPUTextureType_Rectangle,
         IGPUTextureType_Buffer,
 		IGPUTextureType_Count
@@ -63,8 +64,10 @@ public:
     virtual TextureFormat format() const = 0;
     virtual void size(int32 *result) const = 0; // width: result[0], height: result[1], depth: result[2]
 
-	virtual void setSubData(void *data, uint32 *offset = 0, uint32 *size = 0) = 0;
-	virtual void *subData(uint32 *offset = 0, uint32 *size = 0) const = 0;
+	virtual void setSubData(const uint32 *offset, const uint32 *size, TextureFormat::ChannelsCount dataChannelsCount, Type dataType, const void *data) = 0;
+	virtual void *subData(const uint32 *offset = 0, const uint32 *size = 0) const = 0;
+
+	virtual void setBuffer(const IGPUBuffer* pBuffer) const = 0; // специально для IGPUTextureType_Buffer текстур
 
 };
 
