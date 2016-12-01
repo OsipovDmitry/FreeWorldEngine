@@ -31,7 +31,7 @@ void Core::initialize()
 	m_pManagerForOtherManagers = new ResourceManagerHash("ResourceManagerForOtherManagers");
 
 	m_pLogger = new Logger;
-	m_pLogger->addLog(new TextFileLog("TextLog.txt", true));
+	m_pLogger->addLog(new TextFileLog("TextLog.txt", false));
 
 	m_pLibraryManager = new LibraryManager();
 

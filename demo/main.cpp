@@ -43,6 +43,8 @@ int main() {
 	ICore *p = getCoreEngine();
 	p->initialize();
 
+	p->logger()->printMessage("Hello!", ILogger::MessageType_Debug);
+
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow)
 		pMainWindow->setFuncRender(render);
@@ -52,21 +54,20 @@ int main() {
 	IGPUShader *pVSh = p->renderer()->createShader(IGPUShader::IGPUShaderType_Vertex);
 	pVSh->loadFromData(vShader);
 	if (!pVSh->compile(&sLog)) {
-		p->logger()->printMessage(sLog, ILog::MessageType_Error);
+		p->logger()->printMessage(sLog, ILogger::MessageType_Error);
 	}
-
 
 	IGPUShader *pFSh = p->renderer()->createShader(IGPUShader::IGPUShaderType_Fragment);
 	pFSh->loadFromData(fShader);
 	if (!pFSh->compile(&sLog)) {
-		p->logger()->printMessage(sLog, ILog::MessageType_Error);
+		p->logger()->printMessage(sLog, ILogger::MessageType_Error);
 	}
 
 	pProgram = p->renderer()->createProgram();
 	pProgram->attachShader(pVSh);
 	pProgram->attachShader(pFSh);
 	if (!pProgram->link(&sLog)) {
-		p->logger()->printMessage(sLog, ILog::MessageType_Error);
+		p->logger()->printMessage(sLog, ILogger::MessageType_Error);
 	}
 	pProgram->setUniform(pProgram->uniformLocationByName("tex"), 0);
 

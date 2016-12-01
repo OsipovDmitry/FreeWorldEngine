@@ -16,6 +16,7 @@ struct TextureFormat {
         PixelFormat_UnnormalizeSigned, // и в памяти и в шейдере [-MAXINT/2..MAXINT/2-1]
         PixelFormat_UnnormalizeFloat, // и в памяти и в шейдере [-FLTMAX..FLTMAX]
 
+		PixelFormat_SpecialDepth,
         //    PixelFormat_SpecialR11G11B10,
         //    PixelFormat_SpecialR10G10B10A2,
     };

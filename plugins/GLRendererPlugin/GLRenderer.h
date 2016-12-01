@@ -10,6 +10,8 @@ namespace FreeWorldEngine {
 class GLBuffer;
 class GLBufferContainer;
 class GLTexture;
+class GLRenderBuffer;
+class GLFrameBuffer;
 class GLProgram;
 
 class GLRenderer : public IGPURenderer {
@@ -23,7 +25,7 @@ public:
 	IGPUBufferContainer *createBufferContainer();
 	void destroyBufferContainer(IGPUBufferContainer *pBufferContainer);
 
-    IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, TextureFormat internalFormat);
+    IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, const TextureFormat& internalFormat);
     void destroyTexture(IGPUTexture *pTexture);
 	void setTexture(const uint32 slot, const IGPUTexture *pTexture) const;
 
@@ -32,6 +34,12 @@ public:
 
     IGPUProgram *createProgram();
     void destroyProgram(IGPUProgram *pProgram);
+
+	IGPURenderBuffer *createRenderBuffer(const TextureFormat& internalFormat, const uint32 width, const uint32 height);
+	void destroyRenderBuffer(IGPURenderBuffer *pRenderBuffer);
+
+	IGPUFrameBuffer *createFrameBuffer();
+	void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer);
 
 	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
 	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
@@ -42,6 +50,8 @@ public:
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;
 	void bindTexture(const GLTexture *pTexture, uint32 unit) const;
     void bindProgram(const GLProgram *pProgram) const;
+	void bindRenderBuffer(const GLRenderBuffer *pRenderBuffer) const;
+	void bindFrameBuffer(const GLFrameBuffer *pFrameBuffer) const;
 
 	static GLenum GLPrimitiveFormat(PrimitiveFormat primitiveFormat);
 	static GLenum GLType(Type type);
@@ -56,6 +66,9 @@ private:
 	mutable const GLBuffer* m_cachedBuffers[BUFFER_UNITS_COUNT];
 
     mutable const GLProgram* m_cachedProgram;
+
+	mutable const GLRenderBuffer *m_cachedRenderBuffer;
+	mutable const GLFrameBuffer *m_cachedFrameBuffer;
 
 }; // class GLRenderer
 

@@ -25,7 +25,7 @@ public:
 
     static TextureFormat fromGLinternalFormat(GLenum format);
 	static GLenum GLformat(TextureFormat::ChannelsCount channelsCount);
-    static GLenum GLinternalFormat(TextureFormat& format);
+    static GLenum GLinternalFormat(const TextureFormat& format);
     static GLenum GLtarget(IGPUTextureType type);
 
 private:

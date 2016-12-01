@@ -11,14 +11,15 @@ public:
 	Logger();
 	~Logger();
 
-	ILog *addTextFileLog(const std::string& filename);
+	ILog *addTextFileLog(const std::string& filename, const bool rewrite = true);
 	void addLog(ILog *pLog);
 	ILog *findLog(const std::string& name) const;
 	void destroyLog(const std::string& name);
 	void destroyLog(ILog *pLog);
 	void destroyAllLogs();
 
-	void printMessage(const std::string& message, const ILog::MessageType type = ILog::MessageType_Info) const;
+	void printMessage(const std::string& message, const MessageType type = MessageType_Info) const;
+	std::string messageTypeString(const MessageType type) const;
 
 private:
 	IResourceManager *m_pResourceManager;

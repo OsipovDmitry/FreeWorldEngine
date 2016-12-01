@@ -5,6 +5,7 @@
 #include "IGPUTexture.h"
 #include "IGPUBufferContainer.h"
 #include "IGPUShader.h"
+#include "IGPUFrameBuffer.h"
 
 namespace FreeWorldEngine {
 
@@ -18,7 +19,7 @@ public:
 	virtual IGPUBufferContainer *createBufferContainer() = 0;
 	virtual void destroyBufferContainer(IGPUBufferContainer *pBufferContainer) = 0;
 
-    virtual IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, TextureFormat internalFormat) = 0;
+    virtual IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, const TextureFormat& internalFormat) = 0;
     virtual void destroyTexture(IGPUTexture *pTexture) = 0;
 	virtual void setTexture(const uint32 slot, const IGPUTexture *pTexture) const = 0;
 
@@ -27,6 +28,12 @@ public:
 
     virtual IGPUProgram *createProgram() = 0;
     virtual void destroyProgram(IGPUProgram *pProgram) = 0;
+
+	virtual IGPURenderBuffer *createRenderBuffer(const TextureFormat& internalFormat, const uint32 width, const uint32 height) = 0;
+	virtual void destroyRenderBuffer(IGPURenderBuffer *pRenderBuffer) = 0;
+
+	virtual IGPUFrameBuffer *createFrameBuffer() = 0;
+	virtual void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer) = 0;
 
 	virtual void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const = 0;
 	virtual void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const = 0;

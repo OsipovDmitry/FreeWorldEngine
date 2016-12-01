@@ -2,6 +2,7 @@
 #define __HTMLLOG__
 
 #include <ILog.h>
+#include <ILogger.h>
 #include <Types.h>
 
 namespace FreeWorldEngine {
@@ -13,15 +14,14 @@ public :
 
 	std::string name() const;
 
-	void printMessage(const MessageType type, const std::string& time, const std::string message) const;
-	void setMessageColor(const MessageType type, const std::string& color);
+	void printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const;
+	void setMessageColor(const ILogger::MessageType type, const std::string& color);
 
 private:
 	std::string m_name;
 	mutable uint32 m_printPos;
-	std::map<MessageType, std::string> m_messageColors;
+	std::map<ILogger::MessageType, std::string> m_messageColors;
 	
-	static std::string messageType(const MessageType type);
 	static uint32 printHeader(FILE *pFile, const std::string& backgroundColor);
 	static void printFooter(FILE *pFile);
 

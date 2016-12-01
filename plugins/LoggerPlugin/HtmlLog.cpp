@@ -1,3 +1,5 @@
+#include <FreeWorldEngine.h>
+
 #include "HtmlLog.h"
 
 namespace FreeWorldEngine {
@@ -11,7 +13,7 @@ namespace {
 HtmlLog::HtmlLog(const std::string& filename, const std::string& backgroundColor) :
 	m_name(filename),
 	m_printPos(0),
-	m_messageColors(std::map<ILog::MessageType, std::string>())
+	m_messageColors(std::map<ILogger::MessageType, std::string>())
 {
 	FILE *pFile = fopen(m_name.c_str(), "w");
 	if (pFile) {
@@ -20,10 +22,11 @@ HtmlLog::HtmlLog(const std::string& filename, const std::string& backgroundColor
 		fclose(pFile);
 	}
 
-	setMessageColor(ILog::MessageType_Info, "green");
-	setMessageColor(ILog::MessageType_Warning, "yellow");
-	setMessageColor(ILog::MessageType_Error, "red");
-	setMessageColor(ILog::MessageType_Critical, "magenta");
+	setMessageColor(ILogger::MessageType_Info, "green");
+	setMessageColor(ILogger::MessageType_Warning, "yellow");
+	setMessageColor(ILogger::MessageType_Error, "red");
+	setMessageColor(ILogger::MessageType_Critical, "magenta");
+	setMessageColor(ILogger::MessageType_Debug, "blue");
 }
 
 HtmlLog::~HtmlLog()
@@ -35,9 +38,9 @@ std::string HtmlLog::name() const
 	return m_name;
 }
 
-void HtmlLog::printMessage(const MessageType type, const std::string& time, const std::string message) const
+void HtmlLog::printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const
 {
-	std::string typeStr = messageType(type);
+	std::string typeStr = getCoreEngine()->logger()->messageTypeString(type);
 	std::string color = m_messageColors.at(type);
 	std::string messageStr = "<p><font color=\"" + color + "\">" + time + " (" + typeStr + "): " + message + "</font></p>";
 
@@ -51,20 +54,9 @@ void HtmlLog::printMessage(const MessageType type, const std::string& time, cons
 	}
 }
 
-void HtmlLog::setMessageColor(const ILog::MessageType type, const std::string& color)
+void HtmlLog::setMessageColor(const ILogger::MessageType type, const std::string& color)
 {
 	m_messageColors[type] = color;
-}
-
-std::string HtmlLog::messageType(const MessageType type)
-{
-	switch (type) {
-	case MessageType_Info: return "INFO";
-	case MessageType_Warning: return "WARNING";
-	case MessageType_Error: return "ERROR";
-	case MessageType_Critical: return "CRITICAL";
-	default: return "None";
-	}
 }
 
 uint32 HtmlLog::printHeader(FILE *pFile, const std::string& backgroundColor)

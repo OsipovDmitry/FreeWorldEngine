@@ -7,18 +7,16 @@ namespace FreeWorldEngine {
 
 class TextFileLog : public ILog {
 public :
-	TextFileLog(const std::string filename, const bool rewrite = false);
+	TextFileLog(const std::string filename, const bool rewrite = true);
 	~TextFileLog();
 
 	std::string name() const;
 
-	void printMessage(const MessageType type, const std::string& time, const std::string message) const;
-	void setMessageColor(const MessageType type, const std::string& color) {}
+	void printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const;
+	void setMessageColor(const ILogger::MessageType type, const std::string& color) {}
 
 private:
 	std::string m_filename;
-
-	static std::string messageType(const MessageType type);
 
 }; // class TextFileLog
 

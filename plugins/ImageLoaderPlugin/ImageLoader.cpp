@@ -44,7 +44,7 @@ IImage *ImageLoader::loadImage(const std::string& filename)
 		isOk = false;
 
 	if (!isOk) {
-		getCoreEngine()->logger()->printMessage("Failed open file \"" + filename + "\"", ILog::MessageType_Error); 
+		getCoreEngine()->logger()->printMessage("Failed open file \"" + filename + "\"", ILogger::MessageType_Error); 
 		return 0;
 	}
 

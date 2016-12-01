@@ -6,6 +6,7 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
 	../../include/renderer/IGPURenderer.h
+	../../include/renderer/IGPUFrameBuffer.h
 	../../include/renderer/IGPUTexture.h
 	../../include/renderer/IGPUShader.h
 	../../include/renderer/IGPUBuffer.h
@@ -18,6 +19,7 @@ set(HEADERS
 	GLBufferContainer.h
 	GLShader.h
 	GLTexture.h
+	GLFrameBuffer.h
 	GLRenderer.h)
 
 set(SOURCES
@@ -25,6 +27,7 @@ set(SOURCES
 	GLBufferContainer.cpp
 	GLShader.cpp
 	GLTexture.cpp
+	GLFrameBuffer.cpp
 	GLRenderer.cpp
 	
 	GLRendererPlugin.cpp

@@ -182,7 +182,7 @@ GLenum GLTexture::GLformat(TextureFormat::ChannelsCount channelsCount)
     return 0;
 }
 
-GLenum GLTexture::GLinternalFormat(TextureFormat& format)
+GLenum GLTexture::GLinternalFormat(const TextureFormat& format)
 {
     switch (format.pixelFormat) {
     case TextureFormat::PixelFormat_NormalizeUnsigned: {
@@ -327,6 +327,14 @@ GLenum GLTexture::GLinternalFormat(TextureFormat& format)
         }
         break;
     }
+	case TextureFormat::PixelFormat_SpecialDepth: {
+		switch (format.channelSize) {
+        case TextureFormat::ChannelSize_8: break;
+		case TextureFormat::ChannelSize_16: return GL_DEPTH_COMPONENT16;
+		case TextureFormat::ChannelSize_32: return GL_DEPTH_COMPONENT32;
+		}
+		break;
+	}
     }
     return 0;
 }

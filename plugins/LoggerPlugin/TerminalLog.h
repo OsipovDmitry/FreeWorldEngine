@@ -11,11 +11,8 @@ public :
 	~TerminalLog();
 
 	std::string name() const;
-	void printMessage(const MessageType type, const std::string& time, const std::string message) const;
-	void setMessageColor(const MessageType type, const std::string& color) {}
-
-private:
-	static std::string messageType(const MessageType type);
+	void printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const;
+	void setMessageColor(const ILogger::MessageType type, const std::string& color) {}
 
 }; // class TerminalLog
 

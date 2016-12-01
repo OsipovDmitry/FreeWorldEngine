@@ -4,10 +4,10 @@
 #include "ICore.h"
 
 #include "Logger.h"
-#define LOG_INFO(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Info))
-#define LOG_WARNING(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Warning))
-#define LOG_ERROR(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Error))
-#define LOG_CRITICAL(text) (coreEngine->logger()->printMessage(std::string(text), ILog::MessageType_Critical))
+#define LOG_INFO(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Info))
+#define LOG_WARNING(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Warning))
+#define LOG_ERROR(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Error))
+#define LOG_CRITICAL(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Critical))
 #define LOG(text) LOG_INFO(text)
 
 namespace FreeWorldEngine {
