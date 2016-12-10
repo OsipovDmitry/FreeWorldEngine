@@ -13,6 +13,7 @@ if (FWE_3RDPARTY)
 endif ()
 
 add_subdirectory(utility)
+add_subdirectory(math)
 add_subdirectory(core)
 add_subdirectory(plugins)
 add_subdirectory(demo)

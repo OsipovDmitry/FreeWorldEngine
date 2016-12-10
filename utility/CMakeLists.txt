@@ -1,4 +1,4 @@
-include_directories(../3rdparty/include)
+include_directories(../3rdparty)
 include_directories(../include/utility)
 
 set(HEADERS ../include/utility/UtilitySettings.h
