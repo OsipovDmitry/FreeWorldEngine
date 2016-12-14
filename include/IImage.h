@@ -2,7 +2,8 @@
 #define __IIMAGE__
 
 #include "IResource.h"
-#include "Types.h"
+
+struct Raster;
 
 namespace FreeWorldEngine {
 

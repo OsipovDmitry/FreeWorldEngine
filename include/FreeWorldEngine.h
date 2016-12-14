@@ -16,6 +16,8 @@
 #include "IWindow.h"
 #include "IImageLoader.h"
 #include "IImage.h"
+#include "ISceneLoader.h"
+#include "IScene.h"
 #include "renderer/IGPURenderer.h"
 
 #include "CoreSettings.h"

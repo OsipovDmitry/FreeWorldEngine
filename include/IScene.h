@@ -1,23 +1,28 @@
 #ifndef __ISCENE__
 #define __ISCENE__
 
-#include "glm/mat4x4.hpp"
+#include <vector>
+#include <glm/mat4x4.hpp>
+
 #include "Types.h"
 #include "IResource.h"
 
 namespace FreeWorldEngine {
 
-/*class IScene : public IResource {
+class IScene : public IResource {
 public:
+
 	struct Material {
 		std::string name;
 	};
+	typedef std::vector<IScene::Material> MaterialList;
 
 	struct Mesh {
 		std::string name;
-		FreeWorldEngine::Mesh data;
+		::Mesh *data;
 		Material *pMaterial;
 	};
+	typedef std::vector<IScene::Mesh> MeshList;
 
 	struct Node {
 		std::string name;
@@ -30,11 +35,11 @@ public:
 	virtual ~IScene() = 0 {}
 
 	Node *rootNode() const;
-	const std::vector<Mesh*>& meshes() const;
-	const std::vector<Materials*>& materials() const;
+	const MeshList& meshes() const;
+	const MaterialList& materials() const;
 
 }; // class IScene
-*/
+
 } // namespace
 
 #endif // __ISCENE__

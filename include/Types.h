@@ -16,14 +16,18 @@ typedef unsigned int           uint32;
 typedef unsigned long long int uint64;
 
 enum Type {
-	TYPE_SIGNED_INT_8,
+	TYPE_SIGNED_INT_8 = 0,
 	TYPE_SIGNED_INT_16,
 	TYPE_SIGNED_INT_32,
 	TYPE_UNSIGNED_INT_8,
 	TYPE_UNSIGNED_INT_16,
 	TYPE_UNSIGNED_INT_32,
-    TYPE_FLOAT
+    TYPE_FLOAT,
+	TYPE_COUNT
 }; // enum Type
+
+const uint32 TypeSize[TYPE_COUNT] = { sizeof(int8), sizeof(int16), sizeof(int32), sizeof(uint8), sizeof(uint16), sizeof(uint32), sizeof(float) };
+const bool TypeIsFloatingPoint[TYPE_COUNT] = { false, false, false, false, false, false, true };
 
 struct Raster {
     uint32 size[3]; // width, height, depth
@@ -55,27 +59,7 @@ enum AttributeType {
 	AttributeType_TexCoord3,
 }; // enum AttributeType
 
-/*struct MeshData {
-	float *pVertexData;
-	uint32 vertexDataLen;
-	uint32 *pIndexData;
-	uint32 indexDataLen;
-
-	MeshData() : pVertexData(0), pIndexData(0), vertexDataLen(0), indexDataLen(0) {}
-}; // struct MeshData
-
-struct MeshDeclaration {
-	std::map<AttributeType, std::pair<uint16, uint16> > attributes; // отображение типа атрибута на пару (размер, смещение). Размер и смещение в штуках float
-	uint32 numVertices, numPrimitives; // количство примитивов
-	PrimitiveFormat primitiveFormat; // тип примитива
-	uint16 vertexStride; // смещение между вершинами в штуках float
-
-	MeshDeclaration() : attributes(), numVertices(0), numPrimitives(0), primitiveFormat(PrimitiveFormat_Points), vertexStride(0) {}
-}; // struct MeshDeclaration
-*/
 struct Mesh {
-	/*MeshData meshData;
-	MeshDeclaration meshDecl;*/
 
 	float *pVertexData; // массив с вершинными атрибутами. Размер = numVertices * vertexStride * sizeof(float)
 	uint32 *pIndexData; // массив с индексами. Размер = numIndices * sizeof(uint32)
