@@ -1,7 +1,7 @@
 #ifndef __WINDOWMANAGERPLUGIN__
 #define __WINDOWMANAGERPLUGIN__
 
-#include "IPlugin.h"
+#include <IPlugin.h>
 
 namespace FreeWorldEngine {
 
@@ -17,7 +17,7 @@ public:
 
 private:
 
-}; // class IPlugin
+}; // class SceneLoaderPlugin
 
 } // namespace
 

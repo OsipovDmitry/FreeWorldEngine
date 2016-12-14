@@ -20,7 +20,7 @@ std::string SceneLoaderPlugin::name() const
 
 std::string SceneLoaderPlugin::info() const
 {
-	return std::string("SDL2 Window Manager Plugin");
+	return std::string("Assimp Scene Loader Plugin");
 }
 
 bool SceneLoaderPlugin::initialize() const
