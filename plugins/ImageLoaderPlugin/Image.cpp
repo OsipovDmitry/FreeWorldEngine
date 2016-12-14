@@ -1,3 +1,6 @@
+#include <Types.h>
+#include <math/RasterWrapper.h>
+
 #include "Image.h"
 
 namespace FreeWorldEngine {
@@ -10,8 +13,7 @@ Image::Image(const std::string& name, Raster *pRaster) :
 
 Image::~Image()
 {
-    if (m_pRaster)
-        delete m_pRaster;
+	Math::RasterWrapper(m_pRaster).destroyTargetRaster();
 }
 
 std::string Image::name() const
