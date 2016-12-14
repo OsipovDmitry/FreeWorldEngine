@@ -1,7 +1,10 @@
 #ifndef __MESHWRAPPER__
 #define __MESHWRAPPER__
 
+#include <Types.h>
+
 #include "MathTypes.h"
+#include "MathSettings.h"
 
 struct Mesh;
 
@@ -9,9 +12,9 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
-class MeshWrapper {
+class MATH_DLL MeshWrapper {
 public:
-	MeshWrapper(Mesh *pTargetMesh = 0);
+	MeshWrapper(Mesh *pTargetMesh);
 	~MeshWrapper();
 
 	float *addVertices(const uint32 numVertices); // ¬озвращает указатель на добавленную пам€ть
