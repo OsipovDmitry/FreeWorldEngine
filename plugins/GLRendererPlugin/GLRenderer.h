@@ -35,14 +35,23 @@ public:
     IGPUProgram *createProgram();
     void destroyProgram(IGPUProgram *pProgram);
 
-	IGPURenderBuffer *createRenderBuffer(const TextureFormat& internalFormat, const uint32 width, const uint32 height);
+	IGPURenderBuffer *createRenderBuffer(const TextureFormat& format, const uint32 width, const uint32 height);
 	void destroyRenderBuffer(IGPURenderBuffer *pRenderBuffer);
 
 	IGPUFrameBuffer *createFrameBuffer();
 	void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer);
+	void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const;
 
 	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
 	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
+
+	void enableDepthTest(const DepthTestFunc func = DepthTestFunc_Less);
+	void disableDepthTest();
+
+	void enableBlend(const int32 slot = -1);
+	void disableBlend(const int32 slot = -1);
+	void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA);
+	void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA);
 
 	void tmp() const;
 
@@ -55,6 +64,9 @@ public:
 
 	static GLenum GLPrimitiveFormat(PrimitiveFormat primitiveFormat);
 	static GLenum GLType(Type type);
+	static GLenum GLDepthTestFunc(DepthTestFunc func);
+	static GLenum GLBlendFunc(BlendFunc func);
+	static GLenum GLBlendEquation(BlendEquation func);
 
 private:
 	static const uint32 TEXTURE_UNITS_COUNT = 16;
@@ -69,6 +81,14 @@ private:
 
 	mutable const GLRenderBuffer *m_cachedRenderBuffer;
 	mutable const GLFrameBuffer *m_cachedFrameBuffer;
+
+	mutable bool m_cachedDepthTest;
+	mutable DepthTestFunc m_cachedDepthTestFunc;
+
+	static const uint32 BLEND_UNITS_COUNT = 16;
+	mutable bool m_cachedBlend[BLEND_UNITS_COUNT];
+	mutable BlendFunc m_cachedBlendRGBSrc, m_cachedBlendRGBDst, m_cachedBlendASrc, m_cachedBlendADst;
+	mutable BlendEquation m_cachedBlendRGBEquat, m_cachedBlendAEquat;
 
 }; // class GLRenderer
 

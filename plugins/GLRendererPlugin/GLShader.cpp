@@ -115,7 +115,7 @@ bool GLProgram::link(std::string *pLogString) const
 
 int32 GLProgram::attributeLocationByName(const std::string &name) const
 {
-	return -1;
+	return glGetAttribLocation(m_id, name.c_str());
 }
 
 int32 GLProgram::uniformLocationByName(const std::string &name) const
