@@ -11,6 +11,42 @@ namespace FreeWorldEngine {
 
 class IGPURenderer {
 public:
+	enum DepthTestFunc {
+		DepthTestFunc_Never,
+		DepthTestFunc_Always,
+		DepthTestFunc_Less,
+		DepthTestFunc_LessEqual,
+		DepthTestFunc_Equal,
+		DepthTestFunc_Greater,
+		DepthTestFunc_GreaterEqual,
+		DepthTestFunc_NotEqual
+	};
+
+	enum BlendFunc {
+		BlendFunc_Zero,
+		BlendFunc_One,
+		BlendFunc_SrcColor,
+		BlendFunc_InvSrcColor,
+		BlendFunc_DstColor,
+		BlendFunc_InvDstColor,
+		BlendFunc_SrcAlpha,
+		BlendFunc_InvSrcAlpha,
+		BlendFunc_DstAlpha,
+		BlendFunc_InvDstAlpha,
+		BlendFunc_ConstColor,
+		BlendFunc_InvConstColor,
+		BlendFunc_ConstAlpha,
+		BlendFunc_InvConstAlpha
+	};
+
+	enum BlendEquation {
+		BlendEquation_Add,
+		BlendEquation_Sub,
+		BlendEquation_ReverseSub,
+		BlendEquation_Min,
+		BlendEquation_Max
+	};
+
 	virtual ~IGPURenderer() {}
 
 	virtual IGPUBuffer *createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage = IGPUBuffer::IGPUBufferUsage_StaticDraw, void *pData = 0) = 0;
@@ -29,14 +65,24 @@ public:
     virtual IGPUProgram *createProgram() = 0;
     virtual void destroyProgram(IGPUProgram *pProgram) = 0;
 
-	virtual IGPURenderBuffer *createRenderBuffer(const TextureFormat& internalFormat, const uint32 width, const uint32 height) = 0;
+	virtual IGPURenderBuffer *createRenderBuffer(const TextureFormat& format, const uint32 width, const uint32 height) = 0;
 	virtual void destroyRenderBuffer(IGPURenderBuffer *pRenderBuffer) = 0;
 
 	virtual IGPUFrameBuffer *createFrameBuffer() = 0;
 	virtual void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer) = 0;
+	virtual void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const = 0;
 
 	virtual void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const = 0;
 	virtual void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const = 0;
+
+	virtual void enableDepthTest(const DepthTestFunc func = DepthTestFunc_Less) = 0;
+	virtual void disableDepthTest() = 0;
+
+	// slot == -1 => вкл/выкл во всех слотах
+	virtual void enableBlend(const int32 slot = -1) = 0;
+	virtual void disableBlend(const int32 slot = -1) = 0;
+	virtual void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA) = 0;
+	virtual void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA) = 0;
 
 	virtual void tmp() const = 0;
 
