@@ -1,17 +1,19 @@
 include_directories(../3rdparty)
-include_directories(../include/math)
+include_directories(../include)
 
 set(HEADERS
 	../include/math/MathSettings.h
 	../include/math/MathTypes.h
 	../include/math/MathUtils.h
 	../include/math/MeshWrapper.h
+	../include/math/RasterWrapper.h
 	../include/math/BspTree.h
 )
 
 set(SOURCES
 	MathUtils.cpp
 	MeshWrapper.cpp
+	RasterWrapper.cpp
 	BspTree.cpp
 )
 

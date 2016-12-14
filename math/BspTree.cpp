@@ -1,8 +1,8 @@
 #include <queue>
 
-#include <BspTree.h>
-#include <MeshWrapper.h>
-#include <MathUtils.h>
+#include <math/BspTree.h>
+#include <math/MeshWrapper.h>
+#include <math/MathUtils.h>
 
 namespace FreeWorldEngine {
 

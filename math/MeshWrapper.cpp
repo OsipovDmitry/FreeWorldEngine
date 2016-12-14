@@ -1,7 +1,6 @@
-#include <../Types.h>
-#include <MathUtils.h>
-
-#include "MeshWrapper.h"
+#include <Types.h>
+#include <math/MathUtils.h>
+#include <math/MeshWrapper.h>
 
 namespace FreeWorldEngine {
 
@@ -80,12 +79,7 @@ void MeshWrapper::destroyTargetMesh() {
 	if (!m_pMesh)
 		return;
 	delete m_pMesh->pVertexData;
-	m_pMesh->pVertexData = 0;
 	delete m_pMesh->pIndexData;
-	m_pMesh->pIndexData = 0;
-	m_pMesh->numVertices = m_pMesh->numIndices = m_pMesh->vertexStride = 0;
-	m_pMesh->attributes.clear();
-	m_pMesh->primitiveFormat = PrimitiveFormat_Trangles;
 	delete m_pMesh;
 	m_pMesh = 0;
 }

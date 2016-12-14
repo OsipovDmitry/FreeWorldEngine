@@ -1,9 +1,9 @@
 #include <glm/geometric.hpp>
 
-#include <MathUtils.h>
-#include <MeshWrapper.h>
-#include <MathTypes.h>
-#include <../Types.h>
+#include <math/MathUtils.h>
+#include <math/MeshWrapper.h>
+#include <math/MathTypes.h>
+#include <Types.h>
 
 struct Mesh;
 
