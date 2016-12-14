@@ -46,18 +46,17 @@ ILog *Logger::findLog(const std::string& name) const
 void Logger::destroyLog(const std::string& name)
 {
 	ILog *pLog = findLog(name);
-	if (pLog) {
-	std::string date = Date::current().toString();
-	std::string time = Time::current().toString();
-		pLog->printMessage(MessageType_Info, time, "Finish log on " + date + " at " + time);
-		m_pResourceManager->destroyResource(name);
-	}
+	destroyLog(pLog);
 }
 
 void Logger::destroyLog(ILog *pLog)
 {
-	if (pLog)
-		destroyLog(pLog->name());
+	if (pLog) {
+	std::string date = Date::current().toString();
+	std::string time = Time::current().toString();
+		pLog->printMessage(MessageType_Info, time, "Finish log on " + date + " at " + time);
+		m_pResourceManager->destroyResource(pLog->name());
+	}
 }
 
 void Logger::destroyAllLogs()

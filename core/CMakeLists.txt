@@ -25,8 +25,8 @@ set(INTERFACE_HEADERS
     ../include/IPluginManager.h
     ../include/IResource.h
     ../include/IResourceManager.h
-    ../include/ISceneModel.h
-    ../include/ISceneModelManager.h
+    ../include/IScene.h
+    ../include/ISceneModelLoader.h
     ../include/IThread.h
     ../include/IThreadManager.h
     ../include/IWindow.h

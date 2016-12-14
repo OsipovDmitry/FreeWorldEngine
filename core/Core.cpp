@@ -8,6 +8,10 @@
 #include "LibraryManager.h"
 #include "TextFileLog.h"
 
+namespace {
+	const std::string c_pluginsFileName = "plugins.xml";
+}
+
 namespace FreeWorldEngine {
 
 Core::Core() :
@@ -45,7 +49,7 @@ void Core::initialize()
 
 	*m_pLogger << "Free World Engine created";*/
 
-	m_pPluginManager->loadPlugins("plugins.xml");
+	m_pPluginManager->loadPlugins(c_pluginsFileName);
 
 	if (m_pWindowManager)
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::Flags_Show | IWindow::Flags_Resizable);
@@ -198,32 +202,7 @@ Core *coreEngine = 0;
 
 bool initCoreEngine()
 {
-	/*if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		destroyCoreEngine();
-		return false;
-	}
-
-	if (!dInitODE2(0)) {
-		destroyCoreEngine();
-		return false;
-	}*/
-
-	// “ут создаем временное окно с OpenGL и контекст дл€ него, чтобы можно было инициализировать GLRenderer. ѕотом его сразу уничтожаем.
-	/*SDL_Window *pSDLWindow = SDL_CreateWindow("", 0, 0, 0, 0, SDL_WINDOW_OPENGL);
-	if (!pSDLWindow) {
-		destroyCoreEngine();
-		return false;
-	}
-	void *pSDLGLContext = SDL_GL_CreateContext(pSDLWindow);
-	if (!pSDLGLContext) {
-		SDL_DestroyWindow(pSDLWindow);
-		destroyCoreEngine();
-		return false;
-	}
-	bool GLRendererIsOk = true;//initGLRenderer(); // »нициализируем модуль с рендерером
-	SDL_GL_DeleteContext(pSDLGLContext);
-	SDL_DestroyWindow(pSDLWindow);
-	if (!GLRendererIsOk) {
+	/*if (!dInitODE2(0)) {
 		destroyCoreEngine();
 		return false;
 	}*/
@@ -244,7 +223,6 @@ void destroyCoreEngine()
 	coreEngine = 0;
 
 	//dCloseODE();
-	//SDL_Quit();
 }
 
 

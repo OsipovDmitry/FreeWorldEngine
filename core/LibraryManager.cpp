@@ -21,7 +21,7 @@ ILibrary *LibraryManager::loadLibrary(const std::string& filename)
 	LOG("Load library \""+filename+"\"");
 	ILibrary *pLibrary = findLibrary(filename);
 	if (pLibrary) {
-		LOG("Library \""+filename+"\" is loaded earlier");
+		LOG_WARNING("Library \""+filename+"\" is loaded earlier");
 		return pLibrary;
 	}
 	

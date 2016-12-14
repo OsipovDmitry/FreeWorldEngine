@@ -1,0 +1,169 @@
+#include <glm/geometric.hpp>
+
+#include <MathUtils.h>
+#include <MeshWrapper.h>
+#include <MathTypes.h>
+#include <../Types.h>
+
+struct Mesh;
+
+namespace FreeWorldEngine {
+
+namespace Math {
+
+Plane buildPlane(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2)
+{
+	glm::vec3 n = glm::normalize(glm::cross(v1-v0, v2-v0));
+	return Plane(n, -glm::dot(n, v0));
+}
+
+float distToPlane(const Plane& plane, const glm::vec3& v)
+{
+	return plane.x*v.x + plane.y*v.y + plane.z*v.z + plane.w;
+}
+
+ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts, const float eps)
+{
+	bool front = false, back = false;
+
+	for (uint32 i = 0; i < numVerts; ++i) {
+		float dist = distToPlane(plane, *(verts[i]));
+		
+		front = front || (dist > eps);
+		back = back || (dist < -eps);
+
+		if (front && back)
+			return ClassifyPlane_Intersect;
+	}
+
+	if (front)
+		return ClassifyPlane_Front;
+	if (back)
+		return ClassifyPlane_Back;
+
+	return ClassifyPlane_Touch;
+}
+
+Aabb buldAabb(Mesh *pMesh)
+{
+	MeshWrapper mesh(pMesh);
+
+	if (pMesh->numVertices == 0)
+		return Aabb(glm::vec3(), glm::vec3());
+
+	float *pVertex = mesh.attributeValue(AttributeType_Position, 0);
+	glm::vec3 vMin(pVertex[0], pVertex[1], pVertex[2]), vMax(pVertex[0], pVertex[1], pVertex[2]);
+
+	for (uint32 i = 1; i < pMesh->numVertices; ++i) {
+		pVertex = mesh.attributeValue(AttributeType_Position, i);
+		
+		if (pVertex[0] < vMin.x) vMin.x = pVertex[0];
+		else if (pVertex[0] > vMax.x) vMax.x = pVertex[0];
+
+		if (pVertex[1] < vMin.y) vMin.y = pVertex[1];
+		else if (pVertex[1] > vMax.y) vMax.y = pVertex[1];
+
+		if (pVertex[2] < vMin.z) vMin.z = pVertex[2];
+		else if (pVertex[2] > vMax.z) vMax.z = pVertex[2];
+	}
+
+	return Aabb(vMin, vMax);
+}
+
+void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef, const float eps)
+{
+	resultCoef = -1.0f;
+
+	float dists[2] = { distToPlane(plane, *(verts[0])), distToPlane(plane, *(verts[1])) };
+
+	if ((dists[0] >= -eps && dists[1] >= -eps) ||
+		(dists[0] <= eps && dists[1] <= eps)) // обе точки лежат по одну сторону от плоскости или почти по одну, возможно обе на плоскости. Резать не надо.
+		return;
+
+	resultCoef = abs(dists[0]) / abs(dists[0] - dists[1]);
+}
+
+void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20, const float eps)
+{
+	resultCoef01 = resultCoef12 = resultCoef20 = -1.0f;
+
+	float dists[3] = { distToPlane(plane, *(verts[0])), distToPlane(plane, *(verts[1])), distToPlane(plane, *(verts[2])) };
+
+	if ((dists[0] >= -eps && dists[1] >= -eps && dists[2] >= -eps) ||
+		(dists[0] <= eps && dists[1] <= eps && dists[2] <= eps)) // все точки лежат по одну сторону от плоскости или почти по одну, возможно все на плоскости. Резать не надо.
+		return;
+
+	float absDists[3] = { abs(dists[0]), abs(dists[1]), abs(dists[2]) };
+
+	if (absDists[0] < eps) { // Если одна точка лежит на плоскости, то режем противолежащее ребро.
+		resultCoef12 = absDists[1] / (absDists[1] + absDists[2]);
+		return;
+	}
+
+	if (absDists[1] < eps) { // Если одна точка лежит на плоскости, то режем противолежащее ребро.
+		resultCoef20 = absDists[2] / (absDists[2] + absDists[0]);
+		return;
+	}
+
+	if (absDists[2] < eps) { // Если одна точка лежит на плоскости, то режем противолежащее ребро.
+		resultCoef01 = absDists[0] / (absDists[0] + absDists[1]);
+		return;
+	}
+
+	if (dists[0]*dists[1] < 0.0f) { // точки 0 и 1 лежат по разные стороны
+		resultCoef01 = absDists[0] / (absDists[0] + absDists[1]);
+		if (dists[0]*dists[2] < 0.0f) // точки 0 и 2 лежат по разные стороны => точка 0 лежит по другую сторону от точек 1 и 2
+			resultCoef20 = absDists[2] / (absDists[2] + absDists[0]);
+		else  // точка 1 лежит по другую сторону от точек 2 и 0
+			resultCoef12 = absDists[1] / (absDists[1] + absDists[2]);
+	} else { // точка 2, лежит по другую сторону от точек 0 и 1
+		resultCoef12 = absDists[1] / (absDists[1] + absDists[2]);
+		resultCoef20 = absDists[2] / (absDists[2] + absDists[0]);
+	}
+}
+
+void cutPrimitive(Mesh *pMesh, const uint32 primitiveIndex, const Plane& plane, const float eps)
+{
+	std::map<AttributeType, std::pair<uint16, uint16> >::const_iterator iter = pMesh->attributes.find(AttributeType_Position);
+	if (iter == pMesh->attributes.cend()) // если нет атрибута позиции, то невозможно выполнить задачу
+		return;
+
+	std::pair<uint16, uint16> posSizeOffs = iter->second;
+	if (posSizeOffs.first != 3) // если размер атрибута позиции не равен 3, то невозможно выполнить задачу
+		return;
+
+	MeshWrapper mesh(pMesh);
+
+	switch (pMesh->primitiveFormat) {
+
+	case PrimitiveFormat_Lines: {
+		uint32 indices[2];
+		mesh.primitiveIndices(primitiveIndex, indices);
+		glm::vec3 *verts[2] = {(glm::vec3*)mesh.attributeValue(AttributeType_Position, indices[0]),
+							   (glm::vec3*)mesh.attributeValue(AttributeType_Position, indices[1])};
+		float dists[2] = { distToPlane(plane, *(verts[0])), distToPlane(plane, *(verts[1])) };
+		if ((dists[0] >= -eps && dists[1] >= -eps) || (dists[0] <= eps && dists[1] <= eps)) // точки лежат по одну сторону от плоскости или почти по одну. Резать не надо.
+			return;
+		dists[0] = abs(dists[0]);
+		dists[1] = abs(dists[1]);
+		if (dists[0] < eps && dists[1] < eps) // точки лежат на плоскости. Резать не надо.
+			return;
+		float interpCoef = dists[0] / (dists[0] + dists[1]);
+
+		break;
+	}
+
+	case PrimitiveFormat_Trangles: {
+		uint32 indices[3];
+		mesh.primitiveIndices(primitiveIndex, indices);
+
+
+		break;
+	}
+
+	default: break;
+	}
+}
+
+} // namespace
+} // namespace
