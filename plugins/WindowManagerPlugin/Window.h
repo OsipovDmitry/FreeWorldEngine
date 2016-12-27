@@ -1,9 +1,9 @@
 #ifndef __WINDOW__
 #define __WINDOW__
 
-#include "IWindow.h"
+#include <3rdparty/sdl/SDL.h>
 
-#include "SDL2/include/SDL.h"
+#include <IWindow.h>
 
 namespace FreeWorldEngine {
 

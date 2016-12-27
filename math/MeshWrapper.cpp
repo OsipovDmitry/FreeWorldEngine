@@ -1,4 +1,3 @@
-#include <Types.h>
 #include <math/MathUtils.h>
 #include <math/MeshWrapper.h>
 
@@ -43,7 +42,7 @@ uint32 *MeshWrapper::addIndices(const uint32 numIndices)
 	return p + oldSize;
 }
 
-void MeshWrapper::setAttributeDeclaration(const AttributeType attributeType, const uint16 attributeSize, const uint16 attributeOffset)
+void MeshWrapper::setAttributeDeclaration(const VertexAttributeType attributeType, const uint16 attributeSize, const uint16 attributeOffset)
 {
 	m_pMesh->attributes[attributeType] = std::make_pair(attributeSize, attributeOffset);
 }
@@ -58,13 +57,13 @@ void MeshWrapper::setVertexStride(const uint16 stride)
 	m_pMesh->vertexStride = stride;
 }
 
-void MeshWrapper::setAttributeValue(const AttributeType attributeType, const uint32 vertexIndex, float *pData)
+void MeshWrapper::setAttributeValue(const VertexAttributeType attributeType, const uint32 vertexIndex, float *pData)
 {
 	const std::pair<uint16, uint16> size_offset = m_pMesh->attributes.at(attributeType);
 	memcpy(m_pMesh->pVertexData + m_pMesh->vertexStride * vertexIndex + size_offset.second, pData, size_offset.first * sizeof(float));
 }
 
-float *MeshWrapper::attributeValue(const AttributeType attributeType, const uint32 vertexIndex) const
+float *MeshWrapper::attributeValue(const VertexAttributeType attributeType, const uint32 vertexIndex) const
 {
 	const uint16 offset = m_pMesh->attributes.at(attributeType).second;
 	return m_pMesh->pVertexData + m_pMesh->vertexStride * vertexIndex + offset;
@@ -105,6 +104,11 @@ Mesh *MeshWrapper::clone() const
 	}
 
 	return pNewMesh;
+}
+
+Mesh *MeshWrapper::targetMesh() const
+{
+	return m_pMesh;
 }
 
 void MeshWrapper::interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const

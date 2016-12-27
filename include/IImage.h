@@ -3,9 +3,9 @@
 
 #include "IResource.h"
 
-struct Raster;
-
 namespace FreeWorldEngine {
+
+struct Raster;
 
 class IImage : public IResource {
 public:

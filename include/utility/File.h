@@ -3,23 +3,32 @@
 
 #include <string>
 
-#include "UtilitySettings.h"
+#include "utility/UtilitySettings.h"
+#include "Types.h"
 
 namespace FreeWorldEngine {
+
+namespace Utility {
 
 struct FilePrivate;
 class UTILITY_DLL File {
 public:
+	enum OpenMode { OpenMode_ReadOnly, OpenMode_WriteOnly, OpenMode_Append };
+
 	File(const std::string& filename = "");
 	~File();
 
 	std::string filename() const;
 	void setFilename(const std::string& filename);
 
-	enum OpenMode { OpenMode_BinaryReadOnly, OpenMode_BinaryWriteOnly, OpenMode_BinaryAppend, OpenMode_TextReadOnly, OpenMode_TextWriteOnly, OpenMode_TextAppend };
-	bool open(const OpenMode openMode);
-	void close();
+	bool open(const OpenMode openMode) const;
+	void close() const;
 	bool isOpened() const;
+
+	int64 size() const;
+	int64 readAll(const int64 maxLength, void *pData) const;
+	int64 readData(const int64 length, void *pData, const int64 offset = 0) const;
+	void writeData(const int64 length, void *pData, const int64 offset = 0);
 
 	std::string fileExtension() const;
 	std::string filePath() const;
@@ -30,6 +39,7 @@ private:
 
 }; // class File
 
+} // namespace
 } // namespace
 
 #endif // __FILE_H__

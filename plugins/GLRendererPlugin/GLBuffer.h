@@ -1,7 +1,7 @@
 #ifndef __GLBUFFER__
 #define __GLBUFFER__
 
-#include <glew-1.13.0/include/GL/glew.h>
+#include <3rdparty/glew/glew.h>
 
 #include <renderer/IGPUBuffer.h>
 

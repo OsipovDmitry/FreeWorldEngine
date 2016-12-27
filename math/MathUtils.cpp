@@ -1,4 +1,4 @@
-#include <glm/geometric.hpp>
+#include <3rdparty/glm/geometric.hpp>
 
 #include <math/MathUtils.h>
 #include <math/MeshWrapper.h>
@@ -51,11 +51,11 @@ Aabb buldAabb(Mesh *pMesh)
 	if (pMesh->numVertices == 0)
 		return Aabb(glm::vec3(), glm::vec3());
 
-	float *pVertex = mesh.attributeValue(AttributeType_Position, 0);
+	float *pVertex = mesh.attributeValue(VertexAttributeType_Position, 0);
 	glm::vec3 vMin(pVertex[0], pVertex[1], pVertex[2]), vMax(pVertex[0], pVertex[1], pVertex[2]);
 
 	for (uint32 i = 1; i < pMesh->numVertices; ++i) {
-		pVertex = mesh.attributeValue(AttributeType_Position, i);
+		pVertex = mesh.attributeValue(VertexAttributeType_Position, i);
 		
 		if (pVertex[0] < vMin.x) vMin.x = pVertex[0];
 		else if (pVertex[0] > vMax.x) vMax.x = pVertex[0];

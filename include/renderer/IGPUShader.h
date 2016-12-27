@@ -1,19 +1,21 @@
 #ifndef __IGPUSHADER__
 #define __IGPUSHADER__
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat2x2.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/mat4x4.hpp>
+#include <3rdparty/glm/vec2.hpp>
+#include <3rdparty/glm/vec3.hpp>
+#include <3rdparty/glm/vec4.hpp>
+#include <3rdparty/glm/mat2x2.hpp>
+#include <3rdparty/glm/mat3x3.hpp>
+#include <3rdparty/glm/mat4x4.hpp>
 
 #include <string>
 #include "Types.h"
 
 namespace FreeWorldEngine {
 
+namespace Utility {
 class File;
+}
 
 class IGPUShader {
 public:
@@ -29,7 +31,7 @@ public:
     virtual IGPUShaderType type() const = 0;
 
     virtual void loadFromData(const std::string& data) = 0;
-    virtual void loadFromFile(const File& file) = 0;
+    virtual void loadFromFile(const Utility::File& file) = 0;
 
     virtual bool compile(std::string *pLogString = 0) const = 0;
 

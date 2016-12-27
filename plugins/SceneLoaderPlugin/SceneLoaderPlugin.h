@@ -5,6 +5,8 @@
 
 namespace FreeWorldEngine {
 
+class ISceneLoader;
+
 class SceneLoaderPlugin : public IPlugin {
 public:
 	SceneLoaderPlugin();
@@ -16,6 +18,7 @@ public:
 	void deinitialize() const;
 
 private:
+	static ISceneLoader *pSceneLoader;
 
 }; // class SceneLoaderPlugin
 

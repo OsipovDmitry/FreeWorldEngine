@@ -11,14 +11,16 @@ class IPluginManager;
 class IWindowManager;
 class IPhysicsManager;
 class IImageLoader;
-class ISceneModelManager;
+class ISceneLoader;
 class IWindow;
 class ILogger;
-class ICamera;
-class IRenderSystem;
 class IGPURenderer;
 class ILibraryManager;
 class IThreadManager;
+
+namespace GraphicsEngine {
+	class IGraphicsEngine;
+}
 
 class ICore {
 public:
@@ -32,10 +34,7 @@ public:
 	virtual void destroyResourceManager(const std::string& resourceManagerName) = 0;
 
 	virtual ILibraryManager *libraryManager() const = 0;
-
 	virtual IPluginManager *pluginManager() const = 0;
-
-	virtual void setThreadManager(IThreadManager* const pThreadManager) = 0;
 	virtual IThreadManager *threadManager() const = 0;
 
 	virtual void setWindowManager(IWindowManager* const pWindowManager) = 0;
@@ -43,15 +42,19 @@ public:
 
 	virtual void setImageLoader(IImageLoader* const pImageLoader) = 0;
 	virtual IImageLoader *imageLoader() const = 0;
+
+	virtual void setSceneLoader(ISceneLoader* const pSceneLoader) = 0;
+	virtual ISceneLoader *sceneLoader() const = 0;
 	
 	virtual IPhysicsManager *physicsManager() const = 0;
-	virtual ISceneModelManager *sceneModelManager() const = 0;
 
 	virtual IGPURenderer *renderer() const = 0;
 	virtual void setRenderer(IGPURenderer *pGPURenderer) = 0;
 
+	virtual GraphicsEngine::IGraphicsEngine *graphicsEngine() const = 0;
+	virtual void setGraphicsEngine(GraphicsEngine::IGraphicsEngine *pGraphicsEngine) = 0;
+
 	virtual IWindow *mainWindow() const = 0;
-	virtual ICamera *mainCamera() const = 0;
 
 	virtual ILogger *logger() = 0;
 

@@ -30,6 +30,11 @@ void RasterWrapper::setTargetRaster(Raster *pTargetRaster)
 	m_pRaster = pTargetRaster;
 }
 
+Raster *RasterWrapper::targetRaster() const
+{
+	return m_pRaster;
+}
+
 void RasterWrapper::destroyTargetRaster()
 {
 	if (!m_pRaster)
@@ -54,6 +59,49 @@ Raster *RasterWrapper::clone() const
 	return pNewRaster;
 }
 
+void RasterWrapper::setSize(const uint32 width, const uint32 height, const uint32 depth)
+{
+	m_pRaster->size[0] = width;
+	m_pRaster->size[1] = height;
+	m_pRaster->size[2] = depth;
+}
+
+void RasterWrapper::size(uint32& width, uint32& height, uint32& depth) const
+{
+	width = m_pRaster->size[0];
+	height = m_pRaster->size[1];
+	depth = m_pRaster->size[2];
+}
+
+void RasterWrapper::setNumComponents(const uint32 count)
+{
+	m_pRaster->numComponents = count;
+}
+
+uint32 RasterWrapper::numComponents() const
+{
+	return m_pRaster->numComponents;
+}
+
+void RasterWrapper::setDataType(const Type type)
+{
+	m_pRaster->type = type;
+}
+
+Type RasterWrapper::type() const
+{
+	return m_pRaster->type;
+}
+
+void RasterWrapper::setDataPointer(void *pData)
+{
+	m_pRaster->pData = pData;
+}
+
+void *RasterWrapper::dataPointer() const
+{
+	return m_pRaster->pData;
+}
 
 } // namespace
 

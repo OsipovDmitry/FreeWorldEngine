@@ -1,5 +1,4 @@
-include_directories(../3rdparty/include)
-include_directories(../include/utility)
+include_directories(../include)
 
 set(HEADERS ../include/utility/UtilitySettings.h
 			../include/utility/XML.h

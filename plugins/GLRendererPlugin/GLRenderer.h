@@ -1,7 +1,7 @@
 #ifndef __GLRENDERER__
 #define __GLRENDERER__
 
-#include <glew-1.13.0/include/GL/glew.h>
+#include <3rdparty/glew/glew.h>
 
 #include "renderer/IGPURenderer.h"
 
@@ -53,7 +53,11 @@ public:
 	void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA);
 	void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA);
 
-	void tmp() const;
+	void setViewport(const uint32 x, const uint32 y, const uint32 width, const uint32 height);
+	void viewport(uint32& x, uint32& y, uint32& width, uint32& height) const;
+
+	void setDepthRange(const float near = 0.0f, const float far = 1.0f);
+	void depthRange(float& near, float& far) const;
 
 	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const;
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;

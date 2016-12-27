@@ -1,6 +1,8 @@
 #ifndef __IGPURENDERER__
 #define __IGPURENDERER__
 
+#include <math/MathTypes.h>
+
 #include "IGPUBuffer.h"
 #include "IGPUTexture.h"
 #include "IGPUBufferContainer.h"
@@ -84,7 +86,11 @@ public:
 	virtual void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA) = 0;
 	virtual void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA) = 0;
 
-	virtual void tmp() const = 0;
+	virtual void setViewport(const uint32 x, const uint32 y, const uint32 width, const uint32 height) = 0;
+	virtual void viewport(uint32& x, uint32& y, uint32& width, uint32& height) const = 0;
+
+	virtual void setDepthRange(const float near = 0.0f, const float far = 1.0f) = 0;
+	virtual void depthRange(float& near, float& far) const = 0;
 
 };
 

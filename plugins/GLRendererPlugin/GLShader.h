@@ -1,7 +1,7 @@
 #ifndef __GLSHADER__
 #define __GLSHADER__
 
-#include <glew-1.13.0/include/GL/glew.h>
+#include <3rdparty/glew/glew.h>
 
 #include "renderer/IGPUShader.h"
 
@@ -15,7 +15,7 @@ public:
     IGPUShaderType type() const;
 
     void loadFromData(const std::string& data);
-    void loadFromFile(const File& file);
+    void loadFromFile(const Utility::File& file);
 
     bool compile(std::string *pLogString = 0) const;
 
@@ -25,6 +25,8 @@ public:
 
 private:
     GLuint m_id;
+
+	void loadFromData(const char *pData);
 
 }; // class GLShader
 

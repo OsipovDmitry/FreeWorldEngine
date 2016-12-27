@@ -1,9 +1,11 @@
 #include <cstdlib>
 #include <algorithm>
 
-#include "File.h"
+#include <utility/File.h>
 
 namespace FreeWorldEngine {
+
+namespace Utility {
 
 struct FilePrivate {
 	std::string filename;
@@ -34,17 +36,14 @@ void File::setFilename(const std::string& filename)
 	m->filename = filename;
 }
 
-bool File::open(const File::OpenMode openMode)
+bool File::open(const File::OpenMode openMode) const
 {
 	std::string modeStr = "";
 
 	switch (openMode) {
-	case OpenMode_BinaryReadOnly: { modeStr = "rb"; break; }
-	case OpenMode_BinaryWriteOnly: { modeStr = "wb"; break; }
-	case OpenMode_BinaryAppend: { modeStr = "ab"; break; }
-	case OpenMode_TextReadOnly: { modeStr = "r"; break; }
-	case OpenMode_TextWriteOnly: { modeStr = "w"; break; }
-	case OpenMode_TextAppend: { modeStr = "a"; break; }
+	case OpenMode_ReadOnly: { modeStr = "rb"; break; }
+	case OpenMode_WriteOnly: { modeStr = "wb"; break; }
+	case OpenMode_Append: { modeStr = "ab"; break; }
 	default: break;
 	};
 
@@ -52,7 +51,7 @@ bool File::open(const File::OpenMode openMode)
 	return m->pHandle != 0;
 }
 
-void File::close()
+void File::close() const
 {
 	if (m->pHandle) {
 		fclose(m->pHandle);
@@ -63,6 +62,32 @@ void File::close()
 bool File::isOpened() const
 {
 	return m->pHandle != 0;
+}
+
+int64 File::size() const
+{
+	fseek(m->pHandle, 0, SEEK_END);
+	return ftell(m->pHandle);
+}
+
+int64 File::readAll(const int64 maxLength, void *pData) const
+{
+	int64 sz = size();
+	if (sz > maxLength)
+		sz = maxLength;
+	return readData(sz, pData);
+}
+
+int64 File::readData(const int64 length, void *pData, const int64 offset) const
+{
+	fseek(m->pHandle, offset, SEEK_SET);
+	return fread(pData, length, 1, m->pHandle) * length;
+}
+
+void File::writeData(const int64 length, void *pData, const int64 offset)
+{
+	fseek(m->pHandle, offset, SEEK_SET);
+	fwrite(pData, length, 1, m->pHandle);
 }
 
 std::string File::fileExtension() const
@@ -97,4 +122,5 @@ std::string File::fileShortName() const
 		return (slashPos >= dotPos) ? "" : m->filename.substr(slashPos+1, dotPos-slashPos-1);
 }
 
+} // namesapce
 } // namespace

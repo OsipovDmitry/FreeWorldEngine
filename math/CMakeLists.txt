@@ -1,4 +1,3 @@
-include_directories(../3rdparty)
 include_directories(../include)
 
 set(HEADERS

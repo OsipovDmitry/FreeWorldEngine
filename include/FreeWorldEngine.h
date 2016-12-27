@@ -18,8 +18,12 @@
 #include "IImage.h"
 #include "ISceneLoader.h"
 #include "IScene.h"
+
 #include "renderer/IGPURenderer.h"
 
+#include "graphics_engine/IGraphicsEngine.h"
+
+#include "Types.h"
 #include "CoreSettings.h"
 
 namespace FreeWorldEngine {

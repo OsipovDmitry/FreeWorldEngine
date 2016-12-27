@@ -1,7 +1,7 @@
 #ifndef __GLTEXTURE__
 #define __GLTEXTURE__
 
-#include <glew-1.13.0/include/GL/glew.h>
+#include <3rdparty/glew/glew.h>
 
 #include <renderer/IGPUTexture.h>
 

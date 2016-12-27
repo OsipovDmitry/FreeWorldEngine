@@ -317,12 +317,34 @@ void GLRenderer::setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDs
 		m_cachedBlendADst = funcDstA;
 		glBlendFuncSeparate(GLBlendFunc(funcSrcRGB), GLBlendFunc(funcDstRGB), GLBlendFunc(funcSrcA), GLBlendFunc(funcDstA));
 	}
-
 }
 
-void GLRenderer::tmp() const
+void GLRenderer::setViewport(const uint32 x, const uint32 y, const uint32 width, const uint32 height)
 {
-	glViewport(0,0,500,500);
+	glViewport(x, y, width, height);
+}
+
+void GLRenderer::viewport(uint32& x, uint32& y, uint32& width, uint32& height) const
+{
+	GLint vp[4];
+	glGetIntegerv(GL_VIEWPORT, vp);
+	x = vp[0];
+	y = vp[1];
+	width = vp[2];
+	height = vp[3];
+}
+
+void GLRenderer::setDepthRange(const float near, const float far)
+{
+	glDepthRange(near, far);
+}
+
+void GLRenderer::depthRange(float& near, float& far) const
+{
+	float dr[2];
+	glGetFloatv(GL_DEPTH_RANGE, dr);
+	near = dr[0];
+	far = dr[1];
 }
 
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const

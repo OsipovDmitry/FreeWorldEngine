@@ -1,6 +1,8 @@
 #include <FreeWorldEngine.h>
 
 #include <utility/File.h>
+#include <math/MathTypes.h>
+#include <math/RasterWrapper.h>
 
 #include "Image.h"
 #include "ImageLoader.h"
@@ -48,15 +50,13 @@ IImage *ImageLoader::loadImage(const std::string& filename)
 		return 0;
 	}
 
-    Raster *pRaster = new Raster;
-    pRaster->size[0] = imageWidth;
-    pRaster->size[1] = imageHeight;
-    pRaster->size[2] = imageDepth;
-    pRaster->numComponents = imageNumComponents;
-    pRaster->type = imageType;
-    pRaster->pData = imageData;
+    Math::RasterWrapper raster(new Raster);
+	raster.setSize(imageWidth, imageHeight, imageDepth);
+	raster.setNumComponents(imageNumComponents);
+	raster.setDataType(imageType);
+	raster.setDataPointer(imageData);
 
-    pImage = new Image(filename, pRaster);
+	pImage = new Image(filename, raster.targetRaster());
 	m_pResourceManager->addResource(pImage);
 	return pImage;
 }

@@ -1,8 +1,8 @@
 #ifndef __MATHUTILS__
 #define __MATHUTILS__
 
-#include "../Types.h"
-#include "MathTypes.h"
+#include <Types.h>
+#include <math/MathTypes.h>
 
 struct Mesh;
 

@@ -7,7 +7,7 @@ namespace FreeWorldEngine {
 
 Image::Image(const std::string& name, Raster *pRaster) :
 	m_name(name),
-    m_pRaster(pRaster ? pRaster : new Raster())
+    m_pRaster(pRaster ? pRaster : new Raster)
 {
 }
 

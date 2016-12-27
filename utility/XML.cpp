@@ -2,8 +2,8 @@
 #include <fstream>
 #include <vector>
 
-#include "XML.h"
-#include "rapidxml/rapidxml.hpp"
+#include <utility/XML.h>
+#include <3rdparty/rapidxml/rapidxml.hpp>
 
 namespace FreeWorldEngine {
 using namespace rapidxml;

@@ -7,7 +7,7 @@ namespace FreeWorldEngine {
 
 class IResource {
 public:
-	virtual ~IResource() = 0 {}
+	virtual ~IResource() {}
 	virtual std::string name() const = 0;
 
 }; // class IResource

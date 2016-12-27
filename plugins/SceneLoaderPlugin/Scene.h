@@ -1,26 +1,24 @@
-#ifndef __SCENE__
-#define __SCENE__
+#ifndef __SCENECONTAINER__
+#define __SCENECONTAINER__
 
 #include <IScene.h>
 
 namespace FreeWorldEngine {
 
-class Scene : public IScene {
+class SceneContainer : public IScene {
 public:
-	Scene();
-	~Scene();
+	SceneContainer(const std::string& name, Scene *pScene);
+	~SceneContainer();
 
-	Node *rootNode() const;
-	const MeshList& meshes() const;
-	const MaterialList& materials() const;
+	std::string name() const;
+	//const Scene *scene() const;
 
 private:
-	MeshList m_meshes;
-	MaterialList m_materials;
-	Node *m_pRootNode;
+	std::string m_name;
+	Scene *m_pScene;
 
-}; // class IScene
+}; // class SceneContainer
 
 } // namespace
 
-#endif // __SCENE__
+#endif // __SCENECONTAINER__

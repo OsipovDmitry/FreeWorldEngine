@@ -1,6 +1,6 @@
 #include <FreeWorldEngine.h>
 using namespace FreeWorldEngine;
-#include <glm/gtc/matrix_transform.hpp>
+#include <3rdparty/glm/gtc/matrix_transform.hpp>
 
 float vertices[] = {-1.0f, -1.0f, 0.0f,
 					1.0f, -1.0f, 0.0f,
@@ -47,8 +47,8 @@ std::string fShaderPost =
 "{\n"\
 "	float zMin, zMax;\n"\
 "	zMin = zMax = texture(texDepth, gl_FragCoord.xy).r;\n"\
-"	for (int x = -2; x <=2; ++x)\n"\
-"		for (int y = -2; y <= 2; ++y) {\n"\
+"	for (int x = -1; x <= 1; ++x)\n"\
+"		for (int y = -1; y <= 1; ++y) {\n"\
 "			float zVal = texture(texDepth, gl_FragCoord.xy+vec2(x,y)).r;\n"\
 "			if (zVal < zMin) zMin = zVal;\n"\
 "			else if (zVal > zMax) zMax = zVal;\n"\
@@ -68,6 +68,10 @@ IGPUTexture *pTexturePost;
 IGPUTexture *pDepthTexPost;
 
 void render() {
+	int w = getCoreEngine()->mainWindow()->width();
+	int h = getCoreEngine()->mainWindow()->height();
+
+	getCoreEngine()->renderer()->setViewport(0,0,w,h);
 	getCoreEngine()->renderer()->enableDepthTest();
 	getCoreEngine()->renderer()->setFrameBuffer(pFrameBuffer, 1);
 	pFrameBuffer->clearDepthBuffer();
@@ -75,13 +79,14 @@ void render() {
 
 	glm::mat4 vpMatrix;
 	static float angle = 0.0f;
-	vpMatrix = glm::perspective(45.0f, 1.0f, 3.0f, 7.0f) * glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -5.0f)) * glm::rotate(glm::mat4(), angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	vpMatrix = glm::perspective(45.0f, (float)w/(float)h, 3.0f, 7.0f) * glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -5.0f)) * glm::rotate(glm::mat4(), angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	angle += 0.01f;
 	pProgram->setUniform(pProgram->uniformLocationByName("viewProjMatrix"), vpMatrix);
 
 	getCoreEngine()->renderer()->setTexture(0, pTexture);
 	getCoreEngine()->renderer()->renderIndexedGeometry(pProgram, pBCont, PrimitiveFormat_TriangleStrip, TYPE_UNSIGNED_INT_32, 4, 0);
 	
+	getCoreEngine()->renderer()->setViewport(0,0,w,h);
 	getCoreEngine()->renderer()->disableDepthTest();
 	getCoreEngine()->renderer()->setFrameBuffer(0);
 	getCoreEngine()->renderer()->setTexture(0, pTexturePost);
@@ -95,6 +100,8 @@ int main() {
 	p->initialize();
 
 	p->logger()->printMessage("Debug, Hello!", ILogger::MessageType_Debug);
+
+	IScene *pScene = p->sceneLoader()->loadScene("t90.3ds");
 
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow)
@@ -146,7 +153,7 @@ int main() {
 	pTexture = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->raster()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pTexture->setSubData(offs, pImg->raster()->size, TextureFormat::ChannelsCount_3, pImg->raster()->type, pImg->raster()->pData);
 
-	uint32 texsize[2] = {500,500};
+	uint32 texsize[2] = {getCoreEngine()->mainWindow()->width(), getCoreEngine()->mainWindow()->height()};
 	pTexturePost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pDepthTexPost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_SpecialDepth, TextureFormat::ChannelSize_32, TextureFormat::ChannelsCount_1));
 
@@ -167,8 +174,6 @@ int main() {
 	pFrameBuffer = p->renderer()->createFrameBuffer();
 	pFrameBuffer->attachColorBuffer(0, pTexturePost);
 	pFrameBuffer->attachDepthBuffer(pDepthTexPost);
-
-	getCoreEngine()->renderer()->tmp();
 
 	p->windowManager()->mainLoop();
 	p->deinitialize();

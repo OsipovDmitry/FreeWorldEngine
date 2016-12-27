@@ -52,7 +52,7 @@ void BspTree::build(Mesh *pSourceMesh, const float eps)
 
 	// проверяем, что тип примитивов меша PrimitiveFormat_Trangles и имеется атрибут AttributeType_Position
 	if (pSourceMesh->primitiveFormat != PrimitiveFormat_Trangles ||
-		pSourceMesh->attributes.find(AttributeType_Position) == pSourceMesh->attributes.end() ||
+		pSourceMesh->attributes.find(VertexAttributeType_Position) == pSourceMesh->attributes.end() ||
 		pSourceMesh->numIndices < 3)
 		return;
 
@@ -69,9 +69,9 @@ Plane BspTree::calcSeparatingPlane(const std::vector<uint32>& indices) const
 	// пока что выбирается плоскость построенная по первому треугольнику. Анализа пока нет.
 	MeshWrapper mesh(m_pDestMesh);
 	return buildPlane(
-		*((glm::vec3*)mesh.attributeValue(AttributeType_Position, indices.at(0))),
-		*((glm::vec3*)mesh.attributeValue(AttributeType_Position, indices.at(1))), 
-		*((glm::vec3*)mesh.attributeValue(AttributeType_Position, indices.at(2))));
+		*((glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, indices.at(0))),
+		*((glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, indices.at(1))), 
+		*((glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, indices.at(2))));
 }
 
 BspNode *BspTree::buildNode(const std::vector<uint32>& indices, const float eps)
@@ -86,9 +86,9 @@ BspNode *BspTree::buildNode(const std::vector<uint32>& indices, const float eps)
 
 	for (uint32 i = 0; i < indices.size(); i += 3) {
 		uint32 idxs[3] = { indices.at(i+0), indices.at(i+1), indices.at(i+2) };
-		glm::vec3 *verts[3] = {(glm::vec3*)mesh.attributeValue(AttributeType_Position, idxs[0]),
-							   (glm::vec3*)mesh.attributeValue(AttributeType_Position, idxs[1]),
-							   (glm::vec3*)mesh.attributeValue(AttributeType_Position, idxs[2])};
+		glm::vec3 *verts[3] = {(glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[0]),
+							   (glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[1]),
+							   (glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[2])};
 		ClassifyPlane classifyResult = classifyPolygonRelativePlane(sepPlane, verts, 3, eps);
 		switch (classifyResult) {
 		case ClassifyPlane_Touch: { thisIndices.push_back(idxs[0]); thisIndices.push_back(idxs[1]); thisIndices.push_back(idxs[2]); break; }

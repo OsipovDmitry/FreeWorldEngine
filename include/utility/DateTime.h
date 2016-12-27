@@ -2,8 +2,8 @@
 #define __DATETIME__
 
 #include <string>
-#include "../Types.h"
 
+#include "Types.h"
 #include "UtilitySettings.h"
 
 namespace FreeWorldEngine {

@@ -1,6 +1,8 @@
 #ifndef __SCENELOADER__
 #define __SCENELOADER__
 
+#include <3rdparty/assimp/Importer.hpp>
+
 #include <ISceneLoader.h>
 
 namespace FreeWorldEngine {
@@ -14,10 +16,11 @@ public:
 	IScene *loadScene(const std::string& filename);
 	IScene *findScene(const std::string& name) const;
 	void destoryScene(const std::string& name);
-	void destoryScene(IScene *pImage);
+	void destoryScene(IScene *pScene);
 
 private:
 	IResourceManager *m_pResourceManager;
+	Assimp::Importer m_assimpImporter;
 
 };
 

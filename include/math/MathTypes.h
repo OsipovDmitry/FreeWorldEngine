@@ -1,8 +1,11 @@
 #ifndef __MATHTYPES__
 #define __MATHTYPES__
 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include <3rdparty/glm/vec3.hpp>
+#include <3rdparty/glm/vec4.hpp>
+#include <3rdparty/glm/mat4x4.hpp>
+
+#include <Types.h>
 
 namespace FreeWorldEngine {
 

@@ -1,6 +1,5 @@
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(../3rdparty/include)
 include_directories(../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
@@ -26,7 +25,7 @@ set(INTERFACE_HEADERS
     ../include/IResource.h
     ../include/IResourceManager.h
     ../include/IScene.h
-    ../include/ISceneModelLoader.h
+    ../include/ISceneLoader.h
     ../include/IThread.h
     ../include/IThreadManager.h
     ../include/IWindow.h
@@ -51,6 +50,8 @@ set(HEADERS
     TextFileLog.h
     PluginManager.h
     ResourceManager.h
+	Thread.h
+	ThreadManager.h
 )
 
 set(SOURCES
@@ -61,6 +62,8 @@ set(SOURCES
     TextFileLog.cpp
     PluginManager.cpp
     ResourceManager.cpp
+	Thread.cpp
+	ThreadManager.cpp
 )
 
 add_definitions(-DCORE_EXPORT)

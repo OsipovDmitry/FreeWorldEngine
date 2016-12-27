@@ -1,6 +1,5 @@
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 
-include_directories(../../3rdparty/include)
 include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
@@ -23,3 +22,4 @@ add_library(SceneLoaderPlugin SHARED ${INTERFACE_HEADERS} ${HEADERS} ${SOURCES})
 	
 target_link_libraries(SceneLoaderPlugin CoreEngine)
 target_link_libraries(SceneLoaderPlugin FWEMath)
+target_link_libraries(SceneLoaderPlugin assimp)

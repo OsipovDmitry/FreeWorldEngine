@@ -25,10 +25,7 @@ public:
 	void destroyResourceManager(const std::string& resourceManagerName);
 
 	ILibraryManager *libraryManager() const;
-
 	IPluginManager *pluginManager() const;
-
-	void setThreadManager(IThreadManager* const pThreadManager);
 	IThreadManager *threadManager() const;
 
 	void setWindowManager(IWindowManager* const pWindowManager);
@@ -36,15 +33,19 @@ public:
 
 	void setImageLoader(IImageLoader* const pImageLoader);
 	IImageLoader *imageLoader() const;
+
+	void setSceneLoader(ISceneLoader* const pSceneLoader);
+	ISceneLoader *sceneLoader() const;
 	
 	IPhysicsManager *physicsManager() const;
-	ISceneModelManager *sceneModelManager() const;
 
 	IGPURenderer *renderer() const;
 	void setRenderer(IGPURenderer *pGPURenderer);
 
+	GraphicsEngine::IGraphicsEngine *graphicsEngine() const;
+	void setGraphicsEngine(GraphicsEngine::IGraphicsEngine *pGraphicsEngine);
+
 	IWindow *mainWindow() const;
-	ICamera *mainCamera() const;
 
 	ILogger *logger();
 
@@ -58,14 +59,13 @@ private:
 	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;
 	IGPURenderer *m_pGPURenderer;
+	GraphicsEngine::IGraphicsEngine *m_pGraphicsEngine;
 	IImageLoader *m_pImageLoader;
+	ISceneLoader *m_pSceneLoader;
 
 	IPhysicsManager *m_pPhysicsManager;
-	ISceneModelManager *m_pSceneModelManager;
 
 	IWindow *m_pMainWindow;
-
-	ICamera *m_pMainCamera;
 
 }; // class Core
 

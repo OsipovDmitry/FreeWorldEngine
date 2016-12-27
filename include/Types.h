@@ -5,6 +5,9 @@
 #include <map> 
 #include <string>
 #include <vector>
+#include <3rdparty/glm/mat4x4.hpp>
+
+namespace FreeWorldEngine {
 
 typedef signed char            int8;
 typedef signed short int       int16;
@@ -48,28 +51,84 @@ enum PrimitiveFormat {
     PrimitiveFormat_TrangleFan
 }; //enum PrimitiveFormat
 
-enum AttributeType {
-	AttributeType_Position,
-	AttributeType_Tangent,
-	AttributeType_Binormal,
-	AttributeType_Normal,
-	AttributeType_TexCoord0,
-	AttributeType_TexCoord1,
-	AttributeType_TexCoord2,
-	AttributeType_TexCoord3,
+enum VertexAttributeType {
+	VertexAttributeType_Position,
+	VertexAttributeType_Tangent,
+	VertexAttributeType_Binormal,
+	VertexAttributeType_Normal,
+	VertexAttributeType_TexCoord0,
+	VertexAttributeType_TexCoord1,
+	VertexAttributeType_TexCoord2,
+	VertexAttributeType_TexCoord3,
 }; // enum AttributeType
 
 struct Mesh {
-
 	float *pVertexData; // массив с вершинными атрибутами. Размер = numVertices * vertexStride * sizeof(float)
 	uint32 *pIndexData; // массив с индексами. Размер = numIndices * sizeof(uint32)
 	uint32 numVertices; // количество вершин
 	uint32 numIndices; // количество индексов
 	PrimitiveFormat primitiveFormat; // тип примитивов
-	std::map<AttributeType, std::pair<uint16, uint16> > attributes; // отображение типа атрибута на пару (размер, смещение). Размер и смещение в штуках float
+	std::map<VertexAttributeType, std::pair<uint16, uint16> > attributes; // отображение типа атрибута на пару (размер, смещение). Размер и смещение в штуках float
 	uint16 vertexStride; // размер одной вершины в штуках float
 
 	Mesh() : pVertexData(0), pIndexData(0), numVertices(0), numIndices(0), primitiveFormat(PrimitiveFormat_Trangles), attributes(), vertexStride(0) {}
 }; // struct Mesh
+
+struct Material {
+	std::string ambientMap;
+	std::string diffuseMap;
+	std::string specularMap;
+	std::string emissionMap;
+	std::string heightMap;
+	std::string normalMap;
+	std::string shininessMap;
+	std::string opacityMap;
+
+	uint8 ambientColor[4]; // глобальный
+	uint8 diffuseColor[4]; // поглощенный
+	uint8 specularColor[4]; // отраженный
+	uint8 emissionColor[4]; // свечение
+	float shininess; // степень бликов
+	float opacity; // степень прозрачности
+
+	enum BlendMode { BlendMode_Off, BlendMode_Default, BlendMode_Additive };
+	BlendMode blendMode; // смешивание
+
+	bool isTwoSided; // двусторонний
+
+}; // struct Material
+
+struct Scene {
+
+	struct Material {
+		std::string name;
+		FreeWorldEngine::Material *pMaterialData;
+	};
+	typedef std::vector<Material*> MaterialList;
+
+	struct Mesh {
+		std::string name;
+		FreeWorldEngine::Mesh *pMeshData;
+		uint32 materialIndex;
+	};
+	typedef std::vector<Mesh*> MeshList;
+
+	struct Node {
+		std::string name;
+		std::vector<uint32> meshesIndices;
+		std::vector<Node*> childNodes;
+		Node *pParentNode;
+		glm::mat4x4 transform;
+	};
+
+	MaterialList materials;
+	MeshList meshes;
+	Node *rootNode;
+
+	Scene() : materials(), meshes(), rootNode(0) {}
+
+}; // struct Scene
+
+} // namespace
 
 #endif // __TYPES__

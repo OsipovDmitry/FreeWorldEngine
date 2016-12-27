@@ -1,4 +1,6 @@
-#include <glm/gtc/type_ptr.hpp>
+#include <3rdparty/glm/gtc/type_ptr.hpp>
+
+#include <utility/File.h>
 
 #include "GLShader.h"
 #include "GLRenderer.h"
@@ -29,13 +31,18 @@ IGPUShader::IGPUShaderType GLShader::type() const
 
 void GLShader::loadFromData(const std::string &data)
 {
-	const char *p = data.c_str();
-	glShaderSource(m_id, 1, &p, 0);
+	loadFromData(data.c_str());
 }
 
-void GLShader::loadFromFile(const File &file)
+void GLShader::loadFromFile(const Utility::File &file)
 {
-
+	file.open(Utility::File::OpenMode_ReadOnly);
+	int64 sz = file.size();
+	char *p = new char [sz+1];
+	file.readAll(sz, p);
+	p[sz] = 0;
+	loadFromData(p);
+	delete [] p;
 }
 
 bool GLShader::compile(std::string *pLogString) const
@@ -74,6 +81,11 @@ GLenum GLShader::GLtype(const IGPUShaderType type)
 	case IGPUShader::IGPUShaderType_Fragment: return GL_FRAGMENT_SHADER;
 	}
 	return 0;
+}
+
+void GLShader::loadFromData(const char *pData)
+{
+	glShaderSource(m_id, 1, &pData, 0);
 }
 
 GLProgram::GLProgram(const GLuint id) :
