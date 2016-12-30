@@ -31,6 +31,10 @@ bool GraphicsEnginePlugin::initialize() const
 	if (!pCore)
 		return false;
 
+	pGPURenderer = pCore->renderer();
+	if (!pGPURenderer)
+		return false;
+
 	if (!pGraphicsEngine)
 		pGraphicsEngine = new GraphicsEngine();
 
@@ -48,6 +52,8 @@ void GraphicsEnginePlugin::deinitialize() const
 
 	delete pGraphicsEngine;
 	pGraphicsEngine = 0;
+
+	pGPURenderer = 0;
 }
 
 } // namespace

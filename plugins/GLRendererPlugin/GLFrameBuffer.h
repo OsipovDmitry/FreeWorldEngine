@@ -7,6 +7,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 class GLRenderBuffer : public IGPURenderBuffer {
 public:
 	GLRenderBuffer(const GLuint id);
@@ -47,6 +49,8 @@ private:
 	void attachTexture(GLenum attachment, const IGPUTexture *pTexture, const uint32 layer);
 
 }; // class GLFrameBuffer
+
+} // namespace
 
 } // namespace
 

@@ -2,7 +2,7 @@
 #define __LOGGERPLUGIN__
 
 #include <list>
-#include "IPlugin.h"
+#include <IPlugin.h>
 
 namespace FreeWorldEngine {
 

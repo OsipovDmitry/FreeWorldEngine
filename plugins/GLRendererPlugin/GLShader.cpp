@@ -7,6 +7,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLShader::GLShader(const GLuint id) :
 	m_id(id)
 {
@@ -225,10 +227,60 @@ void GLProgram::setUniform(const int32 location, const glm::mat4& value, const b
 	glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(value));
 }
 
+int32 GLProgram::uniformBlockIndexByName(const std::string& name) const
+{
+	return glGetUniformBlockIndex(m_id, name.c_str());
+}
+
+IGPUProgram::UniformBlockInfo GLProgram::uniformBlockInfo(const int32 index, const bool writeNames) const
+{
+	IGPUProgram::UniformBlockInfo info;
+	GLint len;
+
+	info.index = index;
+
+	glGetActiveUniformBlockiv(m_id, index, GL_UNIFORM_BLOCK_NAME_LENGTH, &len);
+	info.name.resize(len+1);
+	glGetActiveUniformBlockName(m_id, index, len+1, 0, (GLchar*)info.name.data());
+
+	glGetActiveUniformBlockiv(m_id, index, GL_UNIFORM_BLOCK_DATA_SIZE, (GLint*)&(info.dataSize));
+
+	glGetActiveUniformBlockiv(m_id, index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, (GLint*)&(info.numUniforms));
+
+	info.uniformsIndices.resize(info.numUniforms);
+	glGetActiveUniformBlockiv(m_id, index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, info.uniformsIndices.data());
+
+	info.uniformsOffsets.resize(info.numUniforms);
+	glGetActiveUniformsiv(m_id, info.numUniforms, (GLuint*)info.uniformsIndices.data(), GL_UNIFORM_OFFSET, info.uniformsOffsets.data());
+
+	info.uniformsSizes.resize(info.numUniforms);
+	glGetActiveUniformsiv(m_id, info.numUniforms, (GLuint*)info.uniformsIndices.data(), GL_UNIFORM_SIZE, info.uniformsSizes.data());
+
+	if (writeNames) {
+		info.uniformsNames.resize(info.numUniforms);
+		std::vector<int32> nameLengths(info.numUniforms);
+		glGetActiveUniformsiv(m_id, info.numUniforms, (GLuint*)info.uniformsIndices.data(), GL_UNIFORM_NAME_LENGTH, nameLengths.data());
+
+		for (uint32 i = 0; i < info.numUniforms; ++i) {
+			info.uniformsNames[i].resize(nameLengths[i]+1);
+			glGetActiveUniformName(m_id, info.uniformsIndices[i], nameLengths[i]+1, 0, (GLchar*)info.uniformsNames[i].data());
+		}
+	}
+
+	return info;
+}
+
+void GLProgram::setUniformBlockBindingPoint(const int32 index, const uint32 bindingPoint) const
+{
+	glUniformBlockBinding(m_id, index, bindingPoint);
+}
+
 GLuint GLProgram::GLid() const
 {
     return m_id;
 }
 
+
+} // namespace
 
 } // namespace

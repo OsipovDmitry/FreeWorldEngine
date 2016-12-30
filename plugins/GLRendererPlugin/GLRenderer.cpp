@@ -7,6 +7,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLRenderer *pGLRenderer = 0;
 
 GLRenderer::GLRenderer()
@@ -135,7 +137,7 @@ void GLRenderer::destroyTexture(IGPUTexture *pTexture)
 	delete pTexture;
 }
 
-void GLRenderer::setTexture(const uint32 slot, const IGPUTexture *pTexture) const
+void GLRenderer::setTexture(const IGPUTexture *pTexture, const uint32 slot) const
 {
 	bindTexture(static_cast<const GLTexture*>(pTexture), slot);
 }
@@ -347,7 +349,7 @@ void GLRenderer::depthRange(float& near, float& far) const
 	far = dr[1];
 }
 
-void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const
+void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint) const
 {
 	int32 cacheIdx = -1;
 	switch (GLTarget) {
@@ -359,7 +361,7 @@ void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const
 	case GL_PIXEL_UNPACK_BUFFER: { cacheIdx = 5; break; }
 	case GL_TEXTURE_BUFFER: { cacheIdx = 6; break; }
 	case GL_TRANSFORM_FEEDBACK_BUFFER: { cacheIdx = 7; break; }
-	case GL_UNIFORM_BUFFER: { cacheIdx = 8; break; }
+	case GL_UNIFORM_BUFFER: { cacheIdx = 8 + bindingPoint; break; }
 	default: break;
 	}
 
@@ -368,7 +370,12 @@ void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const
 			return;
 		m_cachedBuffers[cacheIdx] = pBuffer;
 	}
-	glBindBuffer(GLTarget, pBuffer ? pBuffer->GLid() : 0);
+
+	GLuint id = pBuffer ? pBuffer->GLid() : 0;
+	switch (GLTarget) {
+	case GL_UNIFORM_BUFFER: { glBindBufferBase(GLTarget, bindingPoint, id); break; }
+	default: { glBindBuffer(GLTarget, id); break; }
+	}
 }
 
 void GLRenderer::bindBufferContainer(const GLBufferContainer *pBufferContainer) const
@@ -487,5 +494,7 @@ GLenum GLRenderer::GLBlendEquation(BlendEquation func)
 	}
 	return 0;
 }
+
+} // namespace
 
 } // namespace

@@ -3,6 +3,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLBuffer::GLBuffer(const GLuint id) :
 	m_id(id)
 {
@@ -100,5 +102,7 @@ GLenum GLBuffer::toGLUsage(IGPUBufferUsage usage)
 	default: return 0;
 	}
 }
+
+} // namespace
 
 } // namespace

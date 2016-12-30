@@ -1,6 +1,7 @@
 #include <FreeWorldEngine.h>
 
 #include "GraphicsEngine.h"
+#include "ShaderManager.h"
 #include "GraphicsModel.h"
 #include "GraphicsMaterial.h"
 #include "GraphicsScene.h"
@@ -9,9 +10,12 @@ namespace FreeWorldEngine {
 
 namespace GraphicsEngine {
 
-GraphicsEngine *pGraphicsEngine;
+GraphicsEngine *pGraphicsEngine = 0;
+Renderer::IGPURenderer *pGPURenderer = 0;
 
 GraphicsEngine::GraphicsEngine() :
+	m_pShaderManager(new ShaderManager),
+	m_pProgramManager(new ProgramManager),
 	m_pModelManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsModels")),
 	m_pMaterialManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsMaterials")),
 	m_pSceneManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsScenes"))
@@ -24,6 +28,8 @@ GraphicsEngine::~GraphicsEngine()
 	getCoreEngine()->destroyResourceManager(m_pSceneManager);
 	getCoreEngine()->destroyResourceManager(m_pModelManager);
 	getCoreEngine()->destroyResourceManager(m_pMaterialManager);
+	delete m_pShaderManager;
+	delete m_pProgramManager;
 }
 
 IGraphicsModel *GraphicsEngine::findModel(const std::string& name) const
@@ -87,6 +93,16 @@ IGraphicsScene *GraphicsEngine::createScene(const std::string& name)
 void GraphicsEngine::destroyScene(const std::string& name)
 {
 	m_pSceneManager->destroyResource(name);
+}
+
+ShaderManager *GraphicsEngine::shaderManager() const
+{
+	return m_pShaderManager;
+}
+
+ProgramManager *GraphicsEngine::programManager() const
+{
+	return m_pProgramManager;
 }
 
 

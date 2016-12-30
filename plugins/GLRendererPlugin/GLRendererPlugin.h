@@ -5,6 +5,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 class GLRendererPlugin : public IPlugin {
 public:
 	GLRendererPlugin();
@@ -16,6 +18,8 @@ public:
 	void deinitialize() const;
 
 }; // class GLRendererPlugin
+
+} // namespace
 
 } // namespace
 

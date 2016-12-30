@@ -6,6 +6,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 class GLBufferContainer : public IGPUBufferContainer {
 public:
 	GLBufferContainer(const GLuint id);
@@ -23,6 +25,8 @@ private:
 	GLuint m_id;
 
 }; // class GLVertexArrayObject
+
+} // namespace
 
 } // namespace
 

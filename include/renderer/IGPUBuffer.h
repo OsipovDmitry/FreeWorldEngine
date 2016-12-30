@@ -1,9 +1,11 @@
 #ifndef __IGPUBUFFER__
 #define __IGPUBUFFER__
 
-#include "Types.h"
+#include <Types.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class IGPUBuffer {
 public:
@@ -33,6 +35,8 @@ public:
 	virtual bool unmap() = 0;
 
 }; // class IGPUBuffer
+
+} // namespace
 
 } // namespace
 

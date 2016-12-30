@@ -2,10 +2,11 @@
 #define __GLTEXTURE__
 
 #include <3rdparty/glew/glew.h>
-
 #include <renderer/IGPUTexture.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class GLTexture : public IGPUTexture {
 public:
@@ -33,6 +34,8 @@ private:
 	IGPUTextureType m_type;
 
 }; // class GLTexture
+
+} /// namespace
 
 } // namespace
 

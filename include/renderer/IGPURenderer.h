@@ -3,13 +3,15 @@
 
 #include <math/MathTypes.h>
 
-#include "IGPUBuffer.h"
-#include "IGPUTexture.h"
-#include "IGPUBufferContainer.h"
-#include "IGPUShader.h"
-#include "IGPUFrameBuffer.h"
+#include <renderer/IGPUBuffer.h>
+#include <renderer/IGPUTexture.h>
+#include <renderer/IGPUBufferContainer.h>
+#include <renderer/IGPUShader.h>
+#include <renderer/IGPUFrameBuffer.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class IGPURenderer {
 public:
@@ -59,7 +61,7 @@ public:
 
     virtual IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, const TextureFormat& internalFormat) = 0;
     virtual void destroyTexture(IGPUTexture *pTexture) = 0;
-	virtual void setTexture(const uint32 slot, const IGPUTexture *pTexture) const = 0;
+	virtual void setTexture(const IGPUTexture *pTexture, const uint32 slot) const = 0;
 
     virtual IGPUShader *createShader(IGPUShader::IGPUShaderType type) = 0;
     virtual void destroyShader(IGPUShader *pShader) = 0;
@@ -93,6 +95,8 @@ public:
 	virtual void depthRange(float& near, float& far) const = 0;
 
 };
+
+} // namespace
 
 } // namespace
 

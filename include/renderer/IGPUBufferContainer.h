@@ -5,6 +5,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 class IGPUBuffer;
 
 class IGPUBufferContainer {
@@ -19,6 +21,8 @@ public:
 	virtual void setIndexBuffer(const IGPUBuffer *pGPUBuffer) const = 0;
 
 }; // class IGPUBufferContainer
+
+} // namespace
 
 } // namespace
 

@@ -4,6 +4,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLRenderBuffer::GLRenderBuffer(const GLuint id) :
 	m_id(id)
 {
@@ -146,3 +148,5 @@ void GLFrameBuffer::attachTexture(GLenum attachment, const IGPUTexture *pTexture
 
 
 } // nemasace
+
+} // namespace

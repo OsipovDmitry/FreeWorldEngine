@@ -1,4 +1,3 @@
-#include "SDL2/include/SDL.h"
 #include "FreeWorldEngine.h"
 
 #include "WindowManagerPlugin.h"
@@ -23,7 +22,7 @@ std::string WindowManagerPlugin::name() const
 
 std::string WindowManagerPlugin::info() const
 {
-	return std::string("SDL2 Window Manager Plugin");
+	return std::string("Qt Window Manager Plugin");
 }
 
 bool WindowManagerPlugin::initialize() const
@@ -32,8 +31,7 @@ bool WindowManagerPlugin::initialize() const
 	if (!pCore)
 		return false;
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-		return false;
+	// init libs
 
 	if (!pWindowManager)
 		pWindowManager = new WindowManager();
@@ -53,7 +51,7 @@ void WindowManagerPlugin::deinitialize() const
 	delete pWindowManager;
 	pWindowManager = 0;
 
-	SDL_Quit();
+	// deinit libs
 }
 
 } // namespace

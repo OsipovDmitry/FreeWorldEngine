@@ -11,7 +11,7 @@ class IScene : public IResource {
 public:
 	virtual ~IScene() {}
 
-	//virtual const Scene *scene() const;
+	virtual const Scene *scene() const = 0;
 
 }; // class IScene
 

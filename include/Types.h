@@ -119,13 +119,15 @@ struct Scene {
 		std::vector<Node*> childNodes;
 		Node *pParentNode;
 		glm::mat4x4 transform;
+
+		Node(Node *parent = 0) : name(), meshesIndices(), childNodes(), pParentNode(parent), transform() {}
 	};
 
 	MaterialList materials;
 	MeshList meshes;
-	Node *rootNode;
+	Node *pRootNode;
 
-	Scene() : materials(), meshes(), rootNode(0) {}
+	Scene() : materials(), meshes(), pRootNode(0) {}
 
 }; // struct Scene
 

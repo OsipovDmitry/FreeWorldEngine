@@ -21,9 +21,9 @@ std::string SceneContainer::name() const
 	return m_name;
 }
 
-/*const Scene *SceneContainer::scene() const
+const Scene *SceneContainer::scene() const
 {
 	return m_pScene;
-}*/
+}
 
 } // namespace

@@ -1,9 +1,11 @@
 #ifndef __IGPUTEXTURE__
 #define __IGPUTEXTURE__
 
-#include "Types.h"
+#include <Types.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 struct TextureFormat {
 
@@ -71,6 +73,8 @@ public:
 	virtual void setBuffer(const IGPUBuffer* pBuffer) const = 0; // специально для IGPUTextureType_Buffer текстур
 
 };
+
+} // namespace
 
 } // namespace
 

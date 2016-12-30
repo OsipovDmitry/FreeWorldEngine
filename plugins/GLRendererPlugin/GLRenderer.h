@@ -2,10 +2,11 @@
 #define __GLRENDERER__
 
 #include <3rdparty/glew/glew.h>
-
-#include "renderer/IGPURenderer.h"
+#include <renderer/IGPURenderer.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class GLBuffer;
 class GLBufferContainer;
@@ -27,7 +28,7 @@ public:
 
     IGPUTexture *createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, const TextureFormat& internalFormat);
     void destroyTexture(IGPUTexture *pTexture);
-	void setTexture(const uint32 slot, const IGPUTexture *pTexture) const;
+	void setTexture(const IGPUTexture *pTexture, const uint32 slot) const;
 
     IGPUShader *createShader(IGPUShader::IGPUShaderType type);
     void destroyShader(IGPUShader *pShader);
@@ -59,7 +60,7 @@ public:
 	void setDepthRange(const float near = 0.0f, const float far = 1.0f);
 	void depthRange(float& near, float& far) const;
 
-	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget) const;
+	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint = 0) const;
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;
 	void bindTexture(const GLTexture *pTexture, uint32 unit) const;
     void bindProgram(const GLProgram *pProgram) const;
@@ -78,7 +79,7 @@ private:
 
 	mutable const GLBufferContainer *m_cachedBufferConatiner;
 
-	static const uint32 BUFFER_UNITS_COUNT = 10;
+	static const uint32 BUFFER_UNITS_COUNT = 18;
 	mutable const GLBuffer* m_cachedBuffers[BUFFER_UNITS_COUNT];
 
     mutable const GLProgram* m_cachedProgram;
@@ -98,6 +99,8 @@ private:
 
 extern GLRenderer *pGLRenderer;
 
-}
+} // namespace
+
+} // namespace
 
 #endif // __GLRENDERER__

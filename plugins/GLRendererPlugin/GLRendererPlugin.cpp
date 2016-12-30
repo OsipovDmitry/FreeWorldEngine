@@ -5,6 +5,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLRendererPlugin::GLRendererPlugin()
 {
 }
@@ -65,5 +67,7 @@ void GLRendererPlugin::deinitialize() const
 	delete pGLRenderer;
 	pGLRenderer = 0;
 }
+
+} // namespace
 
 } // namespace

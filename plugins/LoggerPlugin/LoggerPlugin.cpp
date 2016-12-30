@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "FreeWorldEngine.h"
-#include "utility/XML.h"
+#include <FreeWorldEngine.h>
+#include <utility/XML.h>
 
 #include "LoggerPlugin.h"
 #include "TerminalLog.h"

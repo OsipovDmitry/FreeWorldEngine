@@ -7,7 +7,7 @@ extern "C" {
 __declspec(dllexport) void startLibrary()
 {
 	if (!pPlugin)
-		pPlugin = new FreeWorldEngine::GLRendererPlugin();
+		pPlugin = new FreeWorldEngine::Renderer::GLRendererPlugin();
 }
 
 __declspec(dllexport) FreeWorldEngine::IPlugin *getLibrary()

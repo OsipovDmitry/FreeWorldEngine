@@ -7,7 +7,14 @@ namespace FreeWorldEngine {
 
 class IResourceManager;
 
+namespace Renderer {
+	class IGPURenderer;
+} // namespace
+
 namespace GraphicsEngine {
+
+class ShaderManager;
+class ProgramManager;
 
 class GraphicsEngine : public IGraphicsEngine {
 public:
@@ -26,12 +33,18 @@ public:
 	IGraphicsScene *createScene(const std::string& name);
 	void destroyScene(const std::string& name);
 
+	ShaderManager *shaderManager() const;
+	ProgramManager *programManager() const;
+
 private:
+	ShaderManager *m_pShaderManager;
+	ProgramManager *m_pProgramManager;
 	IResourceManager *m_pModelManager, *m_pMaterialManager, *m_pSceneManager;
 
 }; // class GraphicsEngine
 
 extern GraphicsEngine *pGraphicsEngine;
+extern Renderer::IGPURenderer *pGPURenderer;
 
 } // namespace
 

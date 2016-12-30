@@ -1,11 +1,12 @@
 #ifndef __IGPUFRAMBUFFER__
 #define __IGPUFRAMBUFFER__
 
+#include <Types.h>
 #include <renderer/IGPUTexture.h>
 
-#include "../Types.h"
-
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class IGPURenderBuffer {
 public:
@@ -32,6 +33,8 @@ public:
 	virtual void clearDepthBuffer(const float depth = 1.0f) = 0;
 
 }; // class IGPUFrameBuffer
+
+} // namespace
 
 } // namespace
 

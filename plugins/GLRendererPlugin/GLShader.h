@@ -2,10 +2,11 @@
 #define __GLSHADER__
 
 #include <3rdparty/glew/glew.h>
-
-#include "renderer/IGPUShader.h"
+#include <renderer/IGPUShader.h>
 
 namespace FreeWorldEngine {
+
+namespace Renderer {
 
 class GLShader : public IGPUShader {
 public:
@@ -43,6 +44,7 @@ public:
 
     int32 attributeLocationByName(const std::string& name) const;
     int32 uniformLocationByName(const std::string& name) const;
+	int32 uniformBlockIndexByName(const std::string& name) const;
 
 	void setUniform(const int32 location, const float value) const;
 	void setUniform(const int32 location, const int32 value) const;
@@ -60,12 +62,17 @@ public:
 	void setUniform(const int32 location, const glm::mat3& value, const bool transpose = false) const;
 	void setUniform(const int32 location, const glm::mat4& value, const bool transpose = false) const;
 
+	UniformBlockInfo uniformBlockInfo(const int32 index, const bool writeNames = true) const;
+	void setUniformBlockBindingPoint(const int32 index, const uint32 bindingPoint) const;
+
     GLuint GLid() const;
 
 private:
     GLuint m_id;
 
 }; // class GLProgram
+
+} // namespace
 
 } // namespace
 

@@ -11,7 +11,7 @@ public:
 	~SceneContainer();
 
 	std::string name() const;
-	//const Scene *scene() const;
+	const Scene *scene() const;
 
 private:
 	std::string m_name;

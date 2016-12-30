@@ -4,6 +4,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLBufferContainer::GLBufferContainer(const GLuint id) :
 	m_id(id)
 {
@@ -50,5 +52,7 @@ GLuint GLBufferContainer::id() const
 {
 	return m_id;
 }
+
+} // namespace
 
 } // namespace

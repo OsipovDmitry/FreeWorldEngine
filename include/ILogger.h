@@ -1,6 +1,8 @@
 #ifndef __ILOGGER__
 #define __ILOGGER__
 
+#include <string>
+
 namespace FreeWorldEngine {
 
 class ILog;

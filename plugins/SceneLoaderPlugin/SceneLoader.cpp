@@ -1,3 +1,6 @@
+#include <queue>
+#include <utility>
+
 #include <3rdparty/assimp/scene.h>
 #include <3rdparty/assimp/postprocess.h>
 
@@ -179,6 +182,31 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 			pSceneMaterial->pMaterialData = pMaterial;
 		}
 
+	if (pAssimpScene->mRootNode) {
+		std::queue<std::pair<aiNode*, Scene::Node*> > nodesQueue;
+		nodesQueue.push(std::make_pair(pAssimpScene->mRootNode, pScene->pRootNode = new Scene::Node));
+		while (!nodesQueue.empty()) {
+			aiNode *pAssimpNode = nodesQueue.front().first;
+			Scene::Node *pNode = nodesQueue.front().second;
+			nodesQueue.pop();
+
+			pNode->name = pAssimpNode->mName.C_Str();
+			pNode->meshesIndices.resize(pAssimpNode->mNumMeshes);
+			for (uint32 i = 0; i < pAssimpNode->mNumMeshes; ++i)
+				pNode->meshesIndices[i] = pAssimpNode->mMeshes[i];
+			aiMatrix4x4& m = pAssimpNode->mTransformation;
+			pNode->transform = glm::mat4(m.a1, m.b1, m.c1, m.d1,
+				m.a2, m.b2, m.c2, m.d2,
+				m.a3, m.b3, m.c3, m.d3,
+				m.a4, m.b4, m.c4, m.d4);
+
+			pNode->childNodes.resize(pAssimpNode->mNumChildren);
+			for (uint32 i = 0; i < pAssimpNode->mNumChildren; ++i)
+				nodesQueue.push(std::make_pair(pAssimpNode->mChildren[i], pNode->childNodes[i] = new Scene::Node(pNode)));
+		}
+	}
+
+	m_assimpImporter.FreeScene();
 	pResScene = new SceneContainer(filename, pScene);
 	m_pResourceManager->addResource(pResScene);
 	return pResScene;

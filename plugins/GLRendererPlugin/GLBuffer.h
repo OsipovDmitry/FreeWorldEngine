@@ -7,6 +7,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 class GLBuffer : public IGPUBuffer {
 public:
 	GLBuffer(const GLuint id);
@@ -26,6 +28,8 @@ private:
 	GLuint m_id;
 
 }; // class GLBuffer
+
+} // namespace
 
 } // namespace
 

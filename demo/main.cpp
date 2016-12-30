@@ -1,5 +1,6 @@
 #include <FreeWorldEngine.h>
 using namespace FreeWorldEngine;
+using namespace Renderer;
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
 
 float vertices[] = {-1.0f, -1.0f, 0.0f,
@@ -101,7 +102,7 @@ int main() {
 
 	p->logger()->printMessage("Debug, Hello!", ILogger::MessageType_Debug);
 
-	IScene *pScene = p->sceneLoader()->loadScene("t90.3ds");
+	IScene *pScene = p->sceneLoader()->loadScene("AlexandrShabalin.3DS");
 
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow)

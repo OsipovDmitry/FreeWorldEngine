@@ -9,13 +9,15 @@
 #include <3rdparty/glm/mat4x4.hpp>
 
 #include <string>
-#include "Types.h"
+#include <Types.h>
 
 namespace FreeWorldEngine {
 
 namespace Utility {
 class File;
 }
+
+namespace Renderer {
 
 class IGPUShader {
 public:
@@ -49,6 +51,7 @@ public:
 
     virtual int32 attributeLocationByName(const std::string& name) const = 0;
     virtual int32 uniformLocationByName(const std::string& name) const = 0;
+	virtual int32 uniformBlockIndexByName(const std::string& name) const = 0; 
 
 	virtual void setUniform(const int32 location, const float value) const = 0;
 	virtual void setUniform(const int32 location, const int32 value) const = 0;
@@ -66,7 +69,22 @@ public:
 	virtual void setUniform(const int32 location, const glm::mat3& value, const bool transpose = false) const = 0;
 	virtual void setUniform(const int32 location, const glm::mat4& value, const bool transpose = false) const = 0;
 
+	struct UniformBlockInfo {
+		std::string name;
+		int32 index;
+		uint32 dataSize;
+		uint32 numUniforms;
+		std::vector<std::string> uniformsNames;
+		std::vector<int32> uniformsIndices;
+		std::vector<int32> uniformsOffsets;
+		std::vector<int32> uniformsSizes;
+	};
+	virtual UniformBlockInfo uniformBlockInfo(const int32 index, const bool writeNames = true) const = 0;
+	virtual void setUniformBlockBindingPoint(const int32 index, const uint32 bindingPoint) const = 0;
+
 }; // class IGPUProgram
+
+} // namespace
 
 } // namespace
 

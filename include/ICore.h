@@ -14,9 +14,12 @@ class IImageLoader;
 class ISceneLoader;
 class IWindow;
 class ILogger;
-class IGPURenderer;
 class ILibraryManager;
 class IThreadManager;
+
+namespace Renderer {
+	class IGPURenderer;
+}
 
 namespace GraphicsEngine {
 	class IGraphicsEngine;
@@ -48,8 +51,8 @@ public:
 	
 	virtual IPhysicsManager *physicsManager() const = 0;
 
-	virtual IGPURenderer *renderer() const = 0;
-	virtual void setRenderer(IGPURenderer *pGPURenderer) = 0;
+	virtual Renderer::IGPURenderer *renderer() const = 0;
+	virtual void setRenderer(Renderer::IGPURenderer *pGPURenderer) = 0;
 
 	virtual GraphicsEngine::IGraphicsEngine *graphicsEngine() const = 0;
 	virtual void setGraphicsEngine(GraphicsEngine::IGraphicsEngine *pGraphicsEngine) = 0;

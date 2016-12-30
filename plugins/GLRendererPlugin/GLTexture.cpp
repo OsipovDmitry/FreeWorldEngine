@@ -4,6 +4,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Renderer {
+
 GLTexture::GLTexture(IGPUTextureType type, GLenum id) :
 	m_type(type),
 	m_id(id)
@@ -353,5 +355,7 @@ GLenum GLTexture::GLtarget(IGPUTextureType type)
 	}
     return 0;
 }
+
+} // namespace
 
 } // namespace

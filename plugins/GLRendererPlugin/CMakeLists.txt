@@ -19,7 +19,8 @@ set(HEADERS
 	GLShader.h
 	GLTexture.h
 	GLFrameBuffer.h
-	GLRenderer.h)
+	GLRenderer.h
+	GLRendererPlugin.h)
 
 set(SOURCES
 	GLBuffer.cpp

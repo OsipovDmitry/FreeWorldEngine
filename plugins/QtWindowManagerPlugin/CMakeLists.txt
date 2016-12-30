@@ -3,11 +3,11 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 include_directories(../../3rdparty)
 include_directories(../../include)
 # «¿À»œ”’¿!!!
-include_directories(C:/Qt/5.5/msvc2010/include)
+include_directories(C:/Qt/4.8.6/include)
 
 link_directories(${LIBRARY_OUTPUT_PATH})
 # «¿À»œ”’¿!!!
-link_directories(C:/Qt/5.5/msvc2010/lib)
+link_directories(C:/Qt/4.8.6/lib)
 
 set(INTERFACE_HEADERS
 			../../include/IWindow.h
