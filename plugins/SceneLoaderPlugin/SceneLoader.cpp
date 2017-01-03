@@ -54,7 +54,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 				meshWrapper.addIndices(numIndices);
 				uint32 *pIndices = meshWrapper.targetMesh()->pIndexData;
 				for (uint32 faceIdx = 0; faceIdx < pAssimpMesh->mNumFaces; ++faceIdx) {
-					const aiFace& face = pAssimpMesh->mFaces[faceIdx++];
+					const aiFace& face = pAssimpMesh->mFaces[faceIdx];
 					memcpy(pIndices, face.mIndices, face.mNumIndices*sizeof(face.mIndices[0]));
 					pIndices += face.mNumIndices;
 				}
