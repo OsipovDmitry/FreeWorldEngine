@@ -10,20 +10,27 @@ float vertices[] = {-1.0f, -1.0f, 0.0f,
 
 unsigned int indices[] = {0,1,2,3};
 
+Mesh* pMesh;
+
 std::string vShader =
 "#version 330 core\n"\
 "layout(location = 0) in vec3 pos;\n"\
+"layout(location = 1) in vec3 normal;\n"\
+"layout(location = 2) in vec2 texcoord;\n"\
 "uniform mat4 viewProjMatrix;\n"\
+"out vec3 n;\n"\
 "out vec2 tc;\n"\
 "void main(void)\n"\
 "{\n"\
-"	tc = pos.xy*0.5+vec2(0.5);\n"\
+"	tc = texcoord;\n"\
+"	n = normal;\n"\
 "	gl_Position = viewProjMatrix * vec4 (pos, 1.0);\n"\
 "}\n";
 
 std::string fShader =
 "#version 330 core\n"\
 "uniform sampler2D tex;\n"\
+"in vec3 n;\n"\
 "in vec2 tc;\n"\
 "layout(location = 0) out vec4 outColor;\n"\
 "void main(void)\n"\
@@ -43,6 +50,7 @@ std::string fShaderPost =
 "#version 330 core\n"\
 "uniform samplerRect tex;\n"\
 "uniform samplerRect texDepth;\n"\
+"uniform mat4 invMatrix;"
 "out vec4 outColor;\n"\
 "void main(void)\n"\
 "{\n"\
@@ -55,7 +63,7 @@ std::string fShaderPost =
 "			else if (zVal > zMax) zMax = zVal;\n"\
 "		}\n"\
 "	outColor = texture(tex, gl_FragCoord.xy);\n"\
-"	if (abs(zMax-zMin) > 0.12) outColor = vec4(0,0,0,1);\n"\
+"	//if (abs(zMax-zMin) > 0.12) outColor = vec4(0,0,0,1);\n"\
 "}\n";
 
 IGPUProgram *pProgram;
@@ -84,14 +92,14 @@ void render() {
 	angle += 0.01f;
 	pProgram->setUniform(pProgram->uniformLocationByName("viewProjMatrix"), vpMatrix);
 
-	getCoreEngine()->renderer()->setTexture(0, pTexture);
-	getCoreEngine()->renderer()->renderIndexedGeometry(pProgram, pBCont, PrimitiveFormat_TriangleStrip, TYPE_UNSIGNED_INT_32, 4, 0);
+	getCoreEngine()->renderer()->setTexture(pTexture, 0);
+	getCoreEngine()->renderer()->renderIndexedGeometry(pProgram, pBCont, pMesh->primitiveFormat, TYPE_UNSIGNED_INT_32, pMesh->numIndices, 0);
 	
 	getCoreEngine()->renderer()->setViewport(0,0,w,h);
 	getCoreEngine()->renderer()->disableDepthTest();
 	getCoreEngine()->renderer()->setFrameBuffer(0);
-	getCoreEngine()->renderer()->setTexture(0, pTexturePost);
-	getCoreEngine()->renderer()->setTexture(1, pDepthTexPost);
+	getCoreEngine()->renderer()->setTexture(pTexturePost, 0);
+	getCoreEngine()->renderer()->setTexture(pDepthTexPost, 1);
 	getCoreEngine()->renderer()->renderIndexedGeometry(pProgramPost, pBContPost, PrimitiveFormat_TriangleStrip, TYPE_UNSIGNED_INT_32, 4, 0);
 }
 
@@ -101,8 +109,6 @@ int main() {
 	p->initialize();
 
 	p->logger()->printMessage("Debug, Hello!", ILogger::MessageType_Debug);
-
-	IScene *pScene = p->sceneLoader()->loadScene("AlexandrShabalin.3DS");
 
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow)
@@ -158,11 +164,18 @@ int main() {
 	pTexturePost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pDepthTexPost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_SpecialDepth, TextureFormat::ChannelSize_32, TextureFormat::ChannelsCount_1));
 
-	IGPUBuffer *pVB = p->renderer()->createBuffer(12 * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, vertices);
-	IGPUBuffer *pFB = p->renderer()->createBuffer(4 * sizeof(int), IGPUBuffer::IGPUBufferUsage_StaticDraw, indices);
+	IScene *pScene = p->sceneLoader()->loadScene("teapot.FBX");
+	pMesh = pScene->scene()->meshes[0]->pMeshData;
+
+	IGPUBuffer *pVB = p->renderer()->createBuffer(pMesh->vertexStride * pMesh->numVertices * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pVertexData);
+	IGPUBuffer *pFB = p->renderer()->createBuffer(pMesh->numIndices * sizeof(int), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pIndexData);
 	pBCont = p->renderer()->createBufferContainer();
-	pBCont->setVertexAttribute(pVB, 0, 3, 0, 0, TYPE_FLOAT);
+	pBCont->setVertexAttribute(pVB, 0, pMesh->attributes[VertexAttributeType_Position].first, pMesh->attributes[VertexAttributeType_Position].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
 	pBCont->enableVertexAttribute(0);
+	pBCont->setVertexAttribute(pVB, 1, pMesh->attributes[VertexAttributeType_Normal].first, pMesh->attributes[VertexAttributeType_Normal].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+	pBCont->enableVertexAttribute(1);
+	pBCont->setVertexAttribute(pVB, 2, pMesh->attributes[VertexAttributeType_TexCoord0].first, pMesh->attributes[VertexAttributeType_TexCoord0].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+	pBCont->enableVertexAttribute(2);
 	pBCont->setIndexBuffer(pFB);
 
 	IGPUBuffer *pVBPost = p->renderer()->createBuffer(12 * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, vertices);

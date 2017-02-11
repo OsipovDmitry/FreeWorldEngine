@@ -170,12 +170,12 @@ IPhysicsManager *Core::physicsManager() const
 	return m_pPhysicsManager;
 }
 
-IGPURenderer *Core::renderer() const
+Renderer::IGPURenderer *Core::renderer() const
 {
 	return m_pGPURenderer;
 }
 
-void Core::setRenderer(IGPURenderer *pGPURenderer)
+void Core::setRenderer(Renderer::IGPURenderer *pGPURenderer)
 {
 	m_pGPURenderer = pGPURenderer;
 }

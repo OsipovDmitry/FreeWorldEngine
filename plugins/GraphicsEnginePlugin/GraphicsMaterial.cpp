@@ -139,7 +139,7 @@ void GraphicsMaterial::bind() const
 		case UniformType_Mat2f: { m_pProgram->setUniform(location, *(const glm::mat2*)(data.second)); break; }
 		case UniformType_Mat3f: { m_pProgram->setUniform(location, *(const glm::mat3*)(data.second)); break; }
 		case UniformType_Mat4f: { m_pProgram->setUniform(location, *(const glm::mat4*)(data.second)); break; }
-		case UniformType_Sampler: { m_pProgram->setUniform(location, textureSlot); pGPURenderer->setTexture(textureSlot, (Renderer::IGPUTexture*)(data.second)); textureSlot++; break; }
+		case UniformType_Sampler: { m_pProgram->setUniform(location, textureSlot); pGPURenderer->setTexture((Renderer::IGPUTexture*)(data.second), textureSlot); textureSlot++; break; }
 		default: break;
 		}
 	}

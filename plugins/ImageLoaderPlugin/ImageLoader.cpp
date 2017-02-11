@@ -33,7 +33,7 @@ IImage *ImageLoader::loadImage(const std::string& filename)
 	uint32 imageWidth, imageHeight, imageDepth, imageNumComponents;
 	Type imageType;
 	void *imageData;
-	std::string fileExt = File(filename).fileExtension();
+	std::string fileExt = Utility::File(filename).fileExtension();
 	
 	bool isOk = false;
 	if (fileExt == "jpg" || fileExt == "jpeg") {

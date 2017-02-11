@@ -1,5 +1,5 @@
-#include "SDL2/include/SDL.h"
-#include "FreeWorldEngine.h"
+#include <3rdparty/sdl/SDL.h>
+#include <FreeWorldEngine.h>
 
 #include "WindowManagerPlugin.h"
 #include "WindowManager.h"

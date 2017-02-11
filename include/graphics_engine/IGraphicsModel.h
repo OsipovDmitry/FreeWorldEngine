@@ -16,6 +16,8 @@ public:
 	virtual IGraphicsMaterial *material() const = 0;
 	virtual void setMaterial(IGraphicsMaterial *pMaterial) = 0;
 
+	virtual void setMesh(Mesh *pMesh) = 0;
+
 }; // class IGraphicsModel
 
 } // namespace

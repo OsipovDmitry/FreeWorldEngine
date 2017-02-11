@@ -39,8 +39,8 @@ public:
 	
 	IPhysicsManager *physicsManager() const;
 
-	IGPURenderer *renderer() const;
-	void setRenderer(IGPURenderer *pGPURenderer);
+	Renderer::IGPURenderer *renderer() const;
+	void setRenderer(Renderer::IGPURenderer *pGPURenderer);
 
 	GraphicsEngine::IGraphicsEngine *graphicsEngine() const;
 	void setGraphicsEngine(GraphicsEngine::IGraphicsEngine *pGraphicsEngine);
@@ -58,7 +58,7 @@ private:
 	IPluginManager *m_pPluginManager;
 	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;
-	IGPURenderer *m_pGPURenderer;
+	Renderer::IGPURenderer *m_pGPURenderer;
 	GraphicsEngine::IGraphicsEngine *m_pGraphicsEngine;
 	IImageLoader *m_pImageLoader;
 	ISceneLoader *m_pSceneLoader;

@@ -17,6 +17,8 @@ public:
 	IGraphicsMaterial *material() const;
 	void setMaterial(IGraphicsMaterial *pMaterial);
 
+	void setMesh(Mesh *pMesh);
+
 private:
 	std::string m_name;
 	IGraphicsMaterial *m_pMaterial;
