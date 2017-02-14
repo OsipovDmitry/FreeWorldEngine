@@ -36,7 +36,7 @@ Core::~Core()
 
 void Core::initialize()
 {
-	m_pManagerForOtherManagers = new ResourceManagerHash("ResourceManagerForOtherManagers");
+	m_pManagerForOtherManagers = createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
 
 	m_pLogger = new Logger;
 	m_pLogger->addLog(new TextFileLog(c_textLogFileName, false));
@@ -86,27 +86,11 @@ void Core::deinitialize()
 
 IResourceManager *Core::createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType)
 {
-	IResourceManager *pResourceManager = 0;
-	switch (storageType) {
-	case IResourceManager::StorageType_List: { 
-		pResourceManager = new ResourceManagerList(resourceManagerName);
-		break;
-											 }
-	case IResourceManager::StorageType_Hash: {
-		pResourceManager = new ResourceManagerHash(resourceManagerName);
-		break;
-											 }
-	case IResourceManager::StorageType_Map: {
-		pResourceManager = new ResourceManagerMap(resourceManagerName);
-		break;
-											 }
-	default:
-		break;
-	}
-
+	IResourceManager *pResourceManager = createResourceManager(resourceManagerName, storageType);
+	
 	if (pResourceManager)
 		m_pManagerForOtherManagers->addResource(pResourceManager);
-
+	
 	return pResourceManager;
 }
 

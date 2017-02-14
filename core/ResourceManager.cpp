@@ -1,8 +1,19 @@
+#include <algorithm>
+#include <list>
+#include <unordered_map>
+#include <map>
+
 #include "IResource.h"
 
 #include "ResourceManager.h"
 
 namespace FreeWorldEngine {
+
+namespace {
+	typedef std::list<IResource*> list;
+	typedef std::unordered_map<std::string, IResource*> hash;
+	typedef std::map<std::string, IResource*> map;
+}
 
 class ResourceIteratorPrivate {
 public:
@@ -15,6 +26,26 @@ public:
 	virtual void operator ++() = 0;
 	virtual void operator --() = 0;
 };
+
+template <class Iter>
+class ResourceIteratorPrivateImpl : public ResourceIteratorPrivate {
+public:
+	ResourceIteratorPrivateImpl(const Iter& iter) : m_iter(iter) {}
+	~ResourceIteratorPrivateImpl() {}
+	ResourceIteratorPrivate *clone() const { return new ResourceIteratorPrivateImpl<Iter>(m_iter); }
+	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceIteratorPrivateImpl<Iter>*>(other)->m_iter; }
+	IResource *operator *() { return m_iter->second; }
+	void operator ++() { ++m_iter; }
+	void operator --() { --m_iter; }
+private:
+	Iter m_iter;
+};
+
+
+template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::iterator>::operator *() { return *m_iter; }
+template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::const_iterator>::operator *() { return *m_iter; }
+template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::reverse_iterator>::operator *() { return *m_iter; }
+template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::const_reverse_iterator>::operator *() { return *m_iter; }
 
 ResourceIterator::ResourceIterator(ResourceIteratorPrivate *pPrivate) :
 	m(pPrivate)
@@ -33,6 +64,7 @@ ResourceIterator::ResourceIterator(const ResourceIterator& other) :
 
 ResourceIterator& ResourceIterator::operator =(const ResourceIterator& other)
 {
+	delete m;
 	m = other.m->clone();
 	return *this;
 }
@@ -48,6 +80,11 @@ bool ResourceIterator::operator ==(const ResourceIterator& other) const
 }
 
 IResource *ResourceIterator::operator *()
+{
+	return m->operator*();
+}
+
+const IResource *ResourceIterator::operator *() const
 {
 	return m->operator*();
 }
@@ -78,290 +115,43 @@ ResourceIterator& ResourceIterator::operator --(int)
 	return save;
 }
 
-class ResourceListIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceListIteratorPrivate(const std::list<IResource*>::iterator& iter) : m_iter(iter) {}
-	~ResourceListIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceListIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceListIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return *m_iter; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::list<IResource*>::iterator m_iter;
-};
-
-class ResourceListReverseIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceListReverseIteratorPrivate(const std::list<IResource*>::reverse_iterator& iter) : m_iter(iter) {}
-	~ResourceListReverseIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceListReverseIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceListReverseIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return *m_iter; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::list<IResource*>::reverse_iterator m_iter;
-};
-
-ResourceManagerList::ResourceManagerList(const std::string& resourceManagerName) :
-	m_name(resourceManagerName),
-	m_data(0)
-{
-}
-
-ResourceManagerList::~ResourceManagerList()
-{
-	destroyAllResources();
-}
-
-std::string ResourceManagerList::name() const
-{
-	return m_name;
-}
-
-IResourceManager::StorageType ResourceManagerList::storageType() const
-{
-	return IResourceManager::StorageType_List;
-}
-
-IResource *ResourceManagerList::findResource(const std::string& name) const
-{
-	for (std::list<IResource*>::const_iterator it = m_data.cbegin(); it != m_data.cend(); ++it)
-		if ((*it)->name() == name)
-			return *it;
-	return 0;
-}
-
-void ResourceManagerList::addResource(IResource *pResource)
-{
-	const std::string name = pResource->name();
-	for (std::list<IResource*>::iterator it = m_data.begin(); it != m_data.end(); ++it) {
-		if ((*it)->name() == name) {
-			delete *it;
-			*it = pResource;
-			return;
-		}
-	}
-	m_data.push_back(pResource);
-}
-
-void ResourceManagerList::destroyResource(const std::string& name)
-{
-	for (std::list<IResource*>::iterator it = m_data.begin(); it != m_data.end(); ++it) {
-		if ((*it)->name() == name) {
-			delete *it;
-			m_data.erase(it);
-			return;
-		}
-	}
-}
-
-void ResourceManagerList::destroyResource(IResource *pResource)
-{
-	destroyResource(pResource->name());
-}
-
-void ResourceManagerList::destroyAllResources()
-{
-	for (std::list<IResource*>::iterator it = m_data.begin(); it != m_data.end(); ++it)
-		delete *it;
-	m_data.clear();
-}
-
-uint32 ResourceManagerList::size() const
-{
-	return m_data.size();
-}
-
-ResourceIterator ResourceManagerList::begin()
-{
-	return ResourceIterator(new ResourceListIteratorPrivate(m_data.begin()));
-}
-
-ResourceIterator ResourceManagerList::end()
-{
-	return ResourceIterator(new ResourceListIteratorPrivate(m_data.end()));
-}
-
-ResourceIterator ResourceManagerList::rbegin()
-{
-	return ResourceIterator(new ResourceListReverseIteratorPrivate(m_data.rbegin()));
-}
-
-ResourceIterator ResourceManagerList::rend()
-{
-	return ResourceIterator(new ResourceListReverseIteratorPrivate(m_data.rend()));
-}
-
-class ResourceHashIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceHashIteratorPrivate(const std::unordered_map<std::string, IResource*>::iterator& iter) : m_iter(iter) {}
-	~ResourceHashIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceHashIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceHashIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return m_iter->second; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::unordered_map<std::string, IResource*>::iterator m_iter;
-};
-
-class ResourceHashReverseIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceHashReverseIteratorPrivate(const std::unordered_map<std::string, IResource*>::reverse_iterator& iter) : m_iter(iter) {}
-	~ResourceHashReverseIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceHashReverseIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceHashReverseIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return m_iter->second; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::unordered_map<std::string, IResource*>::reverse_iterator m_iter;
-};
-
-ResourceManagerHash::ResourceManagerHash(const std::string& resourceManagerName) :
-	m_name(resourceManagerName),
-	m_data(0)
-{
-}
-
-ResourceManagerHash::~ResourceManagerHash()
-{
-	destroyAllResources();
-}
-
-std::string ResourceManagerHash::name() const
-{
-	return m_name;
-}
-
-IResourceManager::StorageType ResourceManagerHash::storageType() const
-{
-	return IResourceManager::StorageType_Hash;
-}
-
-IResource *ResourceManagerHash::findResource(const std::string& name) const
-{
-	std::unordered_map<std::string, IResource*>::const_iterator i = m_data.find(name);
-	return i == m_data.cend() ? 0 : i->second;
-}
-
-void ResourceManagerHash::addResource(IResource *pResource)
-{
-	const std::string name = pResource->name();
-	std::unordered_map<std::string, IResource*>::iterator i = m_data.find(name);
-	if (i != m_data.end()) {
-		delete i->second;
-		i->second = pResource;
-	}
-	else
-		m_data[name] = pResource;
-}
-
-void ResourceManagerHash::destroyResource(const std::string& name)
-{
-	std::unordered_map<std::string, IResource*>::const_iterator i = m_data.find(name);
-	if (i != m_data.cend()) {
-		delete i->second;
-		m_data.erase(i);
-	}
-}
-
-void ResourceManagerHash::destroyResource(IResource *pResource)
-{
-	destroyResource(pResource->name());
-}
-
-void ResourceManagerHash::destroyAllResources()
-{
-	for (std::unordered_map<std::string, IResource*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
-		delete i->second;
-	m_data.clear();
-}
-
-uint32 ResourceManagerHash::size() const
-{
-	return m_data.size();
-}
-
-ResourceIterator ResourceManagerHash::begin()
-{
-	return ResourceIterator(new ResourceHashIteratorPrivate(m_data.begin()));
-}
-
-ResourceIterator ResourceManagerHash::end()
-{
-	return ResourceIterator(new ResourceHashIteratorPrivate(m_data.end()));
-}
-
-ResourceIterator ResourceManagerHash::rbegin()
-{
-	return ResourceIterator(new ResourceHashReverseIteratorPrivate(m_data.rbegin()));
-}
-
-ResourceIterator ResourceManagerHash::rend()
-{
-	return ResourceIterator(new ResourceHashReverseIteratorPrivate(m_data.rend()));
-}
-
-class ResourceMapIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceMapIteratorPrivate(const std::map<std::string, IResource*>::iterator& iter) : m_iter(iter) {}
-	~ResourceMapIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceMapIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceMapIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return m_iter->second; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::map<std::string, IResource*>::iterator m_iter;
-};
-
-class ResourceMapReverseIteratorPrivate : public ResourceIteratorPrivate {
-public:
-	ResourceMapReverseIteratorPrivate(const std::map<std::string, IResource*>::reverse_iterator& iter) : m_iter(iter) {}
-	~ResourceMapReverseIteratorPrivate() {}
-	ResourceIteratorPrivate *clone() const { return new ResourceMapReverseIteratorPrivate(m_iter); }
-	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceMapReverseIteratorPrivate*>(other)->m_iter; }
-	IResource *operator *() { return m_iter->second; }
-	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
-private:
-	std::map<std::string, IResource*>::reverse_iterator m_iter;
-};
-
-ResourceManagerMap::ResourceManagerMap(const std::string& resourceManagerName) :
+template <class Container>
+ResourceManager<Container>::ResourceManager(const std::string& resourceManagerName) :
 	m_name(resourceManagerName),
 	m_data()
 {
 }
 
-ResourceManagerMap::~ResourceManagerMap()
+template <class Container>
+ResourceManager<Container>::~ResourceManager()
 {
 	destroyAllResources();
 }
 
-std::string ResourceManagerMap::name() const
+template <class Container>
+std::string ResourceManager<Container>::name() const
 {
 	return m_name;
 }
 
-IResourceManager::StorageType ResourceManagerMap::storageType() const
+template <class Container>
+IResourceManager::StorageType ResourceManager<Container>::storageType() const
 {
-	return IResourceManager::StorageType_Map;
+	return (IResourceManager::StorageType)(-1);
 }
 
-IResource *ResourceManagerMap::findResource(const std::string& name) const
+template <class Container>
+IResource *ResourceManager<Container>::findResource(const std::string& name) const
 {
-	std::map<std::string, IResource*>::const_iterator i = m_data.find(name);
+	auto i = m_data.find(name);
 	return i == m_data.cend() ? 0 : i->second;
 }
 
-void ResourceManagerMap::addResource(IResource *pResource)
+template <class Container>
+void ResourceManager<Container>::addResource(IResource *pResource)
 {
 	const std::string name = pResource->name();
-	std::map<std::string, IResource*>::iterator i = m_data.find(name);
+	auto i = m_data.find(name);
 	if (i != m_data.end()) {
 		delete i->second;
 		i->second = pResource;
@@ -370,124 +160,191 @@ void ResourceManagerMap::addResource(IResource *pResource)
 		m_data[name] = pResource;
 }
 
-void ResourceManagerMap::destroyResource(const std::string& name)
+template <class Container>
+void ResourceManager<Container>::destroyResource(const std::string& name)
 {
-	std::map<std::string, IResource*>::const_iterator i = m_data.find(name);
-	if (i != m_data.cend()) {
+	auto i = m_data.find(name);
+	if (i != m_data.end()) {
 		delete i->second;
 		m_data.erase(i);
 	}
 }
 
-void ResourceManagerMap::destroyResource(IResource *pResource)
+template <class Container>
+void ResourceManager<Container>::destroyResource(IResource *pResource)
 {
 	destroyResource(pResource->name());
 }
 
-void ResourceManagerMap::destroyAllResources()
+template <class Container>
+void ResourceManager<Container>::destroyAllResources()
 {
-	for (std::map<std::string, IResource*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
-		delete i->second;
+	//for (auto it = m_data.begin(); it != m_data.end(); ++it)
+		//delete it->second;
+	std::for_each(m_data.begin(), m_data.end(), [](const std::pair<const std::string, IResource*>& elem) { delete elem.second; });
 	m_data.clear();
 }
 
-uint32 ResourceManagerMap::size() const
+template <class Container>
+uint32 ResourceManager<Container>::size() const
 {
 	return m_data.size();
 }
 
-ResourceIterator ResourceManagerMap::begin()
+template <class Container>
+ResourceIterator ResourceManager<Container>::begin()
 {
-	return ResourceIterator(new ResourceMapIteratorPrivate(m_data.begin()));
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::iterator>(m_data.begin()));
 }
 
-ResourceIterator ResourceManagerMap::end()
+template <class Container>
+ResourceIterator ResourceManager<Container>::end()
 {
-	return ResourceIterator(new ResourceMapIteratorPrivate(m_data.end()));
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::iterator>(m_data.end()));
 }
 
-ResourceIterator ResourceManagerMap::rbegin()
+template <class Container>
+ResourceIterator ResourceManager<Container>::rbegin()
 {
-	return ResourceIterator(new ResourceMapReverseIteratorPrivate(m_data.rbegin()));
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::reverse_iterator>(m_data.rbegin()));
 }
 
-ResourceIterator ResourceManagerMap::rend()
+template <class Container>
+ResourceIterator ResourceManager<Container>::rend()
 {
-	return ResourceIterator(new ResourceMapReverseIteratorPrivate(m_data.rend()));
-}
-/*
-template<class ContainerType>
-DataManager<ContainerType>::DataManager(const std::string& resourceManagerName) :
-	m_name(resourceManagerName),
-	m_data(ContainerType())
-{
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::reverse_iterator>(m_data.rend()));
 }
 
-template<class ContainerType>
-DataManager<ContainerType>::~DataManager()
+template <class Container>
+ResourceIterator ResourceManager<Container>::cbegin()
 {
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_iterator>(m_data.cbegin()));
 }
 
-template<class ContainerType>
-IDataManager<>::StorageType DataManager<ContainerType>::storageType() const
+template <class Container>
+ResourceIterator ResourceManager<Container>::cend()
 {
-	return StorageType(0);
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_iterator>(m_data.cend()));
 }
 
-template<class ContainerType>
-typename ContainerType::value_type *DataManager<ContainerType>::findResource(const std::string& name) const
+template <class Container>
+ResourceIterator ResourceManager<Container>::crbegin()
 {
-	return 0;
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_reverse_iterator>(m_data.crbegin()));
 }
 
-template<class ContainerType>
-void DataManager<ContainerType>::addResource(DataType *pResource)
+template <class Container>
+ResourceIterator ResourceManager<Container>::crend()
 {
+	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_reverse_iterator>(m_data.crend()));
 }
 
-template<class ContainerType>
-void DataManager<ContainerType>::destroyResource(const std::string& name)
+IResourceManager *createResourceManager(const std::string & resourceManagerName, const IResourceManager::StorageType storageType)
 {
+	IResourceManager *pResourceManager = 0;
+	switch (storageType) {
+	case IResourceManager::StorageType_List: {
+		pResourceManager = new ResourceManager<typename list>(resourceManagerName);
+		break;
+	}
+	case IResourceManager::StorageType_Hash: {
+		pResourceManager = new ResourceManager<typename hash>(resourceManagerName);
+		break;
+	}
+	case IResourceManager::StorageType_Map: {
+		pResourceManager = new ResourceManager<typename map>(resourceManagerName);
+		break;
+	}
+	default:
+		break;
+	}
+	return pResourceManager;
 }
 
-template<class ContainerType>
-void DataManager<ContainerType>::destroyResource(DataType *pResource)
+
+// Частичная специализация методов для list реализации
+template <>
+IResourceManager::StorageType ResourceManager<typename list>::storageType() const
 {
+	return IResourceManager::StorageType_List;
 }
 
-template<class ContainerType>
-void DataManager<ContainerType>::destroyAllResources()
+template <>
+IResource *ResourceManager<typename list>::findResource(const std::string& name) const
 {
+	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
+	return (it != m_data.end()) ? *it : 0;
 }
 
-template<class ContainerType>
-uint32 DataManager<ContainerType>::size() const
+template <>
+void ResourceManager<typename list>::addResource(IResource *pResource)
 {
-	return m_data.size();
+	const std::string name = pResource->name();
+	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
+	if (it != m_data.end()) {
+		delete *it;
+		*it = pResource;
+		return;
+	}
+	m_data.push_back(pResource);
 }
 
-template<class ContainerType>
-ResourceIterator DataManager<ContainerType>::begin()
+template <>
+void ResourceManager<typename list>::destroyResource(const std::string& name)
 {
-	return ResourceIterator(0);
+	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
+	if (it != m_data.end()) {
+		delete *it;
+		m_data.erase(it);
+		return;
+	}
 }
 
-template<class ContainerType>
-ResourceIterator DataManager<ContainerType>::end()
+template <>
+void ResourceManager<typename list>::destroyAllResources()
 {
-	return ResourceIterator(0);
+	//for (auto it = m_data.begin(); it != m_data.end(); ++it)
+		//delete *it;
+	std::for_each(m_data.begin(), m_data.end(), [](IResource *p) { delete p; });
+	m_data.clear();
 }
 
-template<class ContainerType>
-ResourceIterator DataManager<ContainerType>::rbegin()
+// Частичная специализация методов для hash реализации
+template <>
+IResourceManager::StorageType ResourceManager<typename hash>::storageType() const
 {
-	return ResourceIterator(0);
+	return IResourceManager::StorageType_Hash;
 }
 
-template<class ContainerType>
-ResourceIterator DataManager<ContainerType>::rend()
+template <>
+ResourceIterator ResourceManager<typename hash>::rbegin()
 {
-	return ResourceIterator(0);
+	return begin();
 }
-*/
+
+template <>
+ResourceIterator ResourceManager<typename hash>::rend()
+{
+	return end();
+}
+
+template <>
+ResourceIterator ResourceManager<typename hash>::crbegin()
+{
+	return cbegin();
+}
+
+template <>
+ResourceIterator ResourceManager<typename hash>::crend()
+{
+	return cend();
+}
+
+// Частичная специализация методов для map реализации
+template <>
+IResourceManager::StorageType ResourceManager<typename map>::storageType() const
+{
+	return IResourceManager::StorageType_Map;
+}
+
 } // namespace

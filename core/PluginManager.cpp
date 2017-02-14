@@ -9,6 +9,10 @@
 
 namespace FreeWorldEngine {
 
+namespace {
+	std::vector<std::string> c_pluginsListGroups( {"log", "window_manager", "renderer", "graphics_engine", "other"} );
+}
+
 PluginManager::PluginManager() :
 	m_plugins()
 {
@@ -78,18 +82,22 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 		return;
 	}
 
-	XMLNode::NodeList nodeList = m_pXML->children();
-	for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
-		XMLNode *pNode = *it;
-		if (pNode->name() != "plugin")
+	for (int32 groupIdx = 0; groupIdx < c_pluginsListGroups.size(); ++groupIdx) {
+		XMLNode *pGroupNode = m_pXML->child(c_pluginsListGroups.at(groupIdx));
+		if (!pGroupNode)
 			continue;
-		
-		std::string libraryName = std::string(pNode->attributeValue("library"));
-		std::string startFuncName = std::string(pNode->attributeValue("startFunc"));
-		std::string getFuncName = std::string(pNode->attributeValue("getFunc"));
-		std::string endFuncName = std::string(pNode->attributeValue("endFunc"));
 
-		loadPlugin(libraryName, startFuncName, getFuncName, endFuncName);
+		XMLNode::NodeList nodeList = pGroupNode->children();
+		for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
+			XMLNode *pNode = *it;
+			if (pNode->name() != "plugin")
+				continue;
+			std::string libraryName = std::string(pNode->attributeValue("library"));
+			std::string startFuncName = std::string(pNode->attributeValue("startFunc"));
+			std::string getFuncName = std::string(pNode->attributeValue("getFunc"));
+			std::string endFuncName = std::string(pNode->attributeValue("endFunc"));
+			loadPlugin(libraryName, startFuncName, getFuncName, endFuncName);
+		}
 	}
 
 	XMLRoot::close(m_pXML);
