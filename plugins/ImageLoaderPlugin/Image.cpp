@@ -13,7 +13,7 @@ Image::Image(const std::string& name, Raster *pRaster) :
 
 Image::~Image()
 {
-	Math::RasterWrapper(m_pRaster).destroyTargetRaster();
+	Math::RasterWrapper(m_pRaster).destroyTarget();
 }
 
 std::string Image::name() const

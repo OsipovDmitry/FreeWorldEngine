@@ -1,6 +1,8 @@
 #include "ImageLoaderPlugin.h"
 
-static FreeWorldEngine::IPlugin *pPlugin = 0;
+namespace {
+	FreeWorldEngine::IPlugin *pPlugin = 0;
+}
 
 extern "C" {
 

@@ -15,7 +15,7 @@
 namespace FreeWorldEngine {
 
 ImageLoader::ImageLoader() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForImages"))
+	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForImageLoader"))
 {
 }
 

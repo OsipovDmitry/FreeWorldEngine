@@ -1,6 +1,10 @@
 #ifndef __RESOURCEMANAGER__
 #define __RESOURCEMANAGER__
 
+#include <list>
+#include <unordered_map>
+#include <map>
+
 #include <IResourceManager.h>
 
 namespace FreeWorldEngine {

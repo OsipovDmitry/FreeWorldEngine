@@ -5,6 +5,9 @@
 #include <map> 
 #include <string>
 #include <vector>
+#include <list>
+#include <algorithm>
+#include <iterator>
 #include <3rdparty/glm/mat4x4.hpp>
 
 namespace FreeWorldEngine {
@@ -39,6 +42,7 @@ struct Raster {
     Type type;
 
     Raster() : numComponents(0), type(TYPE_UNSIGNED_INT_8), pData(0) { size[0] = 0; size[1] = size[2] = 1; }
+	~Raster() { delete pData; }
 }; // struct Raster
 
 enum PrimitiveFormat {
@@ -46,7 +50,7 @@ enum PrimitiveFormat {
     PrimitiveFormat_Lines,
     PrimitiveFormat_LineStrip,
     PrimitiveFormat_LineLoop,
-    PrimitiveFormat_Trangles,
+    PrimitiveFormat_Triangles,
     PrimitiveFormat_TriangleStrip,
     PrimitiveFormat_TrangleFan
 }; //enum PrimitiveFormat
@@ -71,7 +75,8 @@ struct Mesh {
 	std::map<VertexAttributeType, std::pair<uint16, uint16> > attributes; // отображение типа атрибута на пару (размер, смещение). –азмер и смещение в штуках float
 	uint16 vertexStride; // размер одной вершины в штуках float
 
-	Mesh() : pVertexData(0), pIndexData(0), numVertices(0), numIndices(0), primitiveFormat(PrimitiveFormat_Trangles), attributes(), vertexStride(0) {}
+	Mesh() : pVertexData(0), pIndexData(0), numVertices(0), numIndices(0), primitiveFormat(PrimitiveFormat_Triangles), attributes(), vertexStride(0) {}
+	~Mesh() { delete pVertexData; delete pIndexData; }
 }; // struct Mesh
 
 struct Material {
@@ -96,9 +101,11 @@ struct Material {
 
 	bool isTwoSided; // двусторонний
 
+	Material() : blendMode(BlendMode_Off), isTwoSided(false) {}
+	~Material() {}
 }; // struct Material
 
-struct Scene {
+struct SceneData {
 
 	struct Material {
 		std::string name;
@@ -127,9 +134,25 @@ struct Scene {
 	MeshList meshes;
 	Node *pRootNode;
 
-	Scene() : materials(), meshes(), pRootNode(0) {}
+	SceneData() : materials(), meshes(), pRootNode(0) {}
+	~SceneData() {
+		for (MeshList::iterator it = meshes.begin(); it != meshes.end(); delete *(it++)) ;
+		for (MaterialList::iterator it = materials.begin(); it != materials.end(); delete *(it++)) ;
+		std::list<SceneData::Node*> nodes;
+		if (pRootNode)
+			nodes.push_back(pRootNode);
+		while (!nodes.empty()) {
+			SceneData::Node *pNode = nodes.front();
+			nodes.pop_front();
+			std::copy(pNode->childNodes.begin(), pNode->childNodes.end(), std::back_inserter(nodes));
+			delete pNode;
+		}
+	}
 
-}; // struct Scene
+}; // struct SceneData
+
+struct Sound {
+}; // struct Sound 
 
 } // namespace
 

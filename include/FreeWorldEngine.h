@@ -14,10 +14,8 @@
 #include "IThread.h"
 #include "IWindowManager.h"
 #include "IWindow.h"
-#include "IImageLoader.h"
-#include "IImage.h"
-#include "ISceneLoader.h"
-#include "IScene.h"
+#include "IContent.h"
+#include "IContentLoader.h"
 
 #include "renderer/IGPURenderer.h"
 

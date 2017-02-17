@@ -1,5 +1,8 @@
 #include <ctime>
 
+#include <math/RasterWrapper.h>
+#include <math/SceneDataWrapper.h>
+
 #include "FreeWorldEngine.h"
 
 #include "Core.h"
@@ -8,6 +11,7 @@
 #include "LibraryManager.h"
 #include "TextFileLog.h"
 #include "ThreadManager.h"
+#include "ContentLoader.h"
 
 namespace {
 	const std::string c_pluginsFileName = "plugins.xml";
@@ -48,6 +52,9 @@ void Core::initialize()
 	m_pPluginManager = new PluginManager();
 	m_pPluginManager->loadPlugins(c_pluginsFileName);
 
+	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
+	//m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
+	
 	if (m_pWindowManager)
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::Flags_Show | IWindow::Flags_Resizable);
 }
@@ -94,6 +101,11 @@ IResourceManager *Core::createResourceManager(const std::string& resourceManager
 	return pResourceManager;
 }
 
+IResourceManager *Core::findResourceManager(const std::string& resourceManagerName) const
+{
+	return static_cast<IResourceManager*>(m_pManagerForOtherManagers->findResource(resourceManagerName));
+}
+
 void Core::destroyResourceManager(IResourceManager *pResourceManager)
 {
 	m_pManagerForOtherManagers->destroyResource(pResourceManager);
@@ -129,19 +141,9 @@ IWindowManager *Core::windowManager() const
 	return m_pWindowManager;
 }
 
-void Core::setImageLoader(IImageLoader* const pImageLoader)
-{
-	m_pImageLoader = pImageLoader;
-}
-
 IImageLoader *Core::imageLoader() const
 {
 	return m_pImageLoader;
-}
-
-void Core::setSceneLoader(ISceneLoader* const pSceneLoader)
-{
-	m_pSceneLoader = pSceneLoader;
 }
 
 ISceneLoader *Core::sceneLoader() const

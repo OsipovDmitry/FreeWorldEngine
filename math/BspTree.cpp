@@ -39,7 +39,7 @@ void BspTree::destroy()
 	}
 
 	m_pRootNode = 0;
-	MeshWrapper(m_pDestMesh).destroyTargetMesh();
+	MeshWrapper(m_pDestMesh).destroyTarget();
 	m_pDestMesh = 0;
 }
 
@@ -51,7 +51,7 @@ void BspTree::build(Mesh *pSourceMesh, const float eps)
 		return;
 
 	// проверяем, что тип примитивов меша PrimitiveFormat_Trangles и имеется атрибут AttributeType_Position
-	if (pSourceMesh->primitiveFormat != PrimitiveFormat_Trangles ||
+	if (pSourceMesh->primitiveFormat != PrimitiveFormat_Triangles ||
 		pSourceMesh->attributes.find(VertexAttributeType_Position) == pSourceMesh->attributes.end() ||
 		pSourceMesh->numIndices < 3)
 		return;

@@ -5,19 +5,19 @@
 
 namespace FreeWorldEngine {
 
-class SceneContainer : public IScene {
+class Scene : public IScene {
 public:
-	SceneContainer(const std::string& name, Scene *pScene);
-	~SceneContainer();
+	Scene(const std::string& name, SceneData *pScene);
+	~Scene();
 
 	std::string name() const;
-	const Scene *scene() const;
+	const SceneData *scene() const;
 
 private:
 	std::string m_name;
-	Scene *m_pScene;
+	SceneData *m_pScene;
 
-}; // class SceneContainer
+}; // class Scene
 
 } // namespace
 

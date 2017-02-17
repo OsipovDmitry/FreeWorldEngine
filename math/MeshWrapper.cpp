@@ -14,6 +14,45 @@ MeshWrapper::~MeshWrapper()
 {
 }
 
+Mesh *MeshWrapper::clone() const
+{
+	if (!m_pMesh)
+		return 0;
+
+	Mesh *pNewMesh = new Mesh;
+	pNewMesh->attributes = m_pMesh->attributes;
+	pNewMesh->numIndices = m_pMesh->numIndices;
+	pNewMesh->numVertices = m_pMesh->numVertices;
+	pNewMesh->primitiveFormat = m_pMesh->primitiveFormat;
+	pNewMesh->vertexStride = m_pMesh->vertexStride;
+	if (m_pMesh->pVertexData) {
+		pNewMesh->pVertexData = new float[m_pMesh->numVertices * m_pMesh->vertexStride];
+		memcpy(pNewMesh->pVertexData, m_pMesh->pVertexData, m_pMesh->numVertices * m_pMesh->vertexStride * sizeof(float));
+	}
+	if (m_pMesh->pIndexData) {
+		pNewMesh->pIndexData = new uint32[m_pMesh->numIndices];
+		memcpy(pNewMesh->pIndexData, m_pMesh->pIndexData, m_pMesh->numIndices * sizeof(uint32));
+	}
+
+	return pNewMesh;
+}
+
+void MeshWrapper::setTarget(Mesh *pTargetMesh)
+{
+	m_pMesh = pTargetMesh;
+}
+
+Mesh *MeshWrapper::target() const
+{
+	return m_pMesh;
+}
+
+void MeshWrapper::destroyTarget()
+{
+	delete m_pMesh;
+	m_pMesh = 0;
+}
+
 float *MeshWrapper::addVertices(const uint32 numVertices)
 {
 	uint32 oldSize = m_pMesh->numVertices * m_pMesh->vertexStride;
@@ -67,48 +106,6 @@ float *MeshWrapper::attributeValue(const VertexAttributeType attributeType, cons
 {
 	const uint16 offset = m_pMesh->attributes.at(attributeType).second;
 	return m_pMesh->pVertexData + m_pMesh->vertexStride * vertexIndex + offset;
-}
-
-void MeshWrapper::setTargetMesh(Mesh *pTargetMesh)
-{
-	m_pMesh = pTargetMesh;
-}
-
-void MeshWrapper::destroyTargetMesh() {
-	if (!m_pMesh)
-		return;
-	delete m_pMesh->pVertexData;
-	delete m_pMesh->pIndexData;
-	delete m_pMesh;
-	m_pMesh = 0;
-}
-
-Mesh *MeshWrapper::clone() const
-{
-	if (!m_pMesh)
-		return 0;
-
-	Mesh *pNewMesh = new Mesh;
-	pNewMesh->attributes = m_pMesh->attributes;
-	pNewMesh->numIndices = m_pMesh->numIndices;
-	pNewMesh->numVertices = m_pMesh->numVertices;
-	pNewMesh->primitiveFormat = m_pMesh->primitiveFormat;
-	pNewMesh->vertexStride = m_pMesh->vertexStride;
-	if (m_pMesh->pVertexData) {
-		pNewMesh->pVertexData = new float [m_pMesh->numVertices * m_pMesh->vertexStride];
-		memcpy(pNewMesh->pVertexData, m_pMesh->pVertexData, m_pMesh->numVertices * m_pMesh->vertexStride * sizeof(float));
-	}
-	if (m_pMesh->pIndexData) {
-		pNewMesh->pIndexData = new uint32 [m_pMesh->numIndices];
-		memcpy(pNewMesh->pIndexData, m_pMesh->pIndexData, m_pMesh->numIndices * sizeof(uint32));
-	}
-
-	return pNewMesh;
-}
-
-Mesh *MeshWrapper::targetMesh() const
-{
-	return m_pMesh;
 }
 
 void MeshWrapper::interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const

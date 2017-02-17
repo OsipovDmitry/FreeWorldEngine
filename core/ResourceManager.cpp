@@ -1,7 +1,5 @@
 #include <algorithm>
-#include <list>
-#include <unordered_map>
-#include <map>
+#include <functional>
 
 #include "IResource.h"
 
@@ -179,8 +177,6 @@ void ResourceManager<Container>::destroyResource(IResource *pResource)
 template <class Container>
 void ResourceManager<Container>::destroyAllResources()
 {
-	//for (auto it = m_data.begin(); it != m_data.end(); ++it)
-		//delete it->second;
 	std::for_each(m_data.begin(), m_data.end(), [](const std::pair<const std::string, IResource*>& elem) { delete elem.second; });
 	m_data.clear();
 }

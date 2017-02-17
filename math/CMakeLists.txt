@@ -6,6 +6,7 @@ set(HEADERS
 	../include/math/MathUtils.h
 	../include/math/MeshWrapper.h
 	../include/math/RasterWrapper.h
+	../include/math/SceneDataWrapper.h
 	../include/math/BspTree.h
 )
 
@@ -13,6 +14,7 @@ set(SOURCES
 	MathUtils.cpp
 	MeshWrapper.cpp
 	RasterWrapper.cpp
+	SceneDataWrapper.cpp
 	BspTree.cpp
 )
 

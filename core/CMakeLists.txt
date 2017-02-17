@@ -30,6 +30,8 @@ set(INTERFACE_HEADERS
     ../include/IThreadManager.h
     ../include/IWindow.h
     ../include/IWindowManager.h
+	../include/IContent.h
+	../include/IContentLoader.h
 )
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
@@ -52,6 +54,9 @@ set(HEADERS
     ResourceManager.h
 	Thread.h
 	ThreadManager.h
+	DataLoader.h
+	ContentLoader.h
+	Content.h
 )
 
 set(SOURCES

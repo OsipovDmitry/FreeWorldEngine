@@ -5,13 +5,13 @@
 
 namespace FreeWorldEngine {
 
-struct Scene;
+struct SceneData;
 
 class IScene : public IResource {
 public:
 	virtual ~IScene() {}
 
-	virtual const Scene *scene() const = 0;
+	virtual const SceneData *scene() const = 0;
 
 }; // class IScene
 

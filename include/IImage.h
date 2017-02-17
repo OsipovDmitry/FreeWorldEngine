@@ -9,6 +9,7 @@ struct Raster;
 
 class IImage : public IResource {
 public:
+
 	virtual ~IImage() = 0 {}
     virtual const Raster *raster() const = 0;
 

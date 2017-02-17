@@ -153,19 +153,19 @@ int main() {
 	pProgramPost->setUniform(pProgramPost->uniformLocationByName("tex"), 0);
 	pProgramPost->setUniform(pProgramPost->uniformLocationByName("texDepth"), 1);
 
-	IImage *pImg = p->imageLoader()->loadImage("img.jpg");
-	
+	IImage *pImg = p->imageLoader()->load("img.jpg");
+
 	uint32 offs[3] = {0,0,0};
 
-	pTexture = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->raster()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
-	pTexture->setSubData(offs, pImg->raster()->size, TextureFormat::ChannelsCount_3, pImg->raster()->type, pImg->raster()->pData);
+	pTexture = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->data()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
+	pTexture->setSubData(offs, pImg->data()->size, TextureFormat::ChannelsCount_3, pImg->data()->type, pImg->data()->pData);
 
 	uint32 texsize[2] = {getCoreEngine()->mainWindow()->width(), getCoreEngine()->mainWindow()->height()};
 	pTexturePost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pDepthTexPost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_SpecialDepth, TextureFormat::ChannelSize_32, TextureFormat::ChannelsCount_1));
 
-	IScene *pScene = p->sceneLoader()->loadScene("teapot.FBX");
-	pMesh = pScene->scene()->meshes[0]->pMeshData;
+	IScene *pScene = p->sceneLoader()->load("teapot.FBX");
+	pMesh = pScene->data()->meshes[0]->pMeshData;
 
 	IGPUBuffer *pVB = p->renderer()->createBuffer(pMesh->vertexStride * pMesh->numVertices * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pVertexData);
 	IGPUBuffer *pFB = p->renderer()->createBuffer(pMesh->numIndices * sizeof(int), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pIndexData);

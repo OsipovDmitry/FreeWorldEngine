@@ -20,7 +20,7 @@ void assimpColorToUint8Array(const aiColor4D& src, uint8 *pDst) {
 }
 
 SceneLoader::SceneLoader() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForScenes")),
+	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForSceneLoader")),
 	m_assimpImporter()
 {
 }
@@ -42,7 +42,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 		return 0;
 	}
 
-	Scene *pScene = new Scene;
+	SceneData *pScene = new SceneData;
 	if (pAssimpScene->HasMeshes())
 		for (uint32 meshIdx = 0; meshIdx < pAssimpScene->mNumMeshes; ++meshIdx) {
 			aiMesh *pAssimpMesh = pAssimpScene->mMeshes[meshIdx];
@@ -117,7 +117,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 			default: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Points); break; }
 			}
 
-			Scene::Mesh *pSceneMesh = new Scene::Mesh;
+			SceneData::Mesh *pSceneMesh = new SceneData::Mesh;
 			pScene->meshes.push_back(pSceneMesh);
 
 			pSceneMesh->name = pAssimpMesh->mName.C_Str();
@@ -172,7 +172,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 			pMaterial->shininessMap = (pAssimpMaterial->GetTexture(aiTextureType_SHININESS, 0, &texPath) == AI_SUCCESS) ? texPath.C_Str() : "";
 			pMaterial->opacityMap = (pAssimpMaterial->GetTexture(aiTextureType_OPACITY, 0, &texPath) == AI_SUCCESS) ? texPath.C_Str() : "";
 
-			Scene::Material *pSceneMaterial = new Scene::Material;
+			SceneData::Material *pSceneMaterial = new SceneData::Material;
 			pScene->materials.push_back(pSceneMaterial);
 
 			aiString assimpMaterialName;
@@ -183,11 +183,11 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 		}
 
 	if (pAssimpScene->mRootNode) {
-		std::queue<std::pair<aiNode*, Scene::Node*> > nodesQueue;
-		nodesQueue.push(std::make_pair(pAssimpScene->mRootNode, pScene->pRootNode = new Scene::Node));
+		std::queue<std::pair<aiNode*, SceneData::Node*> > nodesQueue;
+		nodesQueue.push(std::make_pair(pAssimpScene->mRootNode, pScene->pRootNode = new SceneData::Node));
 		while (!nodesQueue.empty()) {
 			aiNode *pAssimpNode = nodesQueue.front().first;
-			Scene::Node *pNode = nodesQueue.front().second;
+			SceneData::Node *pNode = nodesQueue.front().second;
 			nodesQueue.pop();
 
 			pNode->name = pAssimpNode->mName.C_Str();
@@ -202,12 +202,12 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 
 			pNode->childNodes.resize(pAssimpNode->mNumChildren);
 			for (uint32 i = 0; i < pAssimpNode->mNumChildren; ++i)
-				nodesQueue.push(std::make_pair(pAssimpNode->mChildren[i], pNode->childNodes[i] = new Scene::Node(pNode)));
+				nodesQueue.push(std::make_pair(pAssimpNode->mChildren[i], pNode->childNodes[i] = new SceneData::Node(pNode)));
 		}
 	}
 
 	m_assimpImporter.FreeScene();
-	pResScene = new SceneContainer(filename, pScene);
+	pResScene = new Scene(filename, pScene);
 	m_pResourceManager->addResource(pResScene);
 	return pResScene;
 }

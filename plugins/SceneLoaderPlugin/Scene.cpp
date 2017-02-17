@@ -6,22 +6,22 @@
 
 namespace FreeWorldEngine {
 
-SceneContainer::SceneContainer(const std::string& name, Scene *pScene) :
+Scene::Scene(const std::string& name, SceneData *pScene) :
 	m_name(name),
-	m_pScene(pScene)
+	m_pScene(pScene ? pScene : new SceneData)
 {
 }
 
-SceneContainer::~SceneContainer()
+Scene::~Scene()
 {
 }
 
-std::string SceneContainer::name() const
+std::string Scene::name() const
 {
 	return m_name;
 }
 
-const Scene *SceneContainer::scene() const
+const SceneData *Scene::scene() const
 {
 	return m_pScene;
 }

@@ -10,12 +10,22 @@ namespace FreeWorldEngine {
 class IPluginManager;
 class IWindowManager;
 class IPhysicsManager;
-class IImageLoader;
-class ISceneLoader;
 class IWindow;
 class ILogger;
 class ILibraryManager;
 class IThreadManager;
+
+template <class DataType>
+class IContentLoader;
+
+typedef IContentLoader<Raster> IImageLoader;
+typedef IContentLoader<SceneData> ISceneLoader;
+
+template <class DataType>
+class IContent;
+
+typedef IContent<Raster> IImage;
+typedef IContent<SceneData> IScene;
 
 namespace Renderer {
 	class IGPURenderer;
@@ -33,6 +43,7 @@ public:
 	virtual void deinitialize() = 0;
 
 	virtual IResourceManager *createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType = IResourceManager::StorageType_Hash) = 0;
+	virtual IResourceManager *findResourceManager(const std::string& resourceManagerName) const = 0;
 	virtual void destroyResourceManager(IResourceManager *pResourceManager) = 0;
 	virtual void destroyResourceManager(const std::string& resourceManagerName) = 0;
 
@@ -43,10 +54,7 @@ public:
 	virtual void setWindowManager(IWindowManager* const pWindowManager) = 0;
 	virtual IWindowManager *windowManager() const = 0;
 
-	virtual void setImageLoader(IImageLoader* const pImageLoader) = 0;
 	virtual IImageLoader *imageLoader() const = 0;
-
-	virtual void setSceneLoader(ISceneLoader* const pSceneLoader) = 0;
 	virtual ISceneLoader *sceneLoader() const = 0;
 	
 	virtual IPhysicsManager *physicsManager() const = 0;

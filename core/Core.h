@@ -21,6 +21,7 @@ public:
 	void deinitialize();
 
 	IResourceManager *createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType = IResourceManager::StorageType_Hash);
+	IResourceManager *findResourceManager(const std::string& resourceManagerName) const;
 	void destroyResourceManager(IResourceManager *pResourceManager);
 	void destroyResourceManager(const std::string& resourceManagerName);
 
@@ -31,10 +32,7 @@ public:
 	void setWindowManager(IWindowManager* const pWindowManager);
 	IWindowManager *windowManager() const;
 
-	void setImageLoader(IImageLoader* const pImageLoader);
 	IImageLoader *imageLoader() const;
-
-	void setSceneLoader(ISceneLoader* const pSceneLoader);
 	ISceneLoader *sceneLoader() const;
 	
 	IPhysicsManager *physicsManager() const;

@@ -3,7 +3,8 @@ include_directories(../include)
 set(HEADERS ../include/utility/UtilitySettings.h
 			../include/utility/XML.h
 			../include/utility/DateTime.h
-			../include/utility/File.h)
+			../include/utility/File.h
+			../include/utility/Tree.h)
 
 set(SOURCES XML.cpp
 			DateTime.cpp
