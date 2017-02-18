@@ -6,14 +6,14 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 set(INTERFACE_HEADERS
     ../include/ICamera.h
     ../include/ICore.h
-    ../include/IImage.h
-    ../include/IImageLoader.h
+#    ../include/IImage.h
+#    ../include/IImageLoader.h
     ../include/ILibrary.h
     ../include/ILibraryManager.h
     ../include/ILog.h
     ../include/ILogger.h
-    ../include/IMeshBuilder.h
-    ../include/IMovableObject.h
+#    ../include/IMeshBuilder.h
+#    ../include/IMovableObject.h
     ../include/IPhysicsBody.h
     ../include/IPhysicsGeometry.h
     ../include/IPhysicsManager.h
@@ -24,14 +24,14 @@ set(INTERFACE_HEADERS
     ../include/IPluginManager.h
     ../include/IResource.h
     ../include/IResourceManager.h
-    ../include/IScene.h
-    ../include/ISceneLoader.h
+#    ../include/IScene.h
+#    ../include/ISceneLoader.h
     ../include/IThread.h
     ../include/IThreadManager.h
     ../include/IWindow.h
     ../include/IWindowManager.h
-	../include/IContent.h
-	../include/IContentLoader.h
+    ../include/IContent.h
+    ../include/IContentLoader.h
 )
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})

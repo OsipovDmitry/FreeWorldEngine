@@ -5,8 +5,9 @@ include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
-	../../include/IImage.h
-	../../include/IImageLoader.h)
+#	../../include/IImage.h
+#	../../include/IImageLoader.h
+)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 

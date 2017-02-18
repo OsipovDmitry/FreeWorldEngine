@@ -4,8 +4,9 @@ include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
-	../../include/IScene.h
-	../../include/ISceneLoader.h)
+#	../../include/IScene.h
+#	../../include/ISceneLoader.h
+)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
