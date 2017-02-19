@@ -10,7 +10,7 @@
 namespace FreeWorldEngine {
 
 namespace {
-	std::vector<std::string> c_pluginsListGroups ({"log", "window_manager", "renderer", "graphics_engine", "other"});
+	std::vector<std::string> c_pluginsListGroups({"log", "window_manager", "renderer", "graphics_engine", "other"});
 }
 
 PluginManager::PluginManager() :

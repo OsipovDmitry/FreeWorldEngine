@@ -1,0 +1,21 @@
+<!--
+Обязательные атрибуты:
+	-type
+	-file (для тех типов, где лог ведется в файл)
+Необязательные атрибуты:
+	-infoColor
+	-warningColor
+	-errorColor
+	-criticalColor
+	-backgroundColor (для HTML)
+	-rewrite (для текстовых файлов. По умолчанию true)
+Пример:
+	<log type="Html" file="filename.htm" backgroundColor="black" infoColor="green" warningColor="yellow" errorColor="red" criticalColor="magenta"/>
+-->
+
+<?xml version="1.0"?>
+<logs_list>
+	<log type="Text" file="log.txt" />
+	<log type="Terminal" />
+	<log type="Html" file="log.htm" />
+</logs_list>

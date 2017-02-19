@@ -7,7 +7,7 @@ namespace FreeWorldEngine {
 
 class TextFileLog : public ILog {
 public :
-	TextFileLog(const std::string filename, const bool rewrite = true);
+	TextFileLog(const std::string filename, const bool rewrite);
 	~TextFileLog();
 
 	std::string name() const;

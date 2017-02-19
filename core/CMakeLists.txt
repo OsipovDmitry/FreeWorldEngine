@@ -6,14 +6,10 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 set(INTERFACE_HEADERS
     ../include/ICamera.h
     ../include/ICore.h
-#    ../include/IImage.h
-#    ../include/IImageLoader.h
     ../include/ILibrary.h
     ../include/ILibraryManager.h
     ../include/ILog.h
     ../include/ILogger.h
-#    ../include/IMeshBuilder.h
-#    ../include/IMovableObject.h
     ../include/IPhysicsBody.h
     ../include/IPhysicsGeometry.h
     ../include/IPhysicsManager.h
@@ -24,8 +20,6 @@ set(INTERFACE_HEADERS
     ../include/IPluginManager.h
     ../include/IResource.h
     ../include/IResourceManager.h
-#    ../include/IScene.h
-#    ../include/ISceneLoader.h
     ../include/IThread.h
     ../include/IThreadManager.h
     ../include/IWindow.h
@@ -52,7 +46,7 @@ set(HEADERS
     TextFileLog.h
     PluginManager.h
     ResourceManager.h
-	Thread.h
+    Thread.h
 	ThreadManager.h
 	DataLoader.h
 	ContentLoader.h

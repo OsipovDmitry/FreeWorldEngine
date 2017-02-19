@@ -40,7 +40,7 @@ Core::~Core()
 
 void Core::initialize()
 {
-	m_pManagerForOtherManagers = createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
+	m_pManagerForOtherManagers = FreeWorldEngine::createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
 
 	m_pLogger = new Logger;
 	m_pLogger->addLog(new TextFileLog(c_textLogFileName, false));
@@ -53,7 +53,7 @@ void Core::initialize()
 	m_pPluginManager->loadPlugins(c_pluginsFileName);
 
 	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
-	//m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
+	m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
 	
 	if (m_pWindowManager)
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::Flags_Show | IWindow::Flags_Resizable);
@@ -93,7 +93,7 @@ void Core::deinitialize()
 
 IResourceManager *Core::createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType)
 {
-	IResourceManager *pResourceManager = createResourceManager(resourceManagerName, storageType);
+	IResourceManager *pResourceManager = FreeWorldEngine::createResourceManager(resourceManagerName, storageType);
 	
 	if (pResourceManager)
 		m_pManagerForOtherManagers->addResource(pResourceManager);
