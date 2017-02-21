@@ -22,6 +22,7 @@ public:
 
 	IGPUBuffer *createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage = IGPUBuffer::IGPUBufferUsage_StaticDraw, void *pData = 0);
 	void destroyBuffer(IGPUBuffer *pBuffer);
+	void setUniformBuffer(const IGPUBuffer *pBuffer, const uint32 bindingPoint) const;
 
 	IGPUBufferContainer *createBufferContainer();
 	void destroyBufferContainer(IGPUBufferContainer *pBufferContainer);

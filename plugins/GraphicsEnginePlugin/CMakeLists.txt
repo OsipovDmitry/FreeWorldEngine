@@ -17,6 +17,7 @@ set(HEADERS
 	GraphicsModel.h
 	GraphicsMaterial.h
 	GraphicsScene.h
+	ShaderManager.h
 	GraphicsEnginePlugin.h)
 
 set(SOURCES
@@ -24,6 +25,7 @@ set(SOURCES
 	GraphicsModel.cpp
 	GraphicsMaterial.cpp
 	GraphicsScene.cpp
+	ShaderManager.cpp
 	GraphicsEnginePlugin.cpp
 	main.cpp)
 
@@ -31,3 +33,4 @@ add_library(GraphicsEnginePlugin SHARED ${HEADERS} ${INTERFACE_HEADERS} ${SOURCE
 	
 target_link_libraries(GraphicsEnginePlugin CoreEngine)
 target_link_libraries(GraphicsEnginePlugin FWEMath)
+target_link_libraries(GraphicsEnginePlugin FWEUtility)

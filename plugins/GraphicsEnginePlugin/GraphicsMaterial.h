@@ -1,6 +1,8 @@
 #ifndef __GRAPHICSMATERIAL__
 #define __GRAPHICSMATERIAL__
 
+#include <utility/KeyGenerator.h>
+
 #include <graphics_engine/IGraphicsMaterial.h>
 
 namespace FreeWorldEngine {
@@ -33,9 +35,10 @@ public:
 	void setUniform(const int32 location, const glm::mat3& value);
 	void setUniform(const int32 location, const glm::mat4& value);
 	void setUniform(const int32 location, Renderer::IGPUTexture *pTexture);
+	void setUniform(const int32 index, Renderer::IGPUBuffer *pBuffer);
 
 	void bind() const;
-	bool operator <(const GraphicsMaterial& other) const;
+	//bool operator <(const GraphicsMaterial& other) const;
 
 private:
 	std::string m_name;
@@ -47,12 +50,26 @@ private:
 		UniformType_Vec3f, UniformType_Vec3i, UniformType_Vec3ui, 
 		UniformType_Vec4f, UniformType_Vec4i, UniformType_Vec4ui,
 		UniformType_Mat2f, UniformType_Mat3f, UniformType_Mat4f,
-		UniformType_Sampler,
 	};
-	std::map<int32, std::pair<UniformType, void*> > m_uniformData;
+	struct UniformData {
+		void *pData;
+		UniformType type;
+
+		UniformData() : pData(nullptr) {}
+		UniformData(void *p, UniformType t) : pData(p), type(t) {}
+	};
+	std::map<int32, UniformData> m_uniformData;
+
+	Utility::KeyGenerator m_textureSlotGenerator;
+	std::map<Renderer::IGPUTexture*, int32> m_uniformTextures;
+
+	Utility::KeyGenerator m_uboBindingPointGenerator;
+	std::map<Renderer::IGPUBuffer*, int32> m_uniformBuffers;
 
 	void setUniformData(const int32 location, const UniformType type, void *pData);
-	void clearUniformData();
+	int32 setUniformTexture(Renderer::IGPUTexture *pTexture);
+	int32 setUniformBuffer(Renderer::IGPUBuffer *pBuffer);
+	void clearUniforms();
 
 }; // class GraphicsMaterial
 

@@ -55,6 +55,7 @@ public:
 
 	virtual IGPUBuffer *createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage = IGPUBuffer::IGPUBufferUsage_StaticDraw, void *pData = 0) = 0;
 	virtual void destroyBuffer(IGPUBuffer *pBuffer) = 0;
+	virtual void setUniformBuffer(const IGPUBuffer *pBuffer, const uint32 bindingPoint) const = 0;
 
 	virtual IGPUBufferContainer *createBufferContainer() = 0;
 	virtual void destroyBufferContainer(IGPUBufferContainer *pBufferContainer) = 0;

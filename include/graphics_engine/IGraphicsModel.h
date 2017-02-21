@@ -5,6 +5,8 @@
 
 namespace FreeWorldEngine {
 
+struct Mesh;
+
 namespace GraphicsEngine {
 
 class IGraphicsMaterial;

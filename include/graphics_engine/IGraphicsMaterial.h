@@ -16,6 +16,7 @@ namespace FreeWorldEngine {
 
 namespace Renderer {
 	class IGPUTexture;
+	class IGPUBuffer;
 	class IGPUProgram;
 } // namespace
 
@@ -44,6 +45,7 @@ public:
 	virtual void setUniform(const int32 location, const glm::mat3& value) = 0;
 	virtual void setUniform(const int32 location, const glm::mat4& value) = 0;
 	virtual void setUniform(const int32 location, Renderer::IGPUTexture *pTexture) = 0;
+	virtual void setUniform(const int32 index, Renderer::IGPUBuffer *pBuffer) = 0; // UBO
 
 }; // class IGraphicsMaterial
 

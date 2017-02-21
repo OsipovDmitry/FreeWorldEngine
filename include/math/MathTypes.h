@@ -11,6 +11,8 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
+const float eps = 0.0001f;
+
 struct Aabb {
 	glm::vec3 vMin, vMax;
 
@@ -18,6 +20,8 @@ struct Aabb {
 };
 
 typedef glm::vec4 Plane;
+
+typedef Plane Frustum[6];
 
 } // namespace
 } // namespace

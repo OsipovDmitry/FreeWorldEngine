@@ -29,7 +29,6 @@ set(SOURCES
 	GLTexture.cpp
 	GLFrameBuffer.cpp
 	GLRenderer.cpp
-	
 	GLRendererPlugin.cpp
 	main.cpp)
 

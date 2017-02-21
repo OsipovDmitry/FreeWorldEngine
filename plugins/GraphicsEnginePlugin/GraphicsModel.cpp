@@ -30,6 +30,10 @@ void GraphicsModel::setMaterial(IGraphicsMaterial *pMaterial)
 	m_pMaterial = pMaterial;
 }
 
+void GraphicsModel::setMesh(Mesh * pMesh)
+{
+}
+
 } // namespace
 
 } // namespace

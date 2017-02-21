@@ -8,7 +8,6 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 
 class IGraphicsResource : public IResource {
-public:
 
 }; // class IGraphicsResource
 

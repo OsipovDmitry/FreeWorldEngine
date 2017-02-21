@@ -63,6 +63,11 @@ void GLRenderer::destroyBuffer(IGPUBuffer *pBuffer)
 	delete pBuffer;
 }
 
+void GLRenderer::setUniformBuffer(const IGPUBuffer * pBuffer, const uint32 bindingPoint) const
+{
+	bindBuffer(static_cast<const GLBuffer*>(pBuffer), GL_UNIFORM_BUFFER, bindingPoint);
+}
+
 IGPUBufferContainer *GLRenderer::createBufferContainer()
 {
 	GLuint id;
@@ -77,7 +82,6 @@ void GLRenderer::destroyBufferContainer(IGPUBufferContainer *pBufferContainer)
 	glDeleteVertexArrays(1, &id);
 	delete pBufferContainer;
 }
-
 
 IGPUTexture *GLRenderer::createTexture(IGPUTexture::IGPUTextureType type, const uint32 *size, const TextureFormat& internalFormat)
 {
@@ -426,7 +430,7 @@ GLenum GLRenderer::GLPrimitiveFormat(PrimitiveFormat primitiveFormat)
 	case PrimitiveFormat_Lines: return GL_LINES;
 	case PrimitiveFormat_LineStrip: return GL_LINE_STRIP;
 	case PrimitiveFormat_LineLoop: return GL_LINE_LOOP;
-	case PrimitiveFormat_Trangles: return GL_TRIANGLES;
+	case PrimitiveFormat_Triangles: return GL_TRIANGLES;
 	case PrimitiveFormat_TriangleStrip: return GL_TRIANGLE_STRIP;
 	case PrimitiveFormat_TrangleFan: return GL_TRIANGLE_FAN;
 	}

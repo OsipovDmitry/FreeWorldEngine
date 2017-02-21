@@ -19,22 +19,15 @@ class IGraphicsScene : public IGraphicsResource {
 public:
 	class Node {
 	public:
-		Node(Node *pParentNode) : m_pParentNode(pParentNode), m_childNodes(), m_position(), m_orientation(), m_pModel(0) {}
-		~Node() {
-			for (std::list<Node*>::iterator it = m_childNodes.begin(); it != m_childNodes.end(); ++it)
-				delete *it;
-		}
+		Node(Node *pParentNode) : m_pParentNode(pParentNode), m_pModel(0) {}
+		~Node() { std::for_each(m_childNodes.begin(), m_childNodes.end(), [](Node *p){delete p;}); }
 
 		glm::vec3 position() const { return m_position; }
 		void setPosition(const glm::vec3& pos) { m_position = pos; }
 		glm::quat orientation() const { return m_orientation; }
 		void setPosition(const glm::quat& orient) { m_orientation = orient; }
 		
-		Node *createChild() {
-			Node *pChild = new Node(this);
-			m_childNodes.push_back(pChild);
-			return pChild;
-		}
+		Node *createChild() { m_childNodes.push_back(new Node(this)); return m_childNodes.back(); }
 		void destroyChild(Node *pNode) {
 			std::list<Node*>::iterator it = std::find(m_childNodes.begin(), m_childNodes.end(), pNode);
 			if (it != m_childNodes.end()) { m_childNodes.erase(it); delete *it; }
@@ -51,7 +44,6 @@ public:
 		glm::quat m_orientation;
 		IGraphicsModel *m_pModel;
 	};
-
 
 	virtual ~IGraphicsScene() {}
 	

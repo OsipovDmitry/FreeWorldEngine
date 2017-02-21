@@ -122,7 +122,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 
 			pSceneMesh->name = pAssimpMesh->mName.C_Str();
 			pSceneMesh->materialIndex = pAssimpMesh->mMaterialIndex;
-			pSceneMesh->pMeshData = meshWrapper.targetMesh();
+			pSceneMesh->pMeshData = meshWrapper.target();
 		}
 
 	if (pAssimpScene->HasMaterials())
