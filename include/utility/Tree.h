@@ -57,6 +57,18 @@ class Tree {
 public:
 	typedef TreeNode<T> Node;
 
+	class Iterator {
+	public:
+		Iterator& operator ++();
+
+	private:
+		Node *m_pNode;
+		Tree<T> *m_pTree;
+		Iterator(Tree<T> *pTree, Node *pNode) : m_pTree(pTree), m_pNode(pNode) {}
+
+		friend class Tree<T>;
+	};
+
 	Tree(const T& rootNodeValue = T());
 	Tree(const Tree& other);
 	~Tree();
@@ -66,9 +78,11 @@ public:
 	const Node *rootNode() const;
 	Node *rootNode();
 
+	Iterator begin();
+
 private:
 	Node *m_pRootNode;
-
+	Node *m_pEnd;
 };
 
 template<class T>
@@ -193,13 +207,41 @@ inline TreeNode<T>& TreeNode<T>::operator=(const TreeNode<T>& other)
 }
 
 template<class T>
+inline Tree<T>::Iterator& Tree<T>::Iterator::operator++()
+{
+	if (m_pNode == m_pTree->m_pEnd)
+		return *this;
+
+	if (!m_pNode->m_children.empty()) {
+		m_pNode = m_pNode->m_children.at(0);
+	} else {
+		const Tree<T>::Node *pTmpNode = m_pNode;
+		int thisPos = (pTmpNode->m_pParent) ? pTmpNode->m_pParent->m_children.size() - 1 : 0;
+		while ((pTmpNode->m_pParent) && (thisPos == pTmpNode->m_pParent->m_children.size()-1)) {
+			for (thisPos = 0;
+				(pTmpNode->m_pParent->m_children[thisPos] != pTmpNode) && (thisPos < pTmpNode->m_pParent->m_children.size() - 1);
+				++i);
+			pTmpNode = pTmpNode->m_pParent;
+		}
+		if (++thisPos == pTmpNode->m_children.size()) {
+			m_pNode = m_pTree->m_pEnd;
+		}
+		else
+			m_pNode = m_pNode->m_children.at(thisPos);
+	}
+	return *this;
+}
+
+template<class T>
 inline Tree<T>::Tree(const T& rootNodeValue) :
-	m_pRootNode(new Node(rootNodeValue))
+	m_pRootNode(new Node(rootNodeValue)),
+	m_pEnd(new Node())
 {
 }
 
 template<class T>
-inline Tree<T>::Tree(const Tree &other)
+inline Tree<T>::Tree(const Tree &other) :
+	m_pEnd(new Node())
 {
 	delete m_pRootNode;
 	m_pRootNode = new Node(*(other.m_pRootNode));
@@ -209,6 +251,7 @@ template<class T>
 inline Tree<T>::~Tree()
 {
 	delete m_pRootNode;
+	delete m_pEnd;
 }
 
 template<class T>
@@ -229,6 +272,12 @@ template<class T>
 inline typename Tree<T>::Node *Tree<T>::rootNode()
 {
 	return m_pRootNode;
+}
+
+template<class T>
+inline Tree<T>::Iterator Tree<T>::begin()
+{
+	return Iterator(this, m_pRootNode);
 }
 
 } // namespace
