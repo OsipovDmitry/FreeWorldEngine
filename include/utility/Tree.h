@@ -59,7 +59,28 @@ public:
 
 	class Iterator {
 	public:
-		Iterator& operator ++();
+		Iterator& operator ++() {
+			if (!m_pNode->m_children.empty()) {
+				m_pNode = m_pNode->m_children.at(0);
+			}
+			else {
+				int thisPos;
+				do {
+					thisPos = std::find(m_pNode->m_pParent->m_children.cbegin(), m_pNode->m_pParent->m_children.cend(), m_pNode) - m_pNode->m_pParent->m_children.cbegin();
+					m_pNode = m_pNode->m_pParent;
+				} while ((thisPos == m_pNode->m_children.size()-1) && (m_pNode != m_pTree->m_pRootNode));
+				m_pNode = (thisPos != m_pNode->m_children.size() - 1) ? m_pNode->m_children.at(thisPos + 1) : m_pTree->m_pEnd;
+			}
+			return *this;
+		}
+		Iterator operator ++(int) {
+			Node *pOldNode = m_pNode;
+			operator ++();
+			return Iterator(m_pTree, pOldNode);
+		}
+		bool operator ==(const Iterator& other) const { return m_pNode == other.m_pNode; }
+		bool operator !=(const Iterator& other) const { return m_pNode != other.m_pNode; }
+		Node *operator *() { return m_pNode; }
 
 	private:
 		Node *m_pNode;
@@ -78,7 +99,8 @@ public:
 	const Node *rootNode() const;
 	Node *rootNode();
 
-	Iterator begin();
+	Iterator begin() { return Iterator(this, m_pRootNode); }
+	Iterator end() { return Iterator(this, m_pEnd); }
 
 private:
 	Node *m_pRootNode;
@@ -149,16 +171,16 @@ inline const TreeNode<T>* TreeNode<T>::atChild(const unsigned int pos) const
 template<class T>
 inline TreeNode<T>* TreeNode<T>::insertChild(unsigned int pos, const T& data)
 {
-	if (pos >= m_children.size())
+	if (pos > m_children.size())
 		pos = m_children.size();
-	m_children.insert(pos, new TreeNode<T>(data, this));
+	m_children.insert(m_children.begin()+pos, new TreeNode<T>(data, this));
 	return m_children.at(pos);
 }
 
 template<class T>
 inline TreeNode<T> *TreeNode<T>::addChild(const T& data)
 {
-	return insertChild(m_children.size());
+	return insertChild(m_children.size(), data);
 }
 
 template<class T>
@@ -173,7 +195,7 @@ inline void TreeNode<T>::eraseChild(const unsigned int pos)
 
 template<class T>
 inline TreeNode<T>::TreeNode(const T &data, TreeNode<T> *parent) :
-	m_data(T),
+	m_data(data),
 	m_pParent(parent),
 	m_children()
 {
@@ -203,32 +225,6 @@ template<class T>
 inline TreeNode<T>& TreeNode<T>::operator=(const TreeNode<T>& other)
 {
 	copyFrom(&other);
-	return *this;
-}
-
-template<class T>
-inline Tree<T>::Iterator& Tree<T>::Iterator::operator++()
-{
-	if (m_pNode == m_pTree->m_pEnd)
-		return *this;
-
-	if (!m_pNode->m_children.empty()) {
-		m_pNode = m_pNode->m_children.at(0);
-	} else {
-		const Tree<T>::Node *pTmpNode = m_pNode;
-		int thisPos = (pTmpNode->m_pParent) ? pTmpNode->m_pParent->m_children.size() - 1 : 0;
-		while ((pTmpNode->m_pParent) && (thisPos == pTmpNode->m_pParent->m_children.size()-1)) {
-			for (thisPos = 0;
-				(pTmpNode->m_pParent->m_children[thisPos] != pTmpNode) && (thisPos < pTmpNode->m_pParent->m_children.size() - 1);
-				++i);
-			pTmpNode = pTmpNode->m_pParent;
-		}
-		if (++thisPos == pTmpNode->m_children.size()) {
-			m_pNode = m_pTree->m_pEnd;
-		}
-		else
-			m_pNode = m_pNode->m_children.at(thisPos);
-	}
 	return *this;
 }
 
@@ -272,12 +268,6 @@ template<class T>
 inline typename Tree<T>::Node *Tree<T>::rootNode()
 {
 	return m_pRootNode;
-}
-
-template<class T>
-inline Tree<T>::Iterator Tree<T>::begin()
-{
-	return Iterator(this, m_pRootNode);
 }
 
 } // namespace
