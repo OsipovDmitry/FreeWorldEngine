@@ -9,7 +9,7 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
-SceneDataWrapper::SceneDataWrapper(SceneData * pTargetSceneData) :
+/*SceneDataWrapper::SceneDataWrapper(SceneData * pTargetSceneData) :
 	m_pSceneData(pTargetSceneData)
 {
 }
@@ -46,25 +46,12 @@ SceneData::Material *SceneDataWrapper::findMaterial(const std::string & name) co
 	return (it == m_pSceneData->materials.end()) ? 0 : *it;
 }
 
-SceneData::Node *SceneDataWrapper::findNode(const std::string & name) const
+SceneData::NodeData *SceneDataWrapper::findNode(const std::string & name) const
 {
-	SceneData::Node *pResultNode = 0;
+	auto it = std::find_if(m_pSceneData->treeNodes.begin(), m_pSceneData->treeNodes.end(), 
+		[&name](Utility::Tree<SceneData::NodeData*>::Node *p){ return p->data()->name == name; });
 
-	std::list<SceneData::Node*> nodes;
-	if (m_pSceneData->pRootNode)
-		nodes.push_back(m_pSceneData->pRootNode);
-
-	while (!nodes.empty()) {
-		SceneData::Node *pNode = nodes.front();
-		nodes.erase(nodes.begin());
-		if (pNode->name == name) {
-			pResultNode = pNode;
-			break;
-		}
-		std::copy(pNode->childNodes.begin(), pNode->childNodes.end(), std::back_inserter(nodes));
-	}
-
-	return pResultNode;
+	return (it == m_pSceneData->treeNodes.end()) ? nullptr : (*it)->data();
 }
 
 SceneData *SceneDataWrapper::clone() const
@@ -107,8 +94,7 @@ SceneData *SceneDataWrapper::clone() const
 
 	return pNewScene;
 }
-
-
+*/
 
 } // namespace
 

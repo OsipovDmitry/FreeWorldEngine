@@ -15,8 +15,8 @@ public:
 
 	std::string name() const;
 	std::string info() const;
-	bool initialize() const;
-	void deinitialize() const;
+	bool initialize();
+	void deinitialize();
 
 private:
 	mutable std::list<ILog*> m_logsList;

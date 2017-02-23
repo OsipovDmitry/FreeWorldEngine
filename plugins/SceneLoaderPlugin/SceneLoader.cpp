@@ -52,7 +52,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 				uint32 numIndices = 0;
 				for (uint32 faceIdx = 0; faceIdx < pAssimpMesh->mNumFaces; numIndices += pAssimpMesh->mFaces[faceIdx++].mNumIndices) ;
 				meshWrapper.addIndices(numIndices);
-				uint32 *pIndices = meshWrapper.targetMesh()->pIndexData;
+				uint32 *pIndices = meshWrapper.target()->pIndexData;
 				for (uint32 faceIdx = 0; faceIdx < pAssimpMesh->mNumFaces; ++faceIdx) {
 					const aiFace& face = pAssimpMesh->mFaces[faceIdx];
 					memcpy(pIndices, face.mIndices, face.mNumIndices*sizeof(face.mIndices[0]));
@@ -113,7 +113,7 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 			switch (pAssimpMesh->mPrimitiveTypes) {
 			case aiPrimitiveType_POINT: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Points); break; }
 			case aiPrimitiveType_LINE: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Lines); break; }
-			case aiPrimitiveType_TRIANGLE: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Trangles); break; }
+			case aiPrimitiveType_TRIANGLE: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Triangles); break; }
 			default: { meshWrapper.setPrimitiveFormat(PrimitiveFormat_Points); break; }
 			}
 
@@ -183,12 +183,15 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 		}
 
 	if (pAssimpScene->mRootNode) {
-		std::queue<std::pair<aiNode*, SceneData::Node*> > nodesQueue;
-		nodesQueue.push(std::make_pair(pAssimpScene->mRootNode, pScene->pRootNode = new SceneData::Node));
+		std::queue<std::pair<aiNode*, Utility::Tree<SceneData::NodeData*>::Node*> > nodesQueue;
+		nodesQueue.push(std::make_pair(pAssimpScene->mRootNode, pScene->treeNodes.rootNode()));
 		while (!nodesQueue.empty()) {
 			aiNode *pAssimpNode = nodesQueue.front().first;
-			SceneData::Node *pNode = nodesQueue.front().second;
+			Utility::Tree<SceneData::NodeData*>::Node *pTreeNode = nodesQueue.front().second;
 			nodesQueue.pop();
+
+			SceneData::NodeData *pNode = new SceneData::NodeData;
+			pTreeNode->setData(pNode);
 
 			pNode->name = pAssimpNode->mName.C_Str();
 			pNode->meshesIndices.resize(pAssimpNode->mNumMeshes);
@@ -200,9 +203,10 @@ IScene *SceneLoader::loadScene(const std::string& filename)
 				m.a3, m.b3, m.c3, m.d3,
 				m.a4, m.b4, m.c4, m.d4);
 
-			pNode->childNodes.resize(pAssimpNode->mNumChildren);
-			for (uint32 i = 0; i < pAssimpNode->mNumChildren; ++i)
-				nodesQueue.push(std::make_pair(pAssimpNode->mChildren[i], pNode->childNodes[i] = new SceneData::Node(pNode)));
+			for (uint32 i = 0; i < pAssimpNode->mNumChildren; ++i) {
+				Utility::Tree<SceneData::NodeData*>::Node *p = pTreeNode->addChild();
+				nodesQueue.push(std::make_pair(pAssimpNode->mChildren[i], p));
+			}
 		}
 	}
 

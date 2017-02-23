@@ -1,7 +1,7 @@
 #ifndef __SCENELOADER__
 #define __SCENELOADER__
 
-#include <3rdparty/assimp/Importer.hpp>
+
 
 #include <ISceneLoader.h>
 

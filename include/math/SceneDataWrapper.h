@@ -8,7 +8,7 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
-class MATH_DLL SceneDataWrapper {
+/*class MATH_DLL SceneDataWrapper {
 public:
 	SceneDataWrapper(SceneData *pTargetSceneData);
 	~SceneDataWrapper();
@@ -21,13 +21,13 @@ public:
 
 	SceneData::Mesh *findMesh(const std::string& name) const;
 	SceneData::Material *findMaterial(const std::string& name) const;
-	SceneData::Node *findNode(const std::string& name) const;
+	SceneData::NodeData *findNode(const std::string& name) const;
 
 private:
 	SceneData *m_pSceneData;
 
 }; // class SceneDataWrapper
-
+*/
 } // namespace
 
 } // namespace

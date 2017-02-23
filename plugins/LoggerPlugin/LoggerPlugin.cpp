@@ -32,7 +32,7 @@ std::string LoggerPlugin::info() const
 	return std::string("Logger Plugin");
 }
 
-bool LoggerPlugin::initialize() const
+bool LoggerPlugin::initialize()
 {
 	ICore *pCore = getCoreEngine();
 	if (!pCore)
@@ -100,7 +100,7 @@ bool LoggerPlugin::initialize() const
 	return true;
 }
 
-void LoggerPlugin::deinitialize() const
+void LoggerPlugin::deinitialize()
 {
 	ICore *pCore = getCoreEngine();
 	if (!pCore)

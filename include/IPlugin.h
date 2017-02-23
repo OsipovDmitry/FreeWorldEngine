@@ -11,8 +11,8 @@ public:
 
 	virtual std::string info() const = 0;
 
-	virtual bool initialize() const = 0;
-	virtual void deinitialize() const = 0;
+	virtual bool initialize() = 0;
+	virtual void deinitialize() = 0;
 
 }; // class IPlugin
 

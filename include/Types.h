@@ -1,14 +1,11 @@
 #ifndef __TYPES__
 #define __TYPES__
 
-#include <utility>
 #include <map> 
 #include <string>
 #include <vector>
-#include <list>
-#include <algorithm>
-#include <iterator>
 #include <3rdparty/glm/mat4x4.hpp>
+#include <utility/Tree.h>
 
 namespace FreeWorldEngine {
 
@@ -120,33 +117,21 @@ struct SceneData {
 	};
 	typedef std::vector<Mesh*> MeshList;
 
-	struct Node {
+	struct NodeData {
 		std::string name;
 		std::vector<uint32> meshesIndices;
-		std::vector<Node*> childNodes;
-		Node *pParentNode;
 		glm::mat4x4 transform;
-
-		Node(Node *parent = 0) : name(), meshesIndices(), childNodes(), pParentNode(parent), transform() {}
 	};
 
 	MaterialList materials;
 	MeshList meshes;
-	Node *pRootNode;
+	Utility::Tree<NodeData*> treeNodes;
 
-	SceneData() : materials(), meshes(), pRootNode(0) {}
+	SceneData() : materials(), meshes(), treeNodes() {}
 	~SceneData() {
 		for (MeshList::iterator it = meshes.begin(); it != meshes.end(); delete *(it++)) ;
 		for (MaterialList::iterator it = materials.begin(); it != materials.end(); delete *(it++)) ;
-		std::list<SceneData::Node*> nodes;
-		if (pRootNode)
-			nodes.push_back(pRootNode);
-		while (!nodes.empty()) {
-			SceneData::Node *pNode = nodes.front();
-			nodes.pop_front();
-			std::copy(pNode->childNodes.begin(), pNode->childNodes.end(), std::back_inserter(nodes));
-			delete pNode;
-		}
+		for (Utility::Tree<NodeData*>::Iterator it = treeNodes.begin(); it != treeNodes.end(); delete (*(it++))->data()) ;
 	}
 
 }; // struct SceneData
