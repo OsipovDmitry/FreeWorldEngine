@@ -1,11 +1,10 @@
 #ifndef __WINDOWMANAGERPLUGIN__
 #define __WINDOWMANAGERPLUGIN__
 
-#include "IPlugin.h"
+#include <IPlugin.h>
+#include <Types.h>
 
 namespace FreeWorldEngine {
-
-class IImageLoader;
 
 class ImageLoaderPlugin : public IPlugin {
 public:
@@ -14,11 +13,12 @@ public:
 
 	std::string name() const;
 	std::string info() const;
-	bool initialize() const;
-	void deinitialize() const;
+	bool initialize();
+	void deinitialize();
 
 private:
-	static IImageLoader *pImageLoader;
+	static Raster *loadJPEGFile(const std::string& filename);
+	static Raster *loadPNGFile(const std::string& filename);
 
 }; // class IPlugin
 

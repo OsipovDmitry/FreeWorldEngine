@@ -4,28 +4,15 @@ include_directories(../../3rdparty)
 include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
-set(INTERFACE_HEADERS
-#	../../include/IImage.h
-#	../../include/IImageLoader.h
-)
-
-source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
-
 set(HEADERS 
-	Image.h
-	ImageLoader.h
 	ImageLoaderPlugin.h)
 
 set(SOURCES
-	Image.cpp
-	ImageLoader.cpp
 	ImageLoaderPlugin.cpp
 	main.cpp)
 
 add_library(ImageLoaderPlugin SHARED ${HEADERS} ${INTERFACE_HEADERS} ${SOURCES})
 	
 target_link_libraries(ImageLoaderPlugin CoreEngine)
-target_link_libraries(ImageLoaderPlugin FWEUtility)
-target_link_libraries(ImageLoaderPlugin FWEMath)
 target_link_libraries(ImageLoaderPlugin libjpeg)
 target_link_libraries(ImageLoaderPlugin libpng)
