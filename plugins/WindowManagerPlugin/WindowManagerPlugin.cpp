@@ -26,7 +26,7 @@ std::string WindowManagerPlugin::info() const
 	return std::string("SDL2 Window Manager Plugin");
 }
 
-bool WindowManagerPlugin::initialize() const
+bool WindowManagerPlugin::initialize()
 {
 	ICore *pCore = getCoreEngine();
 	if (!pCore)
@@ -43,7 +43,7 @@ bool WindowManagerPlugin::initialize() const
 	return true;
 }
 
-void WindowManagerPlugin::deinitialize() const
+void WindowManagerPlugin::deinitialize()
 {
 	ICore *pCore = getCoreEngine();
 
