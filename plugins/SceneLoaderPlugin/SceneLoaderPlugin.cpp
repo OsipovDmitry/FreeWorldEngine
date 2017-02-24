@@ -236,8 +236,7 @@ SceneData *SceneLoaderPlugin::loadScene(const std::string& filename)
 
 			pNode->name = pAssimpNode->mName.C_Str();
 			pNode->meshesIndices.resize(pAssimpNode->mNumMeshes);
-			for (uint32 i = 0; i < pAssimpNode->mNumMeshes; ++i)
-				pNode->meshesIndices[i] = pAssimpNode->mMeshes[i];
+			std::copy(pAssimpNode->mMeshes, pAssimpNode->mMeshes + pAssimpNode->mNumMeshes, pNode->meshesIndices.begin());
 			aiMatrix4x4& m = pAssimpNode->mTransformation;
 			pNode->transform = glm::mat4(m.a1, m.b1, m.c1, m.d1,
 				m.a2, m.b2, m.c2, m.d2,
