@@ -57,7 +57,6 @@ template <class DataType>
 inline DataType *DataLoader<DataType>::loadData(const std::string& filename) const
 {
 	std::string ext = Utility::File(filename).fileExtension();
-	std::transform(ext.cbegin(), ext.cend(), ext.begin(), tolower);
 	auto loader = m_loaders.find(ext);
 
 	return (loader != m_loaders.cend()) ? loader->second(filename) : 0;
