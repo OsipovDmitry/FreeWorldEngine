@@ -25,7 +25,7 @@ std::string GLRendererPlugin::info() const
 	return std::string("OpenGL Renderer Plugin");
 }
 
-bool GLRendererPlugin::initialize() const
+bool GLRendererPlugin::initialize()
 {
 	ICore *pCore = getCoreEngine();
 	if (!pCore)
@@ -57,7 +57,7 @@ bool GLRendererPlugin::initialize() const
 	return true;
 }
 
-void GLRendererPlugin::deinitialize() const
+void GLRendererPlugin::deinitialize()
 {
 	ICore *pCore = getCoreEngine();
 

@@ -25,7 +25,7 @@ std::string GraphicsEnginePlugin::info() const
 	return std::string("Graphics Engine Plugin");
 }
 
-bool GraphicsEnginePlugin::initialize() const
+bool GraphicsEnginePlugin::initialize()
 {
 	ICore *pCore = getCoreEngine();
 	if (!pCore)
@@ -43,7 +43,7 @@ bool GraphicsEnginePlugin::initialize() const
 	return true;
 }
 
-void GraphicsEnginePlugin::deinitialize() const
+void GraphicsEnginePlugin::deinitialize()
 {
 	ICore *pCore = getCoreEngine();
 
