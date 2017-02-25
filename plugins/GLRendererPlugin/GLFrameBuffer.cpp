@@ -107,14 +107,14 @@ GLuint GLFrameBuffer::GLid() const
 void GLFrameBuffer::attachRenderBuffer(GLenum attachment, const IGPURenderBuffer *pRenderBuffer)
 {
 	pGLRenderer->bindFrameBuffer(this);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, static_cast<const GLRenderBuffer*>(pRenderBuffer)->GLid());
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, pRenderBuffer ? static_cast<const GLRenderBuffer*>(pRenderBuffer)->GLid() : 0);
 }
 
 void GLFrameBuffer::attachTexture(GLenum attachment, const IGPUTexture *pTexture, const uint32 layer)
 {
 	const GLTexture *pGLTexture = static_cast<const GLTexture*>(pTexture);
-	IGPUTexture::IGPUTextureType texType = pGLTexture->type();
-	GLuint texGLid = pGLTexture->GLid();
+	IGPUTexture::IGPUTextureType texType = pGLTexture ? pGLTexture->type() : IGPUTexture::IGPUTextureType_2D;
+	GLuint texGLid = pGLTexture ? pGLTexture->GLid() : 0;
 
 	pGLRenderer->bindFrameBuffer(this);
 	switch (texType) {
