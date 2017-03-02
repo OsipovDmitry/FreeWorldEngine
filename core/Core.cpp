@@ -57,8 +57,10 @@ void Core::initialize()
 
 
 	
-	if (m_pWindowManager)
-		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768, IWindow::Flags_Show | IWindow::Flags_Resizable);
+	if (m_pWindowManager) {
+		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768);
+		m_pMainWindow->show();
+	}
 }
 
 void Core::deinitialize()

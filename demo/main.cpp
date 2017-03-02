@@ -56,14 +56,14 @@ std::string fShaderPost =
 "{\n"\
 "	float zMin, zMax;\n"\
 "	zMin = zMax = texture(texDepth, gl_FragCoord.xy).r;\n"\
-"	for (int x = -1; x <= 1; ++x)\n"\
-"		for (int y = -1; y <= 1; ++y) {\n"\
+"	for (int x = -2; x <= 2; ++x)\n"\
+"		for (int y = -2; y <= 2; ++y) {\n"\
 "			float zVal = texture(texDepth, gl_FragCoord.xy+vec2(x,y)).r;\n"\
 "			if (zVal < zMin) zMin = zVal;\n"\
 "			else if (zVal > zMax) zMax = zVal;\n"\
 "		}\n"\
 "	outColor = texture(tex, gl_FragCoord.xy);\n"\
-"	//if (abs(zMax-zMin) > 0.12) outColor = vec4(0,0,0,1);\n"\
+"	if (abs(zMax-zMin) > 0.15) outColor = vec4(0,0,0,1);\n"\
 "}\n";
 
 IGPUProgram *pProgram;
@@ -88,13 +88,16 @@ void render() {
 
 	glm::mat4 vpMatrix;
 	static float angle = 0.0f;
-	vpMatrix = glm::perspective(45.0f, (float)w/(float)h, 3.0f, 7.0f) * glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -5.0f)) * glm::rotate(glm::mat4(), angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	vpMatrix = glm::perspective(45.0f, (float)w/(float)h, 3.0f, 7.0f) *
+		glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -5.0f)) *
+		glm::rotate(glm::mat4(), angle, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(glm::mat4(), 1.7f*angle, glm::vec3(1.0f, 0.0f, 0.0f));
 	angle += 0.01f;
 	pProgram->setUniform(pProgram->uniformLocationByName("viewProjMatrix"), vpMatrix);
 
 	getCoreEngine()->renderer()->setTexture(pTexture, 0);
 	getCoreEngine()->renderer()->renderIndexedGeometry(pProgram, pBCont, pMesh->primitiveFormat, TYPE_UNSIGNED_INT_32, pMesh->numIndices, 0);
-	
+
 	getCoreEngine()->renderer()->setViewport(0,0,w,h);
 	getCoreEngine()->renderer()->disableDepthTest();
 	getCoreEngine()->renderer()->setFrameBuffer(0);
@@ -103,7 +106,49 @@ void render() {
 	getCoreEngine()->renderer()->renderIndexedGeometry(pProgramPost, pBContPost, PrimitiveFormat_TriangleStrip, TYPE_UNSIGNED_INT_32, 4, 0);
 }
 
+void resize(int32 w, int32 h) {
+	pFrameBuffer->attachColorBuffer(0, (IGPUTexture*)0);
+	pFrameBuffer->attachDepthBuffer((IGPUTexture*)0);
+	getCoreEngine()->renderer()->destroyTexture(pTexturePost);
+	getCoreEngine()->renderer()->destroyTexture(pDepthTexPost);
+	getCoreEngine()->renderer()->destroyFrameBuffer(pFrameBuffer);
+
+	const uint32 texsize[2] = { w + (4 - w%4)%4, h + (4 - h%4)%4 };
+	pTexturePost = getCoreEngine()->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
+	pDepthTexPost = getCoreEngine()->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_SpecialDepth, TextureFormat::ChannelSize_32, TextureFormat::ChannelsCount_1));
+	pFrameBuffer = getCoreEngine()->renderer()->createFrameBuffer();
+	pFrameBuffer->attachColorBuffer(0, pTexturePost);
+	pFrameBuffer->attachDepthBuffer(pDepthTexPost);
+}
+
+#include <utility/Tree.h>
+#include <iostream>
+
 int main() {
+	Utility::Tree<int> tree(1);
+	Utility::TreeNode<int> *c2 = tree.rootNode()->addChild(2);
+	Utility::TreeNode<int> *c12 = tree.rootNode()->addChild(12);
+	Utility::TreeNode<int> *c13 = tree.rootNode()->addChild(13);
+	Utility::TreeNode<int> *c3 = c2->addChild(3);
+	Utility::TreeNode<int> *c10 = c2->addChild(10);
+	Utility::TreeNode<int> *c4 = c3->addChild(4);
+	Utility::TreeNode<int> *c5 = c3->addChild(5);
+	Utility::TreeNode<int> *c6 = c3->addChild(6);
+	Utility::TreeNode<int> *c7 = c6->addChild(7);
+	Utility::TreeNode<int> *c8 = c6->addChild(8);
+	Utility::TreeNode<int> *c9 = c8->addChild(9);
+	Utility::TreeNode<int> *c11 = c10->addChild(11);
+	Utility::TreeNode<int> *c14 = c13->addChild(14);
+	Utility::TreeNode<int> *c15 = c13->addChild(15);
+	Utility::TreeNode<int> *c16 = c15->addChild(16);
+	Utility::TreeNode<int> *c17 = c15->addChild(17);
+	Utility::TreeNode<int> *c18 = c17->addChild(18);
+	Utility::TreeNode<int> *c19 = c17->addChild(19);
+	Utility::TreeNode<int> *c20 = c17->addChild(20);
+
+	for (auto it = tree.begin(); it != tree.end(); ++it)
+		std::cout << (*it)->data() << " ";
+
 	initCoreEngine();
 	ICore *p = getCoreEngine();
 	p->initialize();
@@ -111,8 +156,10 @@ int main() {
 	p->logger()->printMessage("Debug, Hello!", ILogger::MessageType_Debug);
 
 	IWindow *pMainWindow = p->mainWindow();
-	if (pMainWindow)
+	if (pMainWindow) {
 		pMainWindow->setFuncRender(render);
+		pMainWindow->setFuncResized(resize);
+	}
 
 	std::string sLog="";
 
@@ -153,7 +200,7 @@ int main() {
 	pProgramPost->setUniform(pProgramPost->uniformLocationByName("tex"), 0);
 	pProgramPost->setUniform(pProgramPost->uniformLocationByName("texDepth"), 1);
 
-	IImage *pImg = p->imageLoader()->load("img.jpg");
+	IImage *pImg = p->imageLoader()->load("box.jpg");
 
 	uint32 offs[3] = {0,0,0};
 
@@ -164,7 +211,7 @@ int main() {
 	pTexturePost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pDepthTexPost = p->renderer()->createTexture(IGPUTexture::IGPUTextureType_Rectangle, texsize, TextureFormat(TextureFormat::PixelFormat_SpecialDepth, TextureFormat::ChannelSize_32, TextureFormat::ChannelsCount_1));
 
-	IScene *pScene = p->sceneLoader()->load("teapot.FBX");
+	IScene *pScene = p->sceneLoader()->load("box.FBX");
 	pMesh = pScene->data()->meshes[0]->pMeshData;
 
 	IGPUBuffer *pVB = p->renderer()->createBuffer(pMesh->vertexStride * pMesh->numVertices * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pVertexData);
@@ -188,7 +235,7 @@ int main() {
 	pFrameBuffer = p->renderer()->createFrameBuffer();
 	pFrameBuffer->attachColorBuffer(0, pTexturePost);
 	pFrameBuffer->attachDepthBuffer(pDepthTexPost);
-
+	
 	p->windowManager()->mainLoop();
 	p->deinitialize();
 	destroyCoreEngine();

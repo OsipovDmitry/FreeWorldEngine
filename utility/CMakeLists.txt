@@ -5,12 +5,14 @@ set(HEADERS ../include/utility/UtilitySettings.h
 			../include/utility/DateTime.h
 			../include/utility/File.h
 			../include/utility/Tree.h
-			../include/utility/KeyGenerator.h)
+			../include/utility/KeyGenerator.h
+			../include/utility/AutoNameGenerator.h)
 
 set(SOURCES XML.cpp
 			DateTime.cpp
 			File.cpp
-			KeyGenerator.cpp)
+			KeyGenerator.cpp
+			AutoNameGenerator.cpp)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin) 
 

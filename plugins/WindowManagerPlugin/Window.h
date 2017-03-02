@@ -1,16 +1,16 @@
 #ifndef __WINDOW__
 #define __WINDOW__
 
+#include <vector>
 #include <3rdparty/sdl/SDL.h>
-
 #include <IWindow.h>
 
 namespace FreeWorldEngine {
 
 class Window : public IWindow {
-public:
-	Window(SDL_Window *pWindow, const SDL_GLContext& context);
-	~Window();
+public:	
+	std::string name() const;
+
 	void show();
 	void hide();
 	void move(int32 x, int32 y);
@@ -19,45 +19,84 @@ public:
 	void restore();
 	void maximize();
 
-	void setFuncShown(void (*func)());
-	void setFuncHidden(void (*func)());
-	void setFuncMoved(void (*func)(int32, int32));
-	void setFuncResized(void (*func)(int32, int32));
-	void setFuncMinimized(void (*func)());
-	void setFuncRestored(void (*func)());
-	void setFuncMaximized(void (*func)());
-	void setFuncClose(void (*func)());
-	void setFuncRender(void (*func)());
-	void setFuncUpdate(void (*func)(uint32, uint32));
+	void registerShowCallBack(ShowCallBack callback);
+	void registerHideCallBack(HideCallBack callback);
+	void registerMoveCallBack(MoveCallBack callback);
+	void registerResizeCallBack(ResizeCallBack callback);
+	void registerMinimizeCallBack(MinimizeCallBack callback);
+	void registerRestoreCallBack(RestoreCallBack callback);
+	void registerMaximizeCallBack(MaximizeCallBack callback);
+	void registerCloseCallBack(CloseCallBack callback);
+	void registerRenderCallBack(RenderCallBack callback);
+	void registerUpdateCallBack(UpdateCallBack callback);
+	void registerMouseDownCallBack(MouseDownCallBack callback);
+	void registerMouseUpCallBack(MouseUpCallBack callback);
+	void registerMouseMotionCallBack(MouseMotionCallBack callback);
+	void registerMouseWheelCallBack(MouseWheelCallBack callback);
+	void registerKeyDownCallBack(KeyDownCallBack callback);
+	void registerKeyUpCallBack(KeyUpCallBack callback);
 
-	uint32 id() const;
-	uint32 width() const;
-	uint32 height() const;
+	void unregisterShowCallBack(ShowCallBack callback);
+	void unregisterHideCallBack(HideCallBack callback);
+	void unregisterMoveCallBack(MoveCallBack callback);
+	void unregisterResizeCallBack(ResizeCallBack callback);
+	void unregisterMinimizeCallBack(MinimizeCallBack callback);
+	void unregisterRestoreCallBack(RestoreCallBack callback);
+	void unregisterMaximizeCallBack(MaximizeCallBack callback);
+	void unregisterCloseCallBack(CloseCallBack callback);
+	void unregisterRenderCallBack(RenderCallBack callback);
+	void unregisterUpdateCallBack(UpdateCallBack callback);
+	void unregisterMouseDownCallBack(MouseDownCallBack callback);
+	void unregisterMouseUpCallBack(MouseUpCallBack callback);
+	void unregisterMouseMotionCallBack(MouseMotionCallBack callback);
+	void unregisterMouseWheelCallBack(MouseWheelCallBack callback);
+	void unregisterKeyDownCallBack(KeyDownCallBack callback);
+	void unregisterKeyUpCallBack(KeyUpCallBack callback);
+
+	int32 width() const;
+	int32 height() const;
 	uint64 frameNumber() const;
 	void setMousePos(const int32 x, const int32 y) const;
 
-	void render() const;
-	void update(uint32 time, uint32 dt) const;
-	void sendEvent(const SDL_WindowEvent& windowEvent) const;
-	SDL_Window *window() const;
-	SDL_GLContext context() const;
+	void render();
+	void update(uint32 time, uint32 dt);
+	void sendEvent(const SDL_WindowEvent& windowEvent);
+	/*SDL_Window *window() const;
+	SDL_GLContext context() const;*/
+	Uint32 id() const;
+
+	static KeyCode sdlKeysymToKeyCode(const SDL_Keysym& sdlKey);
+	static MouseButtons sdlMouseButtonsStateToMoueButtons(Uint32 buttonsState);
+	static MouseButton sdlMouseButtonToMouseButton(Uint8 sdlMouseButton);
+	static SDL_Scancode keyCodeToSDLScancode(KeyCode keyCode);
 
 private:
+	std::string m_name;
 	SDL_Window *m_window;
 	SDL_GLContext m_glContext;
-	mutable uint64 m_frameNumber;
+	uint64 m_frameNumber;
 
-	void (*m_funcShown)();
-	void (*m_funcHidden)();
-	void (*m_funcMoved)(int32, int32);
-	void (*m_funcResized)(int32, int32);
-	void (*m_funcMinimized)();
-	void (*m_funcRestored)();
-	void (*m_funcMaximized)();
-	void (*m_funcClose)();
-	void (*m_funcRender)();
-	void (*m_funcUpdate)(uint32, uint32);
+	std::vector<ShowCallBack> m_showCallBacks;
+	std::vector<HideCallBack> m_hideCallBacks;
+	std::vector<MoveCallBack> m_moveCallBacks;
+	std::vector<ResizeCallBack> m_resizeCallBacks;
+	std::vector<MinimizeCallBack> m_minimizeCallBacks;
+	std::vector<RestoreCallBack> m_restoreCallBacks;
+	std::vector<MaximizeCallBack> m_maximizeCallBacks;
+	std::vector<CloseCallBack> m_closeCallBacks;
+	std::vector<RenderCallBack> m_renderCallBacks;
+	std::vector<UpdateCallBack> m_updateCallBacks;
+	std::vector<MouseDownCallBack> m_mouseDownCallBacks;
+	std::vector<MouseUpCallBack> m_mouseUpCallBacks;
+	std::vector<MouseMotionCallBack> m_mouseMotionCallBacks;
+	std::vector<MouseWheelCallBack> m_mouseWheelCallBacks;
+	std::vector<KeyDownCallBack> m_keyDownCallBacks;
+	std::vector<KeyUpCallBack> m_keyUpCallBacks;
 
+	Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable);
+	~Window();
+
+	friend class WindowManager;
 };
 
 } // namespace
