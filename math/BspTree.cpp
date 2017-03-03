@@ -89,14 +89,14 @@ BspNode *BspTree::buildNode(const std::vector<uint32>& indices, const float eps)
 		glm::vec3 *verts[3] = {(glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[0]),
 							   (glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[1]),
 							   (glm::vec3*)mesh.attributeValue(VertexAttributeType_Position, idxs[2])};
-		ClassifyPlane classifyResult = classifyPolygonRelativePlane(sepPlane, verts, 3, eps);
+		ClassifyPlane classifyResult = classifyPolygonRelativePlane(sepPlane, verts, 3);
 		switch (classifyResult) {
 		case ClassifyPlane_Touch: { thisIndices.push_back(idxs[0]); thisIndices.push_back(idxs[1]); thisIndices.push_back(idxs[2]); break; }
 		case ClassifyPlane_Back: { leftIndices.push_back(idxs[0]); leftIndices.push_back(idxs[1]); leftIndices.push_back(idxs[2]); break; }
 		case ClassifyPlane_Front: { rightIndices.push_back(idxs[0]); rightIndices.push_back(idxs[1]); rightIndices.push_back(idxs[2]); break; }
 		case ClassifyPlane_Intersect: {
 			float coefs[3];
-			cutTriangle(verts, sepPlane, coefs[0], coefs[1], coefs[2], eps);
+			cutTriangle(verts, sepPlane, coefs[0], coefs[1], coefs[2]);
 			int32 numCuts = (int32)(coefs[0] > -eps) + (int32)(coefs[1] > -eps) + (int32)(coefs[2] > -eps);
 			if (numCuts == 2) {
 				int32 edgeIdx = 0;

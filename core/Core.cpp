@@ -28,6 +28,7 @@ Core::Core() :
 	m_pThreadManager(0),
 	m_pImageLoader(0),
 	m_pSceneLoader(0),
+    m_pSoundLoader(0),
 	m_pWindowManager(0),
 	m_pGPURenderer(0),
 	m_pGraphicsEngine(0)
@@ -49,17 +50,18 @@ void Core::initialize()
 
 	m_pLibraryManager = new LibraryManager();
 
-	m_pPluginManager = new PluginManager();
-	m_pPluginManager->loadPlugins(c_pluginsFileName);
-
 	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
 	m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
+	m_pSoundLoader = new ContentLoader<SoundData>("ResourceManagerForSoundLoader");
+
+	m_pPluginManager = new PluginManager();
+	m_pPluginManager->loadPlugins(c_pluginsFileName);
 	
+	// FIXME: убрать этот костыль
 	if (m_pWindowManager) {
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768);
 		m_pMainWindow->show();
 	}
-
 }
 
 void Core::deinitialize()
@@ -152,6 +154,11 @@ IImageLoader *Core::imageLoader() const
 ISceneLoader *Core::sceneLoader() const
 {
 	return m_pSceneLoader;
+}
+
+ISoundLoader *Core::soundLoader() const
+{
+	return m_pSoundLoader;
 }
 
 IPhysicsManager *Core::physicsManager() const

@@ -20,12 +20,14 @@ class IContentLoader;
 
 typedef IContentLoader<Raster> IImageLoader;
 typedef IContentLoader<SceneData> ISceneLoader;
+typedef IContentLoader<SoundData> ISoundLoader;
 
 template <class DataType>
 class IContent;
 
 typedef IContent<Raster> IImage;
 typedef IContent<SceneData> IScene;
+typedef IContent<SoundData> ISound;
 
 namespace Renderer {
 	class IGPURenderer;
@@ -56,6 +58,7 @@ public:
 
 	virtual IImageLoader *imageLoader() const = 0;
 	virtual ISceneLoader *sceneLoader() const = 0;
+	virtual ISoundLoader *soundLoader() const = 0;
 	
 	virtual IPhysicsManager *physicsManager() const = 0;
 

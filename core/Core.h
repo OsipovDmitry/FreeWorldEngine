@@ -34,6 +34,7 @@ public:
 
 	IImageLoader *imageLoader() const;
 	ISceneLoader *sceneLoader() const;
+	ISoundLoader *soundLoader() const;
 	
 	IPhysicsManager *physicsManager() const;
 
@@ -60,6 +61,7 @@ private:
 	GraphicsEngine::IGraphicsEngine *m_pGraphicsEngine;
 	IImageLoader *m_pImageLoader;
 	ISceneLoader *m_pSceneLoader;
+	ISoundLoader *m_pSoundLoader;
 
 	IPhysicsManager *m_pPhysicsManager;
 

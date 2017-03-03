@@ -1,6 +1,7 @@
 #ifndef __IRESOURCEMANAGER__
 #define __IRESOURCEMANAGER__
 
+#include <iterator>
 #include <string>
 #include <xutility>
 
@@ -11,15 +12,8 @@
 namespace FreeWorldEngine {
 
 class ResourceIteratorPrivate;
-class CORE_FUNC_DLL ResourceIterator : public
-	std::_Iterator012<std::bidirectional_iterator_tag,
-					  IResource*,
-					  ptrdiff_t,
-					  IResource**,
-					  IResource*&,
-					  std::_Iterator_base0> {
+class CORE_FUNC_DLL ResourceIterator : public std::iterator<std::bidirectional_iterator_tag, IResource*> {
 public:
-
 	ResourceIterator(ResourceIteratorPrivate *pPrivate);
 	~ResourceIterator();
 	ResourceIterator(const ResourceIterator& other);

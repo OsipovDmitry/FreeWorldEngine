@@ -136,8 +136,22 @@ struct SceneData {
 
 }; // struct SceneData
 
-struct Sound {
-}; // struct Sound 
+enum SoundFormat {
+	SoundFormat_Mono8,
+	SoundFormat_Mono16,
+	SoundFormat_Stereo8,
+	SoundFormat_Stereo16
+}; // enum SoundFormat
+
+struct SoundData {
+	void *pData;
+	uint32 size;
+	uint32 frequency;
+	SoundFormat format;
+
+	SoundData(void *d = nullptr, uint32 s = 0, uint32 fr = 0, SoundFormat fmt = SoundFormat_Mono8) : pData(d), size(s), frequency(fr), format(fmt) {}
+	~SoundData() { delete pData; }
+}; // struct SoundData
 
 } // namespace
 

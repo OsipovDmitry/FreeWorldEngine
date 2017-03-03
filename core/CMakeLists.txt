@@ -61,8 +61,8 @@ set(SOURCES
     TextFileLog.cpp
     PluginManager.cpp
     ResourceManager.cpp
-	Thread.cpp
-	ThreadManager.cpp
+    Thread.cpp
+    ThreadManager.cpp
 )
 
 add_definitions(-DCORE_EXPORT)
