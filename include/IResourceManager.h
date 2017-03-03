@@ -2,6 +2,7 @@
 #define __IRESOURCEMANAGER__
 
 #include <string>
+#include <xutility>
 
 #include "IResource.h"
 #include "CoreSettings.h"
@@ -10,8 +11,15 @@
 namespace FreeWorldEngine {
 
 class ResourceIteratorPrivate;
-class CORE_FUNC_DLL ResourceIterator {
+class CORE_FUNC_DLL ResourceIterator : public
+	std::_Iterator012<std::bidirectional_iterator_tag,
+					  IResource*,
+					  ptrdiff_t,
+					  IResource**,
+					  IResource*&,
+					  std::_Iterator_base0> {
 public:
+
 	ResourceIterator(ResourceIteratorPrivate *pPrivate);
 	~ResourceIterator();
 	ResourceIterator(const ResourceIterator& other);
@@ -20,7 +28,6 @@ public:
 	bool operator !=(const ResourceIterator& other) const;
 	bool operator ==(const ResourceIterator& other) const;
 	IResource *operator *();
-	const IResource *operator *() const;
 	ResourceIterator& operator ++();
 	ResourceIterator& operator ++(int);
 	ResourceIterator& operator --();
@@ -51,15 +58,6 @@ public:
 
 	virtual ResourceIterator begin() = 0;
 	virtual ResourceIterator end() = 0;
-
-	virtual ResourceIterator rbegin() = 0;
-	virtual ResourceIterator rend() = 0;
-
-	virtual ResourceIterator cbegin() = 0;
-	virtual ResourceIterator cend() = 0;
-
-	virtual ResourceIterator crbegin() = 0;
-	virtual ResourceIterator crend() = 0;
 
 }; // class IResourceManager
 

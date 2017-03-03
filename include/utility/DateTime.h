@@ -8,6 +8,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Utility {
+
 struct UTILITY_DLL Time {
 	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0);
 	
@@ -41,6 +43,7 @@ struct UTILITY_DLL DateTime {
 	Time time;
 };
 
+} // namespace
 } // namespace
 
 #endif // __DATETIME__

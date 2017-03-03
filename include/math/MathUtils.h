@@ -19,7 +19,7 @@ enum ClassifyPlane {
 
 // модуль числа
 template <class T>
-inline T abs(const T& value) { return (value > 0) ? value : -value; }
+inline T abs(const T& value) { return (value > static_cast<T>(0)) ? value : -value; }
 
 // Интерполяция двух значений по коэфициенту.
 template <class T1, class T2>
@@ -35,20 +35,20 @@ Plane buildPlane(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
 float distToPlane(const Plane& plane, const glm::vec3& v);
 
 // Классификация полигона относительно плоскости. verts - массив указателей на точки. Полигон может содержать 1,2,3 или более точек.
-ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts, const float eps = 0.0001f);
+ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts);
 
 // Построить BoundBox для меша.
 Aabb buldAabb(Mesh *pMesh);
 
 // Разрезать отрезок плоскостью. В resultCoef возвращается коэфициент (0..1) точки пересечения и -1, если пересечения нет.
 // Если функция вернула в resultCoef не отрицательно значение, то точку разреза можно получить interpolate(*(verts[0]), *(verts[1]), resultCoef)
-void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef, const float eps = 0.0001f);
+void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef);
 
 // Разрезать треугольник плоскостью. В resultCoef[i] возвращаются коэфициенты (0..1) точек разреза ребер треугольника или -1 в случае, если данное ребро резать не нужно.
 // Как минимум, в один resultCoef[i] будет возвращено -1, так как плоскость не может одновременно пересекать все три ребра треугольника.
 // Если в два из трех resultCoef[i] вернулось -1, то это значит, что плоскость проходит через одно ребро треугольника и противолежащуюю вершину.
 // Если в три из трех, то треугольник резать не нужно. Он лежит либо на плоскости, либо по одну сторону от плоскости
-void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20, const float eps = 0.0001f);
+void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20);
 
 } // namespace
 } // namespace

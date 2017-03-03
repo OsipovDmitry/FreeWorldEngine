@@ -8,6 +8,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Utility {
+
 struct XMLNodePrivate;
 class UTILITY_DLL XMLNode {
 	friend class XMLRoot;
@@ -55,6 +57,7 @@ private:
 	bool parseBuffer();
 };
 
+} // namespace
 } // namespace
 
 #endif // __XMLNODE__

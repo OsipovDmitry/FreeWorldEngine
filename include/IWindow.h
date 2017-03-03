@@ -107,6 +107,8 @@ public:
 	typedef void(*KeyDownCallBack)(KeyCode keyCode, IWindow*);
 	typedef void(*KeyUpCallBack)(KeyCode keyCode, IWindow*);
 
+	virtual ~IWindow() {}
+
 	virtual void show() = 0;
 	virtual void hide() = 0;
 	virtual void move(int32 x, int32 y) = 0;
@@ -154,9 +156,8 @@ public:
 	virtual uint64 frameNumber() const = 0;
 	virtual void setMousePos(const int32 x, const int32 y) const = 0;
 
-private:
-	virtual ~IWindow() {}
-
+	virtual void setUserData(void *pData) = 0;
+	virtual void *userData() = 0;
 };
 
 } // namespace
