@@ -4,6 +4,8 @@
 
 namespace FreeWorldEngine {
 
+namespace Utility {
+
 Time::Time(uint8 h, uint8 m, uint8 s) : hours(h), minutes(m), seconds(s)
 {
 }
@@ -55,4 +57,5 @@ DateTime DateTime::current()
 	return DateTime(Time::current(), Date::current());
 }
 
-}
+} // namespace
+} // namespace

@@ -8,7 +8,8 @@ set(INTERFACE_HEADERS
 	../../include/graphics_engine/IGraphicsResource.h
 	../../include/graphics_engine/IGraphicsModel.h
 	../../include/graphics_engine/IGraphicsMaterial.h
-	../../include/graphics_engine/IGraphicsScene.h)
+	../../include/graphics_engine/IGraphicsScene.h
+	../../include/graphics_engine/IGraphicsWindow.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
@@ -17,6 +18,7 @@ set(HEADERS
 	GraphicsModel.h
 	GraphicsMaterial.h
 	GraphicsScene.h
+	GraphicsWindow.h
 	ShaderManager.h
 	GraphicsEnginePlugin.h)
 
@@ -25,6 +27,7 @@ set(SOURCES
 	GraphicsModel.cpp
 	GraphicsMaterial.cpp
 	GraphicsScene.cpp
+	GraphicsWindow.cpp
 	ShaderManager.cpp
 	GraphicsEnginePlugin.cpp
 	main.cpp)

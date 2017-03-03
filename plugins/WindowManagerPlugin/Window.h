@@ -9,6 +9,9 @@ namespace FreeWorldEngine {
 
 class Window : public IWindow {
 public:	
+	Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable);
+	~Window();
+
 	std::string name() const;
 
 	void show();
@@ -58,8 +61,18 @@ public:
 	uint64 frameNumber() const;
 	void setMousePos(const int32 x, const int32 y) const;
 
+	void setUserData(void *pData);
+	void *userData();
+
 	void render();
 	void update(uint32 time, uint32 dt);
+	void mouseButtonDown(MouseButton button, uint32 numClicks, int32 cursorPosX, int32 cursorPosY);
+	void mouseButtonUp(MouseButton button, uint32 numClicks, int32 cursorPosX, int32 cursorPosY);
+	void mouseMotion(MouseButtons buttons, int32 cursorPosX, int32 cursorPosY, int32 relCursorPosX, int32 relCursorPosY);
+	void mouseWheel(int32 dirX, int32 dirY);
+	void keyDown(KeyCode keyCode);
+	void keyUp(KeyCode keyCode);
+
 	void sendEvent(const SDL_WindowEvent& windowEvent);
 	/*SDL_Window *window() const;
 	SDL_GLContext context() const;*/
@@ -75,6 +88,7 @@ private:
 	SDL_Window *m_window;
 	SDL_GLContext m_glContext;
 	uint64 m_frameNumber;
+	void *m_pUserData;
 
 	std::vector<ShowCallBack> m_showCallBacks;
 	std::vector<HideCallBack> m_hideCallBacks;
@@ -93,10 +107,6 @@ private:
 	std::vector<KeyDownCallBack> m_keyDownCallBacks;
 	std::vector<KeyUpCallBack> m_keyUpCallBacks;
 
-	Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable);
-	~Window();
-
-	friend class WindowManager;
 };
 
 } // namespace

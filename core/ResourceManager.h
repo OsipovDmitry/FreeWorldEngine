@@ -27,12 +27,6 @@ public:
 
 	ResourceIterator begin();
 	ResourceIterator end();
-	ResourceIterator rbegin();
-	ResourceIterator rend();
-	ResourceIterator cbegin();
-	ResourceIterator cend();
-	ResourceIterator crbegin();
-	ResourceIterator crend();
 
 private:
 	std::string m_name;

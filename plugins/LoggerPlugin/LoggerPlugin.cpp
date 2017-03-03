@@ -38,20 +38,20 @@ bool LoggerPlugin::initialize()
 	if (!pCore)
 		return false;
 
-	XMLRoot *pXML = XMLRoot::openFromFile(g_logerSettingsFileName);
+	Utility::XMLRoot *pXML = Utility::XMLRoot::openFromFile(g_logerSettingsFileName);
 	if (!pXML) {
 		pCore->logger()->printMessage("Could not open file \"" + g_logerSettingsFileName + "\"", ILogger::MessageType_Error);
 		return false;
 	}
 	if (pXML->name() != "logs_list") {
 		pCore->logger()->printMessage("The document \"" + g_logerSettingsFileName + "\" is damaged", ILogger::MessageType_Error);
-		XMLRoot::close(pXML);
+		Utility::XMLRoot::close(pXML);
 		return false;
 	}
 
-	XMLNode::NodeList nodeList = pXML->children();
-	for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
-		XMLNode *pNode = *it;
+	Utility::XMLNode::NodeList nodeList = pXML->children();
+	for (Utility::XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
+		Utility::XMLNode *pNode = *it;
 		if (pNode->name() != "log")
 			continue;
 
@@ -97,6 +97,7 @@ bool LoggerPlugin::initialize()
 		}
 	}
 
+	Utility::XMLRoot::close(pXML);
 	return true;
 }
 

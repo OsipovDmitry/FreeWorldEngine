@@ -6,6 +6,9 @@
 #include <3rdparty/rapidxml/rapidxml.hpp>
 
 namespace FreeWorldEngine {
+
+namespace Utility {
+
 using namespace rapidxml;
 
 struct XMLNodePrivate {
@@ -160,4 +163,5 @@ void XMLRoot::close(XMLRoot *pRoot)
 		delete pRoot;
 }
 
+} // namespace
 } // namespace

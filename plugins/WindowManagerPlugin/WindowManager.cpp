@@ -7,7 +7,7 @@
 namespace FreeWorldEngine {
 
 WindowManager::WindowManager() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForWindowManager")),
+	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForWindowManager", IResourceManager::StorageType_List)),
 	m_pNameGenerator(new Utility::AutoNameGenerator("WindowName"))
 {
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -47,7 +47,8 @@ void WindowManager::destroyWindow(IWindow *pWindow)
 
 void WindowManager::destroyAllWindows()
 {
-	std::for_each(m_pResourceManager->begin(), m_pResourceManager->end(), [this](IResource *p) { this->destroyWindow(static_cast<IWindow*>(p)); });
+	auto func = [this](IResource *p) { this->destroyWindow(static_cast<IWindow*>(p)); };
+	std::for_each(m_pResourceManager->begin(), m_pResourceManager->end(), func);
 }
 
 void WindowManager::mainLoop() {
@@ -56,8 +57,9 @@ void WindowManager::mainLoop() {
 
 	std::for_each(m_pResourceManager->begin(), m_pResourceManager->end(), [](IResource *p) {
 		IWindow *pp = static_cast<IWindow*>(p);
-		pp->resize(pp->width(), pp->height()); });
-
+		pp->resize(pp->width(), pp->height());
+	});
+		
 	while (true) {
 		const uint32 time = SDL_GetTicks();
 		const uint32 dt = time - lastTime;
@@ -77,64 +79,54 @@ void WindowManager::mainLoop() {
 					break;
 				}
 				case SDL_WINDOWEVENT: {
-					ResourceIterator i = std::find_if(m_pResourceManager->begin(), m_pResourceManager->end(), [&event](IResource *p){ return static_cast<Window*>(p)->id() == event.window.windowID;});
-					if (i == m_pResourceManager->end())
+					Window *pWindow = findWindow(event.window.windowID);
+					if (!pWindow)
 						break;
-					static_cast<Window*>(*i)->sendEvent(event.window); // ѕересылаем событие окну.
-					if (event.window.event == SDL_WINDOWEVENT_CLOSE) { // ≈сли событие было на закрытие окна, то дополнительно уничтожаем его и удал€ем из менеджера.
-						m_pResourceManager->destroyResource(*i);
-
+					pWindow->sendEvent(event.window); // ѕересылаем событие окну.
+					/*if (event.window.event == SDL_WINDOWEVENT_CLOSE) { // ≈сли событие было на закрытие окна, то дополнительно уничтожаем его и удал€ем из менеджера.
+						m_pResourceManager->destroyResource(pWindow);
 						if (m_pResourceManager->size() == 0) { // ≈сли последний SDL_WINDOWEVENT_CLOSE посылалс€ искусственно, то SDL_QUIT не придет и нужно его симулировать.
 							SDL_Event quitEvent;
 							quitEvent.type = SDL_QUIT;
 							SDL_PushEvent(&quitEvent);
 						}
-					}
+					}*/
 					break;
 				}
 				case SDL_MOUSEBUTTONDOWN: {
-					if (m_funcMouseButtonDown) {
-						MouseButton mouseButton = sdlMouseButtonToMouseButton(event.button.button);
-						m_funcMouseButtonDown(event.button.windowID, mouseButton, event.button.clicks, event.button.x, event.button.y);
-					}
+					Window *pWindow = findWindow(event.button.windowID);
+					if (pWindow)
+						pWindow->mouseButtonDown(Window::sdlMouseButtonToMouseButton(event.button.button), event.button.clicks, event.button.x, event.button.y);
 					break;
 				}
 				case SDL_MOUSEBUTTONUP: {
-					if (m_funcMouseButtonUp) {
-						MouseButton mouseButton = sdlMouseButtonToMouseButton(event.button.button);
-						m_funcMouseButtonUp(event.button.windowID, mouseButton, event.button.clicks, event.button.x, event.button.y);
-					}
+					Window *pWindow = findWindow(event.button.windowID);
+					if (pWindow)
+						pWindow->mouseButtonUp(Window::sdlMouseButtonToMouseButton(event.button.button), event.button.clicks, event.button.x, event.button.y);
 					break;
 				}
 				case SDL_MOUSEMOTION: {
-					if (m_funcMouseMotion) {
-						uint32 mask = sdlMouseButtonsStateToMask(event.motion.state);
-						m_funcMouseMotion(event.motion.windowID, mask, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
-					}
+					Window *pWindow = findWindow(event.motion.windowID);
+					if (pWindow)
+						pWindow->mouseMotion(Window::sdlMouseButtonsStateToMoueButtons(event.motion.state), event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
 					break;
 				}
 				case SDL_MOUSEWHEEL: {
-					if (m_funcMouseWheel) {
-						m_funcMouseWheel(event.wheel.windowID, event.wheel.x, event.wheel.y);
-					}
+					Window *pWindow = findWindow(event.wheel.windowID);
+					if (pWindow)
+						pWindow->mouseWheel(event.wheel.x, event.wheel.y);
 					break;
 				}
 				case SDL_KEYDOWN : {
-					if (m_funcKeyDown) {
-						KeyCode keyCode;
-						uint32 modifiers;
-						sdlKeysymToKeyCode(event.key.keysym, keyCode, modifiers);
-						m_funcKeyDown(event.key.windowID, keyCode, modifiers);
-					}
+					Window *pWindow = findWindow(event.key.windowID);
+					if (pWindow)
+						pWindow->keyDown(Window::sdlKeysymToKeyCode(event.key.keysym));
 					break;
 				}
 				case SDL_KEYUP : {
-					if (m_funcKeyUp) {
-						KeyCode keyCode;
-						uint32 modifiers;
-						sdlKeysymToKeyCode(event.key.keysym, keyCode, modifiers);
-						m_funcKeyUp(event.key.windowID, keyCode, modifiers);
-					}
+					Window *pWindow = findWindow(event.key.windowID);
+					if (pWindow)
+						pWindow->keyUp(Window::sdlKeysymToKeyCode(event.key.keysym));
 					break;
 				}
 				default: break;
@@ -159,6 +151,12 @@ IWindow::MouseButtons WindowManager::mouseButtonsState() const
 {
 	int tmp;
 	return Window::sdlMouseButtonsStateToMoueButtons(SDL_GetMouseState(&tmp, &tmp));
+}
+
+Window *WindowManager::findWindow(Uint32 id) const
+{
+	ResourceIterator i = std::find_if(m_pResourceManager->begin(), m_pResourceManager->end(), [id](IResource *p){ return static_cast<Window*>(p)->id() == id; });
+	return (i != m_pResourceManager->end()) ? static_cast<Window*>(*i) : 0;
 }
 
 } // namespace

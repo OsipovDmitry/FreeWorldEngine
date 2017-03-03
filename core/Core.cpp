@@ -49,18 +49,17 @@ void Core::initialize()
 
 	m_pLibraryManager = new LibraryManager();
 
-	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
-	m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
-
 	m_pPluginManager = new PluginManager();
 	m_pPluginManager->loadPlugins(c_pluginsFileName);
 
-
+	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
+	m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
 	
 	if (m_pWindowManager) {
 		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768);
 		m_pMainWindow->show();
 	}
+
 }
 
 void Core::deinitialize()

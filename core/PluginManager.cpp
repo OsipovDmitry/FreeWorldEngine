@@ -70,26 +70,26 @@ void PluginManager::unloadPlugin(const std::string& pluginName)
 
 void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 {
-	XMLRoot *m_pXML;
-	if ((m_pXML = XMLRoot::openFromFile(pluginsListFileName)) == 0) {
+	Utility::XMLRoot *m_pXML;
+	if ((m_pXML = Utility::XMLRoot::openFromFile(pluginsListFileName)) == 0) {
 		LOG_ERROR("Could not open file \"" + pluginsListFileName + "\"");
 		return;
 	}
 
 	if (m_pXML->name() != "plugins_list") {
 		LOG_ERROR("The document \"" + pluginsListFileName + "\" is damaged");
-		XMLRoot::close(m_pXML);
+		Utility::XMLRoot::close(m_pXML);
 		return;
 	}
 
 	for (int32 groupIdx = 0; groupIdx < c_pluginsListGroups.size(); ++groupIdx) {
-		XMLNode *pGroupNode = m_pXML->child(c_pluginsListGroups.at(groupIdx));
+		Utility::XMLNode *pGroupNode = m_pXML->child(c_pluginsListGroups.at(groupIdx));
 		if (!pGroupNode)
 			continue;
 
-		XMLNode::NodeList nodeList = pGroupNode->children();
-		for (XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
-			XMLNode *pNode = *it;
+		Utility::XMLNode::NodeList nodeList = pGroupNode->children();
+		for (Utility::XMLNode::NodeList::const_iterator it = nodeList.cbegin(); it != nodeList.cend(); ++it) {
+			Utility::XMLNode *pNode = *it;
 			if (pNode->name() != "plugin")
 				continue;
 			std::string libraryName = std::string(pNode->attributeValue("library"));
@@ -100,7 +100,7 @@ void PluginManager::loadPlugins(const std::string& pluginsListFileName)
 		}
 	}
 
-	XMLRoot::close(m_pXML);
+	Utility::XMLRoot::close(m_pXML);
 }
 
 void PluginManager::unloadPlugins()

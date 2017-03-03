@@ -5,8 +5,6 @@
 #include <math/MathTypes.h>
 #include <Types.h>
 
-struct Mesh;
-
 namespace FreeWorldEngine {
 
 namespace Math {
@@ -22,7 +20,7 @@ float distToPlane(const Plane& plane, const glm::vec3& v)
 	return plane.x*v.x + plane.y*v.y + plane.z*v.z + plane.w;
 }
 
-ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts, const float eps)
+ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts)
 {
 	bool front = false, back = false;
 
@@ -70,7 +68,7 @@ Aabb buldAabb(Mesh *pMesh)
 	return Aabb(vMin, vMax);
 }
 
-void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef, const float eps)
+void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef)
 {
 	resultCoef = -1.0f;
 
@@ -83,7 +81,7 @@ void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef, const flo
 	resultCoef = abs(dists[0]) / abs(dists[0] - dists[1]);
 }
 
-void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20, const float eps)
+void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20)
 {
 	resultCoef01 = resultCoef12 = resultCoef20 = -1.0f;
 

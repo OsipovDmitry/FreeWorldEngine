@@ -39,11 +39,8 @@ private:
 	Iter m_iter;
 };
 
-
-template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::iterator>::operator *() { return *m_iter; }
-template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::const_iterator>::operator *() { return *m_iter; }
-template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::reverse_iterator>::operator *() { return *m_iter; }
-template <> IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::const_reverse_iterator>::operator *() { return *m_iter; }
+template <>
+IResource *ResourceIteratorPrivateImpl<std::list<IResource*>::iterator>::operator *() { return *m_iter; }
 
 ResourceIterator::ResourceIterator(ResourceIteratorPrivate *pPrivate) :
 	m(pPrivate)
@@ -78,11 +75,6 @@ bool ResourceIterator::operator ==(const ResourceIterator& other) const
 }
 
 IResource *ResourceIterator::operator *()
-{
-	return m->operator*();
-}
-
-const IResource *ResourceIterator::operator *() const
 {
 	return m->operator*();
 }
@@ -199,42 +191,6 @@ ResourceIterator ResourceManager<Container>::end()
 	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::iterator>(m_data.end()));
 }
 
-template <class Container>
-ResourceIterator ResourceManager<Container>::rbegin()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::reverse_iterator>(m_data.rbegin()));
-}
-
-template <class Container>
-ResourceIterator ResourceManager<Container>::rend()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::reverse_iterator>(m_data.rend()));
-}
-
-template <class Container>
-ResourceIterator ResourceManager<Container>::cbegin()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_iterator>(m_data.cbegin()));
-}
-
-template <class Container>
-ResourceIterator ResourceManager<Container>::cend()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_iterator>(m_data.cend()));
-}
-
-template <class Container>
-ResourceIterator ResourceManager<Container>::crbegin()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_reverse_iterator>(m_data.crbegin()));
-}
-
-template <class Container>
-ResourceIterator ResourceManager<Container>::crend()
-{
-	return ResourceIterator(new ResourceIteratorPrivateImpl<typename Container::const_reverse_iterator>(m_data.crend()));
-}
-
 IResourceManager *createResourceManager(const std::string & resourceManagerName, const IResourceManager::StorageType storageType)
 {
 	IResourceManager *pResourceManager = 0;
@@ -256,7 +212,6 @@ IResourceManager *createResourceManager(const std::string & resourceManagerName,
 	}
 	return pResourceManager;
 }
-
 
 // Частичная специализация методов для list реализации
 template <>
@@ -299,8 +254,6 @@ void ResourceManager<typename list>::destroyResource(const std::string& name)
 template <>
 void ResourceManager<typename list>::destroyAllResources()
 {
-	//for (auto it = m_data.begin(); it != m_data.end(); ++it)
-		//delete *it;
 	std::for_each(m_data.begin(), m_data.end(), [](IResource *p) { delete p; });
 	m_data.clear();
 }
@@ -310,30 +263,6 @@ template <>
 IResourceManager::StorageType ResourceManager<typename hash>::storageType() const
 {
 	return IResourceManager::StorageType_Hash;
-}
-
-template <>
-ResourceIterator ResourceManager<typename hash>::rbegin()
-{
-	return begin();
-}
-
-template <>
-ResourceIterator ResourceManager<typename hash>::rend()
-{
-	return end();
-}
-
-template <>
-ResourceIterator ResourceManager<typename hash>::crbegin()
-{
-	return cbegin();
-}
-
-template <>
-ResourceIterator ResourceManager<typename hash>::crend()
-{
-	return cend();
 }
 
 // Частичная специализация методов для map реализации

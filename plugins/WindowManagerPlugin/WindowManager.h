@@ -1,6 +1,7 @@
 #ifndef __WINDOWMANAGER__
 #define __WINDOWMANAGER__
 
+#include <3rdparty/sdl/SDL.h>
 #include <IWindowManager.h>
 
 namespace FreeWorldEngine {
@@ -10,6 +11,8 @@ class IResourceManager;
 namespace Utility {
 	class AutoNameGenerator;
 }
+
+class Window;
 
 class WindowManager : public IWindowManager {
 public:
@@ -25,6 +28,8 @@ public:
 	bool keyState(const IWindow::KeyCode keyCode) const;
 	void mousePos(int32& x, int32& y) const;
 	IWindow::MouseButtons mouseButtonsState() const;
+
+	Window *findWindow(Uint32 id) const;
 
 private:
 	IResourceManager *m_pResourceManager;

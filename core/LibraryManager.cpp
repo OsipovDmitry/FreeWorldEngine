@@ -12,7 +12,7 @@ LibraryManager::LibraryManager() :
 LibraryManager::~LibraryManager()
 {
 	while (m_pResourceManager->size())
-		unloadLibrary(static_cast<ILibrary*>(*(m_pResourceManager->rbegin())));
+		unloadLibrary(static_cast<ILibrary*>(*(m_pResourceManager->begin())));
 	coreEngine->destroyResourceManager(m_pResourceManager);
 }
 	

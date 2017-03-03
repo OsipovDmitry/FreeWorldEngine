@@ -6,9 +6,10 @@
 
 namespace FreeWorldEngine {
 
-	Window::Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable) :
+Window::Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable) :
 	m_name(name),
 	m_frameNumber(-1),
+	m_pUserData(0),
 	m_showCallBacks(),
 	m_hideCallBacks(),
 	m_moveCallBacks(),
@@ -26,20 +27,22 @@ namespace FreeWorldEngine {
 	m_keyDownCallBacks(),
 	m_keyUpCallBacks()
 {
-	SDL_Window *pSDLWindow = SDL_CreateWindow(
+	m_window = SDL_CreateWindow(
 		title.c_str(),
 		fullscreen ? 0 : SDL_WINDOWPOS_CENTERED,
 		fullscreen ? 0 : SDL_WINDOWPOS_CENTERED,
 		width,
 		height,
 		SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN | (resizable ? SDL_WINDOW_RESIZABLE : 0));
-	if (!pSDLWindow)
+	if (!m_window)
 		getCoreEngine()->logger()->printMessage("Don't create window.", ILogger::MessageType_Error);
 
-	SDL_GLContext pSDLGLContext = SDL_GL_CreateContext(pSDLWindow);
-	if (!pSDLGLContext) {
-		if (pSDLWindow)
-			SDL_DestroyWindow(pSDLWindow);
+	m_glContext = SDL_GL_CreateContext(m_window);
+	if (!m_glContext) {
+		if (m_window) {
+			SDL_DestroyWindow(m_window);
+			m_window = 0;
+		}
 		getCoreEngine()->logger()->printMessage("Don't create window gl context.", ILogger::MessageType_Error);
 	}
 }
@@ -328,6 +331,16 @@ void Window::setMousePos(const int32 x, const int32 y) const
 	SDL_WarpMouseInWindow(m_window, x, y);
 }
 
+void Window::setUserData(void * pData)
+{
+	m_pUserData = pData;
+}
+
+void *Window::userData()
+{
+	return m_pUserData;
+}
+
 void Window::render()
 {
 	m_frameNumber++;
@@ -338,6 +351,36 @@ void Window::render()
 void Window::update(uint32 time, uint32 dt)
 {
 	std::for_each(m_updateCallBacks.cbegin(), m_updateCallBacks.cend(), [time, dt, this](UpdateCallBack p) { p(time, dt, this); });
+}
+
+void Window::mouseButtonDown(MouseButton button, uint32 numClicks, int32 cursorPosX, int32 cursorPosY)
+{
+	std::for_each(m_mouseDownCallBacks.cbegin(), m_mouseDownCallBacks.cend(), [button, numClicks, cursorPosX, cursorPosY, this](MouseDownCallBack p) { p(button, numClicks, cursorPosX, cursorPosY, this); });
+}
+
+void Window::mouseButtonUp(MouseButton button, uint32 numClicks, int32 cursorPosX, int32 cursorPosY)
+{
+	std::for_each(m_mouseUpCallBacks.cbegin(), m_mouseUpCallBacks.cend(), [button, numClicks, cursorPosX, cursorPosY, this](MouseUpCallBack p) { p(button, numClicks, cursorPosX, cursorPosY, this); });
+}
+
+void Window::mouseMotion(MouseButtons buttons, int32 cursorPosX, int32 cursorPosY, int32 relCursorPosX, int32 relCursorPosY)
+{
+	std::for_each(m_mouseMotionCallBacks.cbegin(), m_mouseMotionCallBacks.cend(), [buttons, cursorPosX, cursorPosY, relCursorPosX, relCursorPosY, this](MouseMotionCallBack p) { p(buttons, cursorPosX, cursorPosY, relCursorPosX, relCursorPosY, this); });
+}
+
+void Window::mouseWheel(int32 dirX, int32 dirY)
+{
+	std::for_each(m_mouseWheelCallBacks.cbegin(), m_mouseWheelCallBacks.cend(), [dirX, dirY, this](MouseWheelCallBack p) { p(dirX, dirY, this); });
+}
+
+void Window::keyDown(KeyCode keyCode)
+{
+	std::for_each(m_keyDownCallBacks.cbegin(), m_keyDownCallBacks.cend(), [keyCode, this](KeyDownCallBack p) { p(keyCode, this); });
+}
+
+void Window::keyUp(KeyCode keyCode)
+{
+	std::for_each(m_keyUpCallBacks.cbegin(), m_keyUpCallBacks.cend(), [keyCode, this](KeyUpCallBack p) { p(keyCode, this); });
 }
 
 void Window::sendEvent(const SDL_WindowEvent& windowEvent)
