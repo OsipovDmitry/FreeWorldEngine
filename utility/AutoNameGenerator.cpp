@@ -7,8 +7,9 @@ namespace Utility {
 
 struct AutoNameGeneratorPrivate {
 	std::string prefix;
+	uint64 index;
 
-	AutoNameGeneratorPrivate(const std::string& s) : prefix(s) {}
+	AutoNameGeneratorPrivate(const std::string& s) : prefix(s), index(0) {}
 };
 
 AutoNameGenerator::AutoNameGenerator(const std::string& prefix) :
@@ -23,9 +24,9 @@ AutoNameGenerator::~AutoNameGenerator()
 
 std::string AutoNameGenerator::generateName()
 {
-	static uint64 index = 0;
-	return m->prefix + std::to_string(index++);
+	return m->prefix + std::to_string((m->index)++);
 }
 
 } // namespace
+
 } // namespace
