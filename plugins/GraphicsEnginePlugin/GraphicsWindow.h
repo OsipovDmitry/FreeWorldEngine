@@ -16,11 +16,11 @@ public:
 
 	std::string name() const;
 
-	void setGraphicsCamera(IGraphicsCamera *pGraphicsCamera);
-	const IGraphicsCamera *graphicsCamera() const;
+	void setCamera(IGraphicsCamera *pGraphicsCamera);
+	const IGraphicsCamera *camera() const;
 
-	void setGraphicsScene(IGraphicsScene *pGraphicsScene);
-	const IGraphicsScene *graphicsScene() const;
+	void setScene(IGraphicsScene *pGraphicsScene);
+	const IGraphicsScene *scene() const;
 
 private:
 	std::string m_name;

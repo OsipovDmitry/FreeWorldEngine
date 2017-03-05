@@ -157,7 +157,7 @@ public:
 	virtual void setMousePos(const int32 x, const int32 y) const = 0;
 
 	virtual void setUserData(void *pData) = 0;
-	virtual void *userData() = 0;
+	virtual void *userData() const = 0;
 };
 
 } // namespace

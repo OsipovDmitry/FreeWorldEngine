@@ -5,27 +5,48 @@
 
 namespace FreeWorldEngine {
 
+class IWindow;
+
+namespace Renderer {
+	class IGPUProgram;
+} // namespace
+
 namespace GraphicsEngine {
 
+class IGraphicsCamera;
 class IGraphicsModel;
 class IGraphicsMaterial;
 class IGraphicsScene;
+class IGraphicsWindow;
 
 class IGraphicsEngine {
 public:
 	virtual ~IGraphicsEngine() {}
 
+	virtual IGraphicsCamera *findCamera(const std::string& name) const = 0;
+	virtual IGraphicsCamera *createCamera(const std::string& name = "@utoname") = 0;
+	virtual void destroyCamera(const std::string& name) = 0;
+	virtual void destroyCamera(IGraphicsCamera *pCamera) = 0;
+
 	virtual IGraphicsModel *findModel(const std::string& name) const = 0;
-	virtual IGraphicsModel *createModel(const std::string& name) = 0;
+	virtual IGraphicsModel *createModel(const std::string& name = "@utoname") = 0;
 	virtual void destroyModel(const std::string& name) = 0;
+	virtual void destroyModel(IGraphicsModel *pModel) = 0;
 
 	virtual IGraphicsMaterial *findMaterial(const std::string& name) const = 0;
-	virtual IGraphicsMaterial *createMaterial(const std::string& name) = 0;
+	virtual IGraphicsMaterial *createMaterial(Renderer::IGPUProgram *pPrgram, const std::string& name = "@utoname") = 0;
 	virtual void destroyMaterial(const std::string& name) = 0;
+	virtual void destroyMaterial(IGraphicsMaterial *pMaterial) = 0;
 
 	virtual IGraphicsScene *findScene(const std::string& name) const = 0;
-	virtual IGraphicsScene *createScene(const std::string& name) = 0;
+	virtual IGraphicsScene *createScene(const std::string& name = "@utoname") = 0;
 	virtual void destroyScene(const std::string& name) = 0;
+	virtual void destroyScene(IGraphicsScene *pScene) = 0;
+
+	virtual IGraphicsWindow *findWindow(const std::string& name) const = 0;
+	virtual IGraphicsWindow *createWindow(IWindow *pTargetWindow, const std::string& name = "@utoname") = 0;
+	virtual void destroyWindow(const std::string& name) = 0;
+	virtual void destroyWindow(IGraphicsWindow *pWindow) = 0;
 
 }; // class IGraphicsEngine
 

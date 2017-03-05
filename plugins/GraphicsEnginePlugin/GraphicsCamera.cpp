@@ -7,6 +7,7 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 	
 GraphicsCamera::GraphicsCamera(const std::string & name) :
+	m_name(name),
 	m_frustum(),
 	m_cacheProjMatrix(),
 	m_cacheViewMatrix(),
@@ -27,6 +28,11 @@ GraphicsCamera::GraphicsCamera(const std::string & name) :
 
 GraphicsCamera::~GraphicsCamera()
 {
+}
+
+std::string GraphicsCamera::name() const
+{
+	return m_name;
 }
 
 glm::mat4x4 GraphicsCamera::viewMatrix() const

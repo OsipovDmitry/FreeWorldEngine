@@ -100,100 +100,99 @@ void Window::maximize()
 
 void Window::registerShowCallBack(ShowCallBack callback)
 {
-	if (std::find(m_showCallBacks.cbegin(), m_showCallBacks.cend(), callback) != m_showCallBacks.cend())
+	if (std::find(m_showCallBacks.cbegin(), m_showCallBacks.cend(), callback) == m_showCallBacks.cend())
 		m_showCallBacks.push_back(callback);
 }
 
 void Window::registerHideCallBack(HideCallBack callback)
 {
-	if (std::find(m_hideCallBacks.cbegin(), m_hideCallBacks.cend(), callback) != m_hideCallBacks.cend())
+	if (std::find(m_hideCallBacks.cbegin(), m_hideCallBacks.cend(), callback) == m_hideCallBacks.cend())
 		m_hideCallBacks.push_back(callback);
 }
 
 void Window::registerMoveCallBack(MoveCallBack callback)
 {
-	if (std::find(m_moveCallBacks.cbegin(), m_moveCallBacks.cend(), callback) != m_moveCallBacks.cend())
+	if (std::find(m_moveCallBacks.cbegin(), m_moveCallBacks.cend(), callback) == m_moveCallBacks.cend())
 		m_moveCallBacks.push_back(callback);
 }
 
 void Window::registerResizeCallBack(ResizeCallBack callback)
 {
-	if (std::find(m_resizeCallBacks.cbegin(), m_resizeCallBacks.cend(), callback) != m_resizeCallBacks.cend())
+	if (std::find(m_resizeCallBacks.cbegin(), m_resizeCallBacks.cend(), callback) == m_resizeCallBacks.cend())
 		m_resizeCallBacks.push_back(callback);
 }
 
 void Window::registerMinimizeCallBack(MinimizeCallBack callback)
 {
-	if (std::find(m_minimizeCallBacks.cbegin(), m_minimizeCallBacks.cend(), callback) != m_minimizeCallBacks.cend())
+	if (std::find(m_minimizeCallBacks.cbegin(), m_minimizeCallBacks.cend(), callback) == m_minimizeCallBacks.cend())
 		m_minimizeCallBacks.push_back(callback);
 }
 
 void Window::registerRestoreCallBack(RestoreCallBack callback)
 {
-	if (std::find(m_restoreCallBacks.cbegin(), m_restoreCallBacks.cend(), callback) != m_restoreCallBacks.cend())
+	if (std::find(m_restoreCallBacks.cbegin(), m_restoreCallBacks.cend(), callback) == m_restoreCallBacks.cend())
 		m_restoreCallBacks.push_back(callback);
 }
 
 void Window::registerMaximizeCallBack(MaximizeCallBack callback)
 {
-	if (std::find(m_maximizeCallBacks.cbegin(), m_maximizeCallBacks.cend(), callback) != m_maximizeCallBacks.cend())
+	if (std::find(m_maximizeCallBacks.cbegin(), m_maximizeCallBacks.cend(), callback) == m_maximizeCallBacks.cend())
 		m_maximizeCallBacks.push_back(callback);
 }
 
 void Window::registerCloseCallBack(CloseCallBack callback)
 {
-	if (std::find(m_closeCallBacks.cbegin(), m_closeCallBacks.cend(), callback) != m_closeCallBacks.cend())
+	if (std::find(m_closeCallBacks.cbegin(), m_closeCallBacks.cend(), callback) == m_closeCallBacks.cend())
 		m_closeCallBacks.push_back(callback);
 }
 
 void Window::registerRenderCallBack(RenderCallBack callback)
 {
-	if (std::find(m_renderCallBacks.cbegin(), m_renderCallBacks.cend(), callback) != m_renderCallBacks.cend())
+	if (std::find(m_renderCallBacks.cbegin(), m_renderCallBacks.cend(), callback) == m_renderCallBacks.cend())
 		m_renderCallBacks.push_back(callback);
 }
 
 void Window::registerUpdateCallBack(UpdateCallBack callback)
 {
-	if (std::find(m_updateCallBacks.cbegin(), m_updateCallBacks.cend(), callback) != m_updateCallBacks.cend())
+	if (std::find(m_updateCallBacks.cbegin(), m_updateCallBacks.cend(), callback) == m_updateCallBacks.cend())
 		m_updateCallBacks.push_back(callback);
 }
 
 void Window::registerMouseDownCallBack(MouseDownCallBack callback)
 {
-	if (std::find(m_mouseDownCallBacks.cbegin(), m_mouseDownCallBacks.cend(), callback) != m_mouseDownCallBacks.cend())
+	if (std::find(m_mouseDownCallBacks.cbegin(), m_mouseDownCallBacks.cend(), callback) == m_mouseDownCallBacks.cend())
 		m_mouseDownCallBacks.push_back(callback);
 }
 
 void Window::registerMouseUpCallBack(MouseUpCallBack callback)
 {
-	if (std::find(m_mouseUpCallBacks.cbegin(), m_mouseUpCallBacks.cend(), callback) != m_mouseUpCallBacks.cend())
+	if (std::find(m_mouseUpCallBacks.cbegin(), m_mouseUpCallBacks.cend(), callback) == m_mouseUpCallBacks.cend())
 		m_mouseUpCallBacks.push_back(callback);
 }
 
 void Window::registerMouseMotionCallBack(MouseMotionCallBack callback)
 {
-	if (std::find(m_mouseMotionCallBacks.cbegin(), m_mouseMotionCallBacks.cend(), callback) != m_mouseMotionCallBacks.cend())
+	if (std::find(m_mouseMotionCallBacks.cbegin(), m_mouseMotionCallBacks.cend(), callback) == m_mouseMotionCallBacks.cend())
 		m_mouseMotionCallBacks.push_back(callback);
 }
 
 void Window::registerMouseWheelCallBack(MouseWheelCallBack callback)
 {
-	if (std::find(m_mouseWheelCallBacks.cbegin(), m_mouseWheelCallBacks.cend(), callback) != m_mouseWheelCallBacks.cend())
+	if (std::find(m_mouseWheelCallBacks.cbegin(), m_mouseWheelCallBacks.cend(), callback) == m_mouseWheelCallBacks.cend())
 		m_mouseWheelCallBacks.push_back(callback);
 }
 
 void Window::registerKeyDownCallBack(KeyDownCallBack callback)
 {
-	if (std::find(m_keyDownCallBacks.cbegin(), m_keyDownCallBacks.cend(), callback) != m_keyDownCallBacks.cend())
+	if (std::find(m_keyDownCallBacks.cbegin(), m_keyDownCallBacks.cend(), callback) == m_keyDownCallBacks.cend())
 		m_keyDownCallBacks.push_back(callback);
 }
 
 void Window::registerKeyUpCallBack(KeyUpCallBack callback)
 {
-	if (std::find(m_keyUpCallBacks.cbegin(), m_keyUpCallBacks.cend(), callback) != m_keyUpCallBacks.cend())
+	if (std::find(m_keyUpCallBacks.cbegin(), m_keyUpCallBacks.cend(), callback) == m_keyUpCallBacks.cend())
 		m_keyUpCallBacks.push_back(callback);
 }
-
 
 void Window::unregisterShowCallBack(ShowCallBack callback)
 {
@@ -336,7 +335,7 @@ void Window::setUserData(void * pData)
 	m_pUserData = pData;
 }
 
-void *Window::userData()
+void *Window::userData() const
 {
 	return m_pUserData;
 }

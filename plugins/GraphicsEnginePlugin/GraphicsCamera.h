@@ -12,6 +12,8 @@ public:
 	GraphicsCamera(const std::string& name);
 	~GraphicsCamera();
 
+	std::string name() const;
+
 	glm::mat4x4 viewMatrix() const;
 	glm::mat4x4 projectionMatrix() const;
 
@@ -35,7 +37,6 @@ public:
 	void setOrientation(const float yaw, const float pitch, const float roll);
 	void setOrientation(const glm::quat& orient);
 	glm::quat orientation() const;
-	glm::quat orientation() const;
 	glm::vec3 rightDirection() const;
 	glm::vec3 upDirection() const;
 	glm::vec3 backwardDirection() const;
@@ -45,6 +46,8 @@ public:
 	void update();
 
 private:
+	std::string m_name;
+
 	Math::Frustum m_frustum;
 
 	glm::mat4x4 m_cacheViewMatrix, m_cacheProjMatrix;

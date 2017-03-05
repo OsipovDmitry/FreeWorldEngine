@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 
-
 namespace FreeWorldEngine {
 
 namespace Utility {
@@ -57,9 +56,29 @@ class Tree {
 public:
 	typedef TreeNode<T> Node;
 
-	class Iterator {
+private:
+	template <class Derived>
+	class Iterator : public std::iterator<std::forward_iterator_tag, Node*> {
 	public:
-		Iterator& operator ++() {
+		Derived operator ++(int) {
+			Node *pOldNode = m_pNode;
+			Derived::operator ++();
+			return Derived(m_pTree, pOldNode);
+		}
+		bool operator ==(const Derived& other) const { return m_pNode == other.m_pNode; }
+		bool operator !=(const Derived& other) const { return m_pNode != other.m_pNode; }
+		Node *operator *() { return m_pNode; }
+		int depth() const { int res = 0; Node *p = m_pNode; while (p->m_pParent) { p = p->m_pParent; ++res; } return res; }
+	protected:
+		Node *m_pNode;
+		Tree<T> *m_pTree;
+		Iterator(Tree<T> *pTree, Node *pNode) : m_pTree(pTree), m_pNode(pNode) {}
+	};
+
+public:
+	class DepthIterator : public Iterator<DepthIterator> {
+	public:
+		DepthIterator& operator ++() {
 			if (!m_pNode->m_children.empty()) {
 				m_pNode = m_pNode->m_children.at(0);
 			}
@@ -73,20 +92,19 @@ public:
 			}
 			return *this;
 		}
-		Iterator operator ++(int) {
-			Node *pOldNode = m_pNode;
-			operator ++();
-			return Iterator(m_pTree, pOldNode);
-		}
-		bool operator ==(const Iterator& other) const { return m_pNode == other.m_pNode; }
-		bool operator !=(const Iterator& other) const { return m_pNode != other.m_pNode; }
-		Node *operator *() { return m_pNode; }
-
 	private:
-		Node *m_pNode;
-		Tree<T> *m_pTree;
-		Iterator(Tree<T> *pTree, Node *pNode) : m_pTree(pTree), m_pNode(pNode) {}
+		DepthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
+		friend class Tree<T>;
+	};
 
+	class WidthIterator : public Iterator<WidthIterator> {
+	public:
+		WidthIterator& operator ++() {
+			//
+			return *this;
+		}
+	private:
+		WidthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
 		friend class Tree<T>;
 	};
 
@@ -99,12 +117,16 @@ public:
 	const Node *rootNode() const;
 	Node *rootNode();
 
-	Iterator begin() { return Iterator(this, m_pRootNode); }
-	Iterator end() { return Iterator(this, m_pEnd); }
+	DepthIterator beginDepth() { return DepthIterator(this, m_pRootNode); }
+	DepthIterator endDepth() { return DepthIterator(this, m_pEnd); }
+
+	WidthIterator beginWidth() { return WidthIterator(this, m_pRootNode); }
+	WidthIterator endWidth() { return WidthIterator(this, m_pEnd); }
 
 private:
 	Node *m_pRootNode;
 	Node *m_pEnd;
+
 };
 
 template<class T>

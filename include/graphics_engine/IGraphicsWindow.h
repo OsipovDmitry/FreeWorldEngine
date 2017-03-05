@@ -14,11 +14,11 @@ class IGraphicsWindow : public IGraphicsResource {
 public:
 	virtual ~IGraphicsWindow() {}
 
-	virtual void setGraphicsCamera(IGraphicsCamera *pGraphicsCamera) = 0;
-	virtual const IGraphicsCamera *graphicsCamera() const = 0;
+	virtual void setCamera(IGraphicsCamera *pGraphicsCamera) = 0;
+	virtual const IGraphicsCamera *camera() const = 0;
 
-	virtual void setGraphicsScene(IGraphicsScene *pGraphicsScene) = 0;
-	virtual const IGraphicsScene *graphicsScene() const = 0;
+	virtual void setScene(IGraphicsScene *pGraphicsScene) = 0;
+	virtual const IGraphicsScene *scene() const = 0;
 
 }; // class IGraphicsWindow
 

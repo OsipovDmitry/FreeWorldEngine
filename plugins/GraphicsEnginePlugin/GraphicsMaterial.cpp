@@ -17,9 +17,9 @@ namespace {
 
 namespace GraphicsEngine {
 
-GraphicsMaterial::GraphicsMaterial(const std::string& name) :
+GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgram *pProgram) :
 	m_name(name),
-	m_pProgram(0),
+	m_pProgram(pProgram),
 	m_uniformData(),
 	m_textureSlotGenerator(0),
 	m_uniformTextures(),
@@ -41,11 +41,6 @@ std::string GraphicsMaterial::name() const
 Renderer::IGPUProgram *GraphicsMaterial::program() const
 {
 	return m_pProgram;
-}
-
-void GraphicsMaterial::setProgram(Renderer::IGPUProgram *pProgram)
-{
-	m_pProgram = pProgram;
 }
 
 void GraphicsMaterial::setUniform(const int32 location, const float value)

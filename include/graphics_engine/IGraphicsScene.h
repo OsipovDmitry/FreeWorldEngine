@@ -32,6 +32,8 @@ public:
 			std::list<Node*>::iterator it = std::find(m_childNodes.begin(), m_childNodes.end(), pNode);
 			if (it != m_childNodes.end()) { m_childNodes.erase(it); delete *it; }
 		}
+		std::list<Node*>::const_iterator beginChildNodes() const { return m_childNodes.cbegin(); }
+		std::list<Node*>::const_iterator endChildNodes() const { return m_childNodes.cend(); }
 		Node *parentNode() const { return m_pParentNode; }
 
 		IGraphicsModel *model() const { return m_pModel; }

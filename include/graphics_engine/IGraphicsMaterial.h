@@ -27,7 +27,6 @@ public:
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
-	virtual void setProgram(Renderer::IGPUProgram *pProgram) = 0;
 
 	virtual void setUniform(const int32 location, const float value) = 0;
 	virtual void setUniform(const int32 location, const int32 value) = 0;
@@ -45,7 +44,7 @@ public:
 	virtual void setUniform(const int32 location, const glm::mat3& value) = 0;
 	virtual void setUniform(const int32 location, const glm::mat4& value) = 0;
 	virtual void setUniform(const int32 location, Renderer::IGPUTexture *pTexture) = 0;
-	virtual void setUniform(const int32 index, Renderer::IGPUBuffer *pBuffer) = 0; // UBO
+	virtual void setUniform(const int32 index,    Renderer::IGPUBuffer *pBuffer) = 0; // UBO
 
 }; // class IGraphicsMaterial
 

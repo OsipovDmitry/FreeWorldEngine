@@ -62,7 +62,7 @@ public:
 	void setMousePos(const int32 x, const int32 y) const;
 
 	void setUserData(void *pData);
-	void *userData();
+	void *userData() const;
 
 	void render();
 	void update(uint32 time, uint32 dt);

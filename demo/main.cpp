@@ -76,7 +76,7 @@ IGPUBufferContainer *pBContPost;
 IGPUTexture *pTexturePost;
 IGPUTexture *pDepthTexPost;
 
-void render() {
+void render(IWindow*) {
 	int w = getCoreEngine()->mainWindow()->width();
 	int h = getCoreEngine()->mainWindow()->height();
 
@@ -106,7 +106,7 @@ void render() {
 	getCoreEngine()->renderer()->renderIndexedGeometry(pProgramPost, pBContPost, PrimitiveFormat_TriangleStrip, TYPE_UNSIGNED_INT_32, 4, 0);
 }
 
-void resize(int32 w, int32 h) {
+void resize(int32 w, int32 h, IWindow*) {
 	pFrameBuffer->attachColorBuffer(0, (IGPUTexture*)0);
 	pFrameBuffer->attachDepthBuffer((IGPUTexture*)0);
 	getCoreEngine()->renderer()->destroyTexture(pTexturePost);
@@ -146,7 +146,7 @@ int main() {
 	Utility::TreeNode<int> *c19 = c17->addChild(19);
 	Utility::TreeNode<int> *c20 = c17->addChild(20);
 
-	for (auto it = tree.begin(); it != tree.end(); ++it)
+	for (auto it = tree.beginDepth(); it != tree.endDepth(); it++)
 		std::cout << (*it)->data() << " ";
 
 	initCoreEngine();
@@ -157,8 +157,8 @@ int main() {
 
 	IWindow *pMainWindow = p->mainWindow();
 	if (pMainWindow) {
-		pMainWindow->setFuncRender(render);
-		pMainWindow->setFuncResized(resize);
+		pMainWindow->registerRenderCallBack(render);
+		pMainWindow->registerResizeCallBack(resize);
 	}
 
 	std::string sLog="";

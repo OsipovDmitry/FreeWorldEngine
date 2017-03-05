@@ -11,13 +11,12 @@ namespace GraphicsEngine {
 
 class GraphicsMaterial : public IGraphicsMaterial {
 public:
-	GraphicsMaterial(const std::string& name);
+	GraphicsMaterial(const std::string& name, Renderer::IGPUProgram *pProgram);
 	~GraphicsMaterial();
 
 	std::string name() const;
 
 	Renderer::IGPUProgram *program() const;
-	void setProgram(Renderer::IGPUProgram *pProgram);
 
 	void setUniform(const int32 location, const float value);
 	void setUniform(const int32 location, const int32 value);

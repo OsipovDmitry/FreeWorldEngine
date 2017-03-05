@@ -131,7 +131,7 @@ struct SceneData {
 	~SceneData() {
 		for (MeshList::iterator it = meshes.begin(); it != meshes.end(); delete *(it++)) ;
 		for (MaterialList::iterator it = materials.begin(); it != materials.end(); delete *(it++)) ;
-		for (Utility::Tree<NodeData*>::Iterator it = treeNodes.begin(); it != treeNodes.end(); delete (*(it++))->data()) ;
+		for (Utility::Tree<NodeData*>::DepthIterator it = treeNodes.beginDepth(); it != treeNodes.endDepth(); delete (*(it++))->data()) ;
 	}
 
 }; // struct SceneData

@@ -1,7 +1,10 @@
-#include <graphics_engine/IGraphicsCamera.h>
 #include <IWindow.h>
 
 #include "GraphicsWindow.h"
+#include "GraphicsCamera.h"
+#include "GraphicsModel.h"
+#include "GraphicsMaterial.h"
+#include "GraphicsScene.h"
 
 namespace FreeWorldEngine {
 	
@@ -40,23 +43,23 @@ std::string GraphicsWindow::name() const
 	return m_name;
 }
 
-void GraphicsWindow::setGraphicsCamera(IGraphicsCamera *pGraphicsCamera)
+void GraphicsWindow::setCamera(IGraphicsCamera *pGraphicsCamera)
 {
 	m_pCamera = pGraphicsCamera;
 	m_pCamera->setAspectRatio((float)m_pTargetWindow->width() / (float)m_pTargetWindow->height());
 }
 
-const IGraphicsCamera * GraphicsWindow::graphicsCamera() const
+const IGraphicsCamera * GraphicsWindow::camera() const
 {
 	return m_pCamera;
 }
 
-void GraphicsWindow::setGraphicsScene(IGraphicsScene * pGraphicsScene)
+void GraphicsWindow::setScene(IGraphicsScene * pGraphicsScene)
 {
 	m_pScene = pGraphicsScene;
 }
 
-const IGraphicsScene * GraphicsWindow::graphicsScene() const
+const IGraphicsScene * GraphicsWindow::scene() const
 {
 	return m_pScene;
 }
@@ -71,6 +74,22 @@ void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow
 void GraphicsWindow::renderCallBack(IWindow * pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
+	IGraphicsScene *pScene = pThis->m_pScene;
+	IGraphicsCamera *pCamera = pThis->m_pCamera;
+
+	std::multimap<IGraphicsMaterial*, GraphicsModel::RenderData*> renderData;
+	std::list<IGraphicsScene::Node*> sceneNodes;
+	sceneNodes.push_back(pScene->rootNode());
+
+	while (!sceneNodes.empty()) {
+		IGraphicsScene::Node *pNode = sceneNodes.front();
+		sceneNodes.pop_front();
+		std::copy(pNode->beginChildNodes(), pNode->endChildNodes(), std::back_inserter(sceneNodes));
+		if (GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model()))
+			renderData.insert(std::make_pair(pModel->material(), pModel->renderData()));
+	}
+
+
 }
 
 void GraphicsWindow::updateCallBack(uint32 dt, uint32 time, IWindow * pWindow)
