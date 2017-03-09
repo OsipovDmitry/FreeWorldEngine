@@ -15,8 +15,8 @@ Mesh* pMesh;
 std::string vShader =
 "#version 330 core\n"\
 "layout(location = 0) in vec3 pos;\n"\
-"layout(location = 1) in vec3 normal;\n"\
-"layout(location = 2) in vec2 texcoord;\n"\
+"layout(location = 3) in vec3 normal;\n"\
+"layout(location = 4) in vec2 texcoord;\n"\
 "uniform mat4 viewProjMatrix;\n"\
 "out vec3 n;\n"\
 "out vec2 tc;\n"\
@@ -217,12 +217,12 @@ int main() {
 	IGPUBuffer *pVB = p->renderer()->createBuffer(pMesh->vertexStride * pMesh->numVertices * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pVertexData);
 	IGPUBuffer *pFB = p->renderer()->createBuffer(pMesh->numIndices * sizeof(int), IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pIndexData);
 	pBCont = p->renderer()->createBufferContainer();
-	pBCont->setVertexAttribute(pVB, 0, pMesh->attributes[VertexAttributeType_Position].first, pMesh->attributes[VertexAttributeType_Position].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+	pBCont->setVertexAttribute(pVB, VertexAttributeType_Position, pMesh->attributes[VertexAttributeType_Position].first, pMesh->attributes[VertexAttributeType_Position].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
 	pBCont->enableVertexAttribute(0);
-	pBCont->setVertexAttribute(pVB, 1, pMesh->attributes[VertexAttributeType_Normal].first, pMesh->attributes[VertexAttributeType_Normal].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
-	pBCont->enableVertexAttribute(1);
-	pBCont->setVertexAttribute(pVB, 2, pMesh->attributes[VertexAttributeType_TexCoord0].first, pMesh->attributes[VertexAttributeType_TexCoord0].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
-	pBCont->enableVertexAttribute(2);
+	pBCont->setVertexAttribute(pVB, VertexAttributeType_Normal, pMesh->attributes[VertexAttributeType_Normal].first, pMesh->attributes[VertexAttributeType_Normal].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+	pBCont->enableVertexAttribute(VertexAttributeType_Normal);
+	pBCont->setVertexAttribute(pVB, VertexAttributeType_TexCoord0, pMesh->attributes[VertexAttributeType_TexCoord0].first, pMesh->attributes[VertexAttributeType_TexCoord0].second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+	pBCont->enableVertexAttribute(VertexAttributeType_TexCoord0);
 	pBCont->setIndexBuffer(pFB);
 
 	IGPUBuffer *pVBPost = p->renderer()->createBuffer(12 * sizeof(float), IGPUBuffer::IGPUBufferUsage_StaticDraw, vertices);
