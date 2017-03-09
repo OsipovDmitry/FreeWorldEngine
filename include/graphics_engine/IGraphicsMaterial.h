@@ -24,6 +24,12 @@ namespace GraphicsEngine {
 
 class IGraphicsMaterial : public IGraphicsResource {
 public:
+	enum AutoUniform {
+		AutoUniform_ViewMatrix,
+		AutoUniform_ProjectionMatrix,
+		AutoUniform_ViewProjectionMatrix,
+	};
+
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
@@ -45,6 +51,8 @@ public:
 	virtual void setUniform(const int32 location, const glm::mat4& value) = 0;
 	virtual void setUniform(const int32 location, Renderer::IGPUTexture *pTexture) = 0;
 	virtual void setUniform(const int32 index,    Renderer::IGPUBuffer *pBuffer) = 0; // UBO
+
+	virtual void setAutoUniform(const int32 location, const AutoUniform value) = 0;
 
 }; // class IGraphicsMaterial
 

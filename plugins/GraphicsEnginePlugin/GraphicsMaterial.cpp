@@ -1,4 +1,7 @@
 #include <renderer/IGPURenderer.h>
+#include <graphics_engine/IGraphicsWindow.h>
+#include <graphics_engine/IGraphicsCamera.h>
+
 
 #include "GraphicsEngine.h"
 #include "GraphicsMaterial.h"
@@ -21,6 +24,7 @@ GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgra
 	m_name(name),
 	m_pProgram(pProgram),
 	m_uniformData(),
+	m_autoUniformData(),
 	m_textureSlotGenerator(0),
 	m_uniformTextures(),
 	m_uboBindingPointGenerator(0),
@@ -132,7 +136,12 @@ void GraphicsMaterial::setUniform(const int32 index, Renderer::IGPUBuffer *pBuff
 		setUniform(index, bindingPoint);
 }
 
-void GraphicsMaterial::bind() const
+void GraphicsMaterial::setAutoUniform(const int32 location, const AutoUniform value)
+{
+	m_autoUniformData.insert(std::make_pair(value, location));
+}
+
+void GraphicsMaterial::bind(IGraphicsWindow *pWindow) const
 {
 	for (auto it = m_uniformData.cbegin(); it != m_uniformData.cend(); ++it) {
 		int32 location = it->first;
@@ -154,6 +163,18 @@ void GraphicsMaterial::bind() const
 		case UniformType_Mat2f: { m_pProgram->setUniform(location, *(const glm::mat2*)(data.pData)); break; }
 		case UniformType_Mat3f: { m_pProgram->setUniform(location, *(const glm::mat3*)(data.pData)); break; }
 		case UniformType_Mat4f: { m_pProgram->setUniform(location, *(const glm::mat4*)(data.pData)); break; }
+		default: break;
+		}
+	}
+
+	for (auto it = m_autoUniformData.cbegin(); it != m_autoUniformData.cend(); ++it) {
+		AutoUniform value = it->first;
+		int32 location = it->second;
+
+		switch (value) {
+		case AutoUniform_ViewMatrix: { m_pProgram->setUniform(location, pWindow->camera()->viewMatrix()); break; }
+		case AutoUniform_ProjectionMatrix: { m_pProgram->setUniform(location, pWindow->camera()->projectionMatrix()); break; }
+		case AutoUniform_ViewProjectionMatrix: { m_pProgram->setUniform(location, pWindow->camera()->viewProjectionMatrix()); break; }
 		default: break;
 		}
 	}
@@ -206,6 +227,7 @@ void GraphicsMaterial::clearUniforms()
 	for (auto it = m_uniformData.cbegin(); it != m_uniformData.cend(); ++it)
 		delete it->second.pData;
 	m_uniformData.clear();
+	m_autoUniformData.clear();
 
 	m_uniformTextures.clear();
 

@@ -44,7 +44,19 @@ void GraphicsModel::setMaterial(IGraphicsMaterial *pMaterial)
 
 void GraphicsModel::setMesh(Mesh *pMesh)
 {
+	pGPURenderer->destroyBufferContainer(m_pRenderData->pBufferContainer);
+	pGPURenderer->destroyBuffer(m_pVertexBuffer);
+	pGPURenderer->destroyBuffer(m_pIndexBuffer);
+
 	const uint64 verticesSize = pMesh->vertexStride * pMesh->numVertices * sizeof(float);
+	m_pVertexBuffer = pGPURenderer->createBuffer(verticesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pVertexData);
+
+	const uint64 indicesSize = pMesh->numIndices * sizeof(uint32);
+	m_pIndexBuffer = pGPURenderer->createBuffer(indicesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pIndexData);
+
+	m_pRenderData->pBufferContainer = pGPURenderer->createBufferContainer();
+
+	/*const uint64 verticesSize = pMesh->vertexStride * pMesh->numVertices * sizeof(float);
 	m_pVertexBuffer->resize(verticesSize);
 	void *pVerties = m_pVertexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
 	if (pMesh)
@@ -56,7 +68,7 @@ void GraphicsModel::setMesh(Mesh *pMesh)
 	void *pIndices = m_pIndexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
 	if (pMesh)
 		memcpy(pIndices, pMesh->pIndexData, indicesSize);
-	m_pIndexBuffer->unmap();
+	m_pIndexBuffer->unmap();*/
 
 	if (pMesh) {
 		for (auto it : pMesh->attributes) {

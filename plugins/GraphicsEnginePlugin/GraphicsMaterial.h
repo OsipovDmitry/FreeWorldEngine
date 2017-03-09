@@ -9,6 +9,8 @@ namespace FreeWorldEngine {
 
 namespace GraphicsEngine {
 
+class IGraphicsWindow;
+
 class GraphicsMaterial : public IGraphicsMaterial {
 public:
 	GraphicsMaterial(const std::string& name, Renderer::IGPUProgram *pProgram);
@@ -36,8 +38,9 @@ public:
 	void setUniform(const int32 location, Renderer::IGPUTexture *pTexture);
 	void setUniform(const int32 index, Renderer::IGPUBuffer *pBuffer);
 
-	void bind() const;
-	//bool operator <(const GraphicsMaterial& other) const;
+	void setAutoUniform(const int32 location, const AutoUniform value);
+
+	void bind(IGraphicsWindow *pWindow) const;
 
 private:
 	std::string m_name;
@@ -58,6 +61,7 @@ private:
 		UniformData(void *p, UniformType t) : pData(p), type(t) {}
 	};
 	std::map<int32, UniformData> m_uniformData;
+	std::multimap<AutoUniform, int32> m_autoUniformData;
 
 	Utility::KeyGenerator m_textureSlotGenerator;
 	std::map<Renderer::IGPUTexture*, int32> m_uniformTextures;

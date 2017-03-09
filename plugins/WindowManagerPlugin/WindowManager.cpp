@@ -47,8 +47,8 @@ void WindowManager::destroyWindow(IWindow *pWindow)
 
 void WindowManager::destroyAllWindows()
 {
-	auto func = [this](IResource *p) { this->destroyWindow(static_cast<IWindow*>(p)); };
-	std::for_each(m_pResourceManager->begin(), m_pResourceManager->end(), func);
+	while (m_pResourceManager->size())
+		destroyWindow(static_cast<IWindow*>(*(m_pResourceManager->begin())));
 }
 
 void WindowManager::mainLoop() {

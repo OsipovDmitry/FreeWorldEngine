@@ -20,6 +20,7 @@ public:
 
 	virtual glm::mat4x4 viewMatrix() const = 0;
 	virtual glm::mat4x4 projectionMatrix() const = 0;
+	virtual glm::mat4x4 viewProjectionMatrix() const = 0;
 
 	virtual void setViewMatrix(const glm::mat4x4& value) = 0; // Принудительная установка матрицы
 	virtual void setProjectionMatrix(const glm::mat4x4& value) = 0; // Принудительная установка матрицы

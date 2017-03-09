@@ -31,6 +31,7 @@ private:
 	static void resizeCallBack(int32 width, int32 height, IWindow *pWindow);
 	static void renderCallBack(IWindow *pWindow);
 	static void updateCallBack(uint32 dt, uint32 time, IWindow *pWindow);
+	static void closeCallBack(IWindow *pWindow);
 
 }; // class GraphicsWindow
 

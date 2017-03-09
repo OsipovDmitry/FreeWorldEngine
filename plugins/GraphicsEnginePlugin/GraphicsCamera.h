@@ -16,6 +16,7 @@ public:
 
 	glm::mat4x4 viewMatrix() const;
 	glm::mat4x4 projectionMatrix() const;
+	glm::mat4x4 viewProjectionMatrix() const;
 
 	void setViewMatrix(const glm::mat4x4& value);
 	void setProjectionMatrix(const glm::mat4x4& value);
@@ -50,7 +51,7 @@ private:
 
 	Math::Frustum m_frustum;
 
-	glm::mat4x4 m_cacheViewMatrix, m_cacheProjMatrix;
+	glm::mat4x4 m_cacheViewMatrix, m_cacheProjMatrix, m_cacheViewProjMatrix;
 	glm::quat m_orientQuat;
 	glm::mat3x3 m_orientMatrix;
 	glm::vec3 m_orientAngles;

@@ -11,6 +11,7 @@ GraphicsCamera::GraphicsCamera(const std::string & name) :
 	m_frustum(),
 	m_cacheProjMatrix(),
 	m_cacheViewMatrix(),
+	m_cacheViewProjMatrix(),
 	m_orientQuat(),
 	m_orientAngles(0.0f, 0.0f, 0.0f),
 	m_orientMatrix(),
@@ -43,6 +44,11 @@ glm::mat4x4 GraphicsCamera::viewMatrix() const
 glm::mat4x4 GraphicsCamera::projectionMatrix() const
 {
 	return m_cacheProjMatrix;
+}
+
+glm::mat4x4 GraphicsCamera::viewProjectionMatrix() const
+{
+	return m_cacheViewProjMatrix;
 }
 
 void GraphicsCamera::setViewMatrix(const glm::mat4x4 & value)
@@ -192,7 +198,8 @@ void GraphicsCamera::update()
 	}
 
 	if (m_needUpProjMatrix || m_needUpViewMatrix) {
-		glm::mat4 vp = m_cacheProjMatrix * m_cacheViewMatrix;
+		m_cacheViewProjMatrix = m_cacheProjMatrix * m_cacheViewMatrix;
+		glm::mat4& vp = m_cacheViewProjMatrix;
 		// right plane
 		m_frustum[0].x = vp[0][3] - vp[0][0];
 		m_frustum[0].y = vp[1][3] - vp[1][0];
