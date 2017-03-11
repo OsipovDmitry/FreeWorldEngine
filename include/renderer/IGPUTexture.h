@@ -48,7 +48,6 @@ class IGPUBuffer;
 
 class IGPUTexture {
 public:
-
     enum IGPUTextureType {
         IGPUTextureType_1D,
         IGPUTextureType_2D,
@@ -60,6 +59,18 @@ public:
         IGPUTextureType_Buffer,
 		IGPUTextureType_Count
     };
+	enum IGPUTextureMinFilter {
+		IGPUTextureMinFilter_Nearest,
+		IGPUTextureMinFilter_Linear,
+		IGPUTextureMinFilter_NearestMipmapNearest,
+		IGPUTextureMinFilter_NearestMipmapLinear,
+		IGPUTextureMinFilter_LinearMipmapNearest,
+		IGPUTextureMinFilter_LinearMipmapLinear
+	};
+	enum IGPUTextureMagFilter {
+		IGPUTextureMagFilter_Nearest,
+		IGPUTextureMagFilter_Linear
+	};
 
     virtual ~IGPUTexture() {}
 
@@ -72,6 +83,10 @@ public:
 
 	virtual void setBuffer(const IGPUBuffer* pBuffer) const = 0; // специально для IGPUTextureType_Buffer текстур
 
+	virtual void setMinFilter(IGPUTextureMinFilter filter) const = 0;
+	virtual void setMagFilter(IGPUTextureMagFilter filter) const = 0;
+
+	virtual void generateMipMaps() const = 0;
 };
 
 } // namespace

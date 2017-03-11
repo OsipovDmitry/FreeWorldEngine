@@ -59,6 +59,9 @@ int main() {
 	uint32 offs[3] = { 0, 0, 0 };
 	Renderer::IGPUTexture *pTexture = pCore->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->data()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
 	pTexture->setSubData(offs, pImg->data()->size, TextureFormat::ChannelsCount_3, pImg->data()->type, pImg->data()->pData);
+	pTexture->generateMipMaps();
+	pTexture->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
+	pTexture->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
 
 	IGPUShader *pVSh = pCore->renderer()->createShader(IGPUShader::IGPUShaderType_Vertex);
 	pVSh->loadFromData(vShader);
@@ -88,7 +91,7 @@ int main() {
 
 	IGraphicsScene *pRenderScene = pGraphics->createScene();
 	pRenderScene->rootNode()->setModel(pRenderModel);
-	pRenderScene->rootNode()->setPosition(glm::vec3(1,1,-5));
+	pRenderScene->rootNode()->setPosition(glm::vec3(1,1,-8));
 
 	IGraphicsWindow *pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());
 	pRenderWindow->setCamera(pRenderCamera);

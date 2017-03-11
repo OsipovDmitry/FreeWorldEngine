@@ -22,12 +22,19 @@ public:
 
 	void setBuffer(const IGPUBuffer* pBuffer) const;
 
+	void setMinFilter(IGPUTextureMinFilter filter) const;
+	void setMagFilter(IGPUTextureMagFilter filter) const;
+
+	void generateMipMaps() const;
+
     GLuint GLid() const;
 
     static TextureFormat fromGLinternalFormat(GLenum format);
 	static GLenum GLformat(TextureFormat::ChannelsCount channelsCount);
     static GLenum GLinternalFormat(const TextureFormat& format);
     static GLenum GLtarget(IGPUTextureType type);
+	static GLenum GLMinFilter(IGPUTextureMinFilter filter);
+	static GLenum GLMagFilter(IGPUTextureMagFilter filter);
 
 private:
 	GLuint m_id;

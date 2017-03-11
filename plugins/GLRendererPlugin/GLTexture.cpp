@@ -107,6 +107,41 @@ void GLTexture::setBuffer(const IGPUBuffer* pBuffer) const
 	glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, static_cast<const GLBuffer*>(pBuffer)->GLid());
 }
 
+void GLTexture::setMinFilter(IGPUTextureMinFilter filter) const
+{
+	GLenum target = GLtarget(m_type);
+	GLenum gl_filter = GLMinFilter(filter);
+
+	if (!target || !gl_filter)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, gl_filter);
+}
+
+void GLTexture::setMagFilter(IGPUTextureMagFilter filter) const
+{
+	GLenum target = GLtarget(m_type);
+	GLenum gl_filter = GLMagFilter(filter);
+
+	if (!target || !gl_filter)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, gl_filter);
+}
+
+void GLTexture::generateMipMaps() const
+{
+	GLenum target = GLtarget(m_type);
+
+	if (!target)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glGenerateMipmap(target);
+}
+
 GLuint GLTexture::GLid() const
 {
     return m_id;
@@ -354,6 +389,28 @@ GLenum GLTexture::GLtarget(IGPUTextureType type)
 	case IGPUTextureType_Buffer: return GL_TEXTURE_BUFFER;
 	}
     return 0;
+}
+
+GLenum GLTexture::GLMinFilter(IGPUTextureMinFilter filter)
+{
+	switch (filter) {
+	case IGPUTextureMinFilter_Nearest: return GL_NEAREST;
+	case IGPUTextureMinFilter_Linear: return GL_LINEAR;
+	case IGPUTextureMinFilter_NearestMipmapNearest: return GL_NEAREST_MIPMAP_NEAREST;
+	case IGPUTextureMinFilter_NearestMipmapLinear: return GL_NEAREST_MIPMAP_LINEAR;
+	case IGPUTextureMinFilter_LinearMipmapNearest: return GL_LINEAR_MIPMAP_NEAREST;
+	case IGPUTextureMinFilter_LinearMipmapLinear: return GL_LINEAR_MIPMAP_LINEAR;
+	}
+	return 0;
+}
+
+GLenum GLTexture::GLMagFilter(IGPUTextureMagFilter filter)
+{
+	switch (filter) {
+	case IGPUTextureMagFilter_Nearest: return GL_NEAREST;
+	case IGPUTextureMagFilter_Linear: return GL_LINEAR;
+	}
+	return 0;
 }
 
 } // namespace
