@@ -38,7 +38,8 @@ IGraphicsCamera *pRenderCamera;
 void render(IWindow*) {
 }
 
-void resize(int32 w, int32 h, IWindow*) {
+void resize(int32 w, int32 h, IWindow*)
+{
 }
 
 void update(uint32 time, uint32 dt, IWindow*) {
