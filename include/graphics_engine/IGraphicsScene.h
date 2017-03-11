@@ -25,7 +25,7 @@ public:
 		glm::vec3 position() const { return m_position; }
 		void setPosition(const glm::vec3& pos) { m_position = pos; }
 		glm::quat orientation() const { return m_orientation; }
-		void setPosition(const glm::quat& orient) { m_orientation = orient; }
+		void setOrientation(const glm::quat& orient) { m_orientation = orient; }
 		
 		Node *createChild() { m_childNodes.push_back(new Node(this)); return m_childNodes.back(); }
 		void destroyChild(Node *pNode) {

@@ -9,14 +9,14 @@ std::string vShader =
 "layout(location = 0) in vec3 pos;\n"\
 "layout(location = 3) in vec3 normal;\n"\
 "layout(location = 4) in vec2 texcoord;\n"\
-"uniform mat4 viewProjMatrix;\n"\
+"uniform mat4 modelViewProjMatrix;\n"\
 "out vec3 n;\n"\
 "out vec2 tc;\n"\
 "void main(void)\n"\
 "{\n"\
 "	tc = texcoord;\n"\
 "	n = normal;\n"\
-"	gl_Position = viewProjMatrix * vec4 (pos, 1.0);\n"\
+"	gl_Position = modelViewProjMatrix * vec4(pos, 1.0);\n"\
 "}\n";
 
 std::string fShader =
@@ -78,7 +78,7 @@ int main() {
 
 	pRenderMaterial = pGraphics->createMaterial(pProgram);
 	pRenderMaterial->setUniform(pProgram->uniformLocationByName("tex"), pTexture);
-	pRenderMaterial->setAutoUniform(pProgram->uniformLocationByName("viewProjMatrix"), IGraphicsMaterial::AutoUniform_ViewProjectionMatrix);
+	pRenderMaterial->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
 
 	IGraphicsModel *pRenderModel = pGraphics->createModel();
 	IScene *pScene = pCore->sceneLoader()->load("box.FBX");
@@ -87,6 +87,7 @@ int main() {
 
 	IGraphicsScene *pRenderScene = pGraphics->createScene();
 	pRenderScene->rootNode()->setModel(pRenderModel);
+	pRenderScene->rootNode()->setPosition(glm::vec3(1,1,-5));
 
 	IGraphicsWindow *pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());
 	pRenderWindow->setCamera(pRenderCamera);

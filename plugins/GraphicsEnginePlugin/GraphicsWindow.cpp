@@ -1,3 +1,5 @@
+#include <3rdparty/glm/gtc/matrix_transform.hpp>
+
 #include <IWindow.h>
 #include <renderer/IGPURenderer.h>
 
@@ -16,6 +18,17 @@ struct GraphicsWindowUserData {
 	GraphicsWindow *pThis;
 
 	GraphicsWindowUserData(GraphicsWindow *pWindow) : pThis(pWindow) {}
+};
+
+struct ModelRenderData {
+	Renderer::IGPUBufferContainer *pBufferContainer;
+	glm::quat orientation;
+	glm::vec3 position;
+	uint32 numIndices;
+	PrimitiveFormat primitiveFormat;
+	
+	ModelRenderData(Renderer::IGPUBufferContainer *pVAO, uint32 numInds, PrimitiveFormat primFormat, glm::quat& orient, glm::vec3& pos) :
+		pBufferContainer(pVAO), orientation(orient), position(pos), numIndices(numInds), primitiveFormat(primFormat) {}
 };
 
 GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) :
@@ -82,7 +95,7 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 	IGraphicsScene *pScene = pThis->m_pScene;
 	IGraphicsCamera *pCamera = pThis->m_pCamera;
 
-	std::multimap<GraphicsMaterial*, GraphicsModel::RenderData*> renderData;
+	std::multimap<GraphicsMaterial*, ModelRenderData> renderData;
 	std::list<IGraphicsScene::Node*> sceneNodes;
 	sceneNodes.push_back(pScene->rootNode());
 
@@ -91,12 +104,15 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 		sceneNodes.pop_front();
 		std::copy(pNode->beginChildNodes(), pNode->endChildNodes(), std::back_inserter(sceneNodes));
 		if (GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model()))
-			renderData.insert(std::make_pair(static_cast<GraphicsMaterial*>(pModel->material()), pModel->renderData()));
+			renderData.insert(std::make_pair(static_cast<GraphicsMaterial*>(pModel->material()),
+				ModelRenderData(pModel->bufferContainer(), pModel->numIndices(), pModel->primitiveFormat(), pNode->orientation(), pNode->position())));
 	}
 
 	for (auto it : renderData) {
-		it.first->bind(pThis);
-		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second->pBufferContainer, it.second->primitiveFormat, TYPE_UNSIGNED_INT_32, it.second->numIndices);
+		
+		glm::mat4x4 modelMatrix = glm::translate(glm::mat4x4(it.second.orientation), it.second.position);
+		it.first->bind(pCamera, modelMatrix);
+		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second.pBufferContainer, it.second.primitiveFormat, TYPE_UNSIGNED_INT_32, it.second.numIndices);
 	}
 }
 

@@ -32,13 +32,17 @@ public:
 
 	void setMesh(Mesh *pMesh);
 
-	RenderData *renderData() const;
+	Renderer::IGPUBufferContainer *bufferContainer() const;
+	uint32 numIndices() const;
+	PrimitiveFormat primitiveFormat() const;
 
 private:
 	std::string m_name;
 	IGraphicsMaterial *m_pMaterial;
 	Renderer::IGPUBuffer *m_pVertexBuffer, *m_pIndexBuffer;
-	RenderData *m_pRenderData;
+	Renderer::IGPUBufferContainer *m_pVertexArray;
+	uint32 m_numIndices;
+	PrimitiveFormat m_primitiveFormat;
 
 }; // class GraphicsModel
 

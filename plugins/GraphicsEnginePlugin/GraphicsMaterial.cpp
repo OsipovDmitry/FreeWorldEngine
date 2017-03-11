@@ -141,7 +141,7 @@ void GraphicsMaterial::setAutoUniform(const int32 location, const AutoUniform va
 	m_autoUniformData.insert(std::make_pair(value, location));
 }
 
-void GraphicsMaterial::bind(IGraphicsWindow *pWindow) const
+void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const
 {
 	for (auto it = m_uniformData.cbegin(); it != m_uniformData.cend(); ++it) {
 		int32 location = it->first;
@@ -172,9 +172,12 @@ void GraphicsMaterial::bind(IGraphicsWindow *pWindow) const
 		int32 location = it->second;
 
 		switch (value) {
-		case AutoUniform_ViewMatrix: { m_pProgram->setUniform(location, pWindow->camera()->viewMatrix()); break; }
-		case AutoUniform_ProjectionMatrix: { m_pProgram->setUniform(location, pWindow->camera()->projectionMatrix()); break; }
-		case AutoUniform_ViewProjectionMatrix: { m_pProgram->setUniform(location, pWindow->camera()->viewProjectionMatrix()); break; }
+		case AutoUniform_ModelMatrix: { m_pProgram->setUniform(location, modelMatrix); break; }
+		case AutoUniform_ViewMatrix: { m_pProgram->setUniform(location, pCamera->viewMatrix()); break; }
+		case AutoUniform_ModelViewMatrix: { m_pProgram->setUniform(location, pCamera->viewMatrix()*modelMatrix); break; }
+		case AutoUniform_ProjectionMatrix: { m_pProgram->setUniform(location, pCamera->projectionMatrix()); break; }
+		case AutoUniform_ViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->viewProjectionMatrix()); break; }
+		case AutoUniform_ModelViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->viewProjectionMatrix()*modelMatrix); break; }
 		default: break;
 		}
 	}

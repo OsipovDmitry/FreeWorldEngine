@@ -14,15 +14,16 @@ GraphicsModel::GraphicsModel(const std::string& name) :
 	m_pMaterial(pGraphicsEngine->findMaterial("StandardMaterial")),
 	m_pVertexBuffer(pGPURenderer->createBuffer(0)),
 	m_pIndexBuffer(pGPURenderer->createBuffer(0)),
-	m_pRenderData(new RenderData(pGPURenderer->createBufferContainer(), 0, PrimitiveFormat_Triangles))
+	m_pVertexArray(pGPURenderer->createBufferContainer()),
+	m_numIndices(0),
+	m_primitiveFormat(PrimitiveFormat_Triangles)
 {
-	m_pRenderData->pBufferContainer->setIndexBuffer(m_pIndexBuffer);
+	m_pVertexArray->setIndexBuffer(m_pIndexBuffer);
 }
 
 GraphicsModel::~GraphicsModel()
 {
-	pGPURenderer->destroyBufferContainer(m_pRenderData->pBufferContainer);
-	delete m_pRenderData;
+	pGPURenderer->destroyBufferContainer(m_pVertexArray);
 	pGPURenderer->destroyBuffer(m_pVertexBuffer);
 	pGPURenderer->destroyBuffer(m_pIndexBuffer);
 }
@@ -44,7 +45,7 @@ void GraphicsModel::setMaterial(IGraphicsMaterial *pMaterial)
 
 void GraphicsModel::setMesh(Mesh *pMesh)
 {
-	pGPURenderer->destroyBufferContainer(m_pRenderData->pBufferContainer);
+	pGPURenderer->destroyBufferContainer(m_pVertexArray);
 	pGPURenderer->destroyBuffer(m_pVertexBuffer);
 	pGPURenderer->destroyBuffer(m_pIndexBuffer);
 
@@ -54,7 +55,7 @@ void GraphicsModel::setMesh(Mesh *pMesh)
 	const uint64 indicesSize = pMesh->numIndices * sizeof(uint32);
 	m_pIndexBuffer = pGPURenderer->createBuffer(indicesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StaticDraw, pMesh->pIndexData);
 
-	m_pRenderData->pBufferContainer = pGPURenderer->createBufferContainer();
+	m_pVertexArray = pGPURenderer->createBufferContainer();
 
 	/*const uint64 verticesSize = pMesh->vertexStride * pMesh->numVertices * sizeof(float);
 	m_pVertexBuffer->resize(verticesSize);
@@ -72,22 +73,32 @@ void GraphicsModel::setMesh(Mesh *pMesh)
 
 	if (pMesh) {
 		for (auto it : pMesh->attributes) {
-			m_pRenderData->pBufferContainer->setVertexAttribute(m_pVertexBuffer, it.first, it.second.first, it.second.second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
-			m_pRenderData->pBufferContainer->enableVertexAttribute(it.first);
+			m_pVertexArray->setVertexAttribute(m_pVertexBuffer, it.first, it.second.first, it.second.second * sizeof(float), pMesh->vertexStride * sizeof(float), TYPE_FLOAT);
+			m_pVertexArray->enableVertexAttribute(it.first);
 		}
-		m_pRenderData->pBufferContainer->setIndexBuffer(m_pIndexBuffer);
-		m_pRenderData->primitiveFormat = pMesh->primitiveFormat;
-		m_pRenderData->numIndices = pMesh->numIndices;
+		m_pVertexArray->setIndexBuffer(m_pIndexBuffer);
+		m_primitiveFormat = pMesh->primitiveFormat;
+		m_numIndices = pMesh->numIndices;
 	}
 	else {
-		m_pRenderData->primitiveFormat = PrimitiveFormat_Triangles;
-		m_pRenderData->numIndices = 0;
+		m_primitiveFormat = PrimitiveFormat_Triangles;
+		m_numIndices = 0;
 	}
 }
 
-GraphicsModel::RenderData *GraphicsModel::renderData() const
+Renderer::IGPUBufferContainer *GraphicsModel::bufferContainer() const
 {
-	return m_pRenderData;
+	return m_pVertexArray;
+}
+
+uint32 GraphicsModel::numIndices() const
+{
+	return m_numIndices;
+}
+
+PrimitiveFormat GraphicsModel::primitiveFormat() const
+{
+	return m_primitiveFormat;
 }
 
 } // namespace

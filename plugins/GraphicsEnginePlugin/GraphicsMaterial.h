@@ -2,14 +2,13 @@
 #define __GRAPHICSMATERIAL__
 
 #include <utility/KeyGenerator.h>
-
 #include <graphics_engine/IGraphicsMaterial.h>
 
 namespace FreeWorldEngine {
 
 namespace GraphicsEngine {
 
-class IGraphicsWindow;
+class IGraphicsCamera;
 
 class GraphicsMaterial : public IGraphicsMaterial {
 public:
@@ -40,7 +39,7 @@ public:
 
 	void setAutoUniform(const int32 location, const AutoUniform value);
 
-	void bind(IGraphicsWindow *pWindow) const;
+	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
 
 private:
 	std::string m_name;
