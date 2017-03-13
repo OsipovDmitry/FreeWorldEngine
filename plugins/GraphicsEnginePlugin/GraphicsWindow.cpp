@@ -96,20 +96,20 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 	IGraphicsCamera *pCamera = pThis->m_pCamera;
 
 	std::multimap<GraphicsMaterial*, ModelRenderData> renderData;
-	std::list<IGraphicsScene::Node*> sceneNodes;
+	std::list<IGraphicsSceneNode*> sceneNodes;
 	sceneNodes.push_back(pScene->rootNode());
 
 	while (!sceneNodes.empty()) {
-		IGraphicsScene::Node *pNode = sceneNodes.front();
+		IGraphicsSceneNode *pNode = sceneNodes.front();
 		sceneNodes.pop_front();
-		std::copy(pNode->beginChildNodes(), pNode->endChildNodes(), std::back_inserter(sceneNodes));
+		for (uint32 i = 0; i < pNode->numChildren(); ++i)
+			sceneNodes.push_back(pNode->childAt(i));
 		if (GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model()))
 			renderData.insert(std::make_pair(static_cast<GraphicsMaterial*>(pModel->material()),
 				ModelRenderData(pModel->bufferContainer(), pModel->numIndices(), pModel->primitiveFormat(), pNode->orientation(), pNode->position())));
 	}
 
 	for (auto it : renderData) {
-		
 		glm::mat4x4 modelMatrix = glm::translate(glm::mat4x4(it.second.orientation), it.second.position);
 		it.first->bind(pCamera, modelMatrix);
 		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second.pBufferContainer, it.second.primitiveFormat, TYPE_UNSIGNED_INT_32, it.second.numIndices);

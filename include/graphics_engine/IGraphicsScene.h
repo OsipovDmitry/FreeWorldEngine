@@ -1,13 +1,12 @@
 #ifndef __IGRAPHICSSCENE__
 #define __IGRAPHICSSCENE__
 
-#include <list>
-#include <algorithm>
-
 #include <3rdparty/glm/vec3.hpp>
+#include <3rdparty/glm/mat4x4.hpp>
 #include <3rdparty/glm/gtc/quaternion.hpp>
 
 #include "IGraphicsResource.h"
+#include "Types.h"
 
 namespace FreeWorldEngine {
 
@@ -15,41 +14,32 @@ namespace GraphicsEngine {
 
 class IGraphicsModel;
 
+class IGraphicsSceneNode {
+public:
+	virtual ~IGraphicsSceneNode() {}
+
+	virtual glm::vec3 position() const = 0;
+	virtual void setPosition(const glm::vec3& pos) = 0;
+	virtual glm::quat orientation() = 0;
+	virtual void setOrientation(const glm::quat& orient) = 0;
+	virtual glm::mat4x4 transformation() const = 0;
+	virtual glm::mat4x4 worldTransformation() const = 0;
+
+	virtual IGraphicsSceneNode *createChild() = 0;
+	virtual void destroyChild(IGraphicsSceneNode *pNode) = 0;
+	virtual uint32 numChildren() const = 0;
+	virtual IGraphicsSceneNode *childAt(const uint32 idx) const = 0;
+	virtual IGraphicsSceneNode *parentNode() const = 0;
+
+	virtual IGraphicsModel *model() const = 0;
+	virtual void setModel(IGraphicsModel *pModel) = 0;
+};
+
 class IGraphicsScene : public IGraphicsResource {
 public:
-	class Node {
-	public:
-		Node(Node *pParentNode) : m_pParentNode(pParentNode), m_pModel(0) {}
-		~Node() { std::for_each(m_childNodes.begin(), m_childNodes.end(), [](Node *p){delete p;}); }
-
-		glm::vec3 position() const { return m_position; }
-		void setPosition(const glm::vec3& pos) { m_position = pos; }
-		glm::quat orientation() const { return m_orientation; }
-		void setOrientation(const glm::quat& orient) { m_orientation = orient; }
-		
-		Node *createChild() { m_childNodes.push_back(new Node(this)); return m_childNodes.back(); }
-		void destroyChild(Node *pNode) {
-			std::list<Node*>::iterator it = std::find(m_childNodes.begin(), m_childNodes.end(), pNode);
-			if (it != m_childNodes.end()) { m_childNodes.erase(it); delete *it; }
-		}
-		std::list<Node*>::const_iterator beginChildNodes() const { return m_childNodes.cbegin(); }
-		std::list<Node*>::const_iterator endChildNodes() const { return m_childNodes.cend(); }
-		Node *parentNode() const { return m_pParentNode; }
-
-		IGraphicsModel *model() const { return m_pModel; }
-		void setModel(IGraphicsModel *pModel) { m_pModel = pModel; }
-
-	private:
-		Node *m_pParentNode;
-		std::list<Node*> m_childNodes;
-		glm::vec3 m_position;
-		glm::quat m_orientation;
-		IGraphicsModel *m_pModel;
-	};
-
 	virtual ~IGraphicsScene() {}
 	
-	virtual Node *rootNode() const = 0; 
+	virtual IGraphicsSceneNode *rootNode() const = 0;
 
 }; // class IGraphicsModel
 
