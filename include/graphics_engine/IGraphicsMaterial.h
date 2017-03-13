@@ -33,6 +33,17 @@ public:
 		AutoUniform_ModelViewProjectionMatrix,
 	};
 
+	enum DepthTestFunc {
+		DepthTestFunc_Never,
+		DepthTestFunc_Always,
+		DepthTestFunc_Less,
+		DepthTestFunc_LessEqual,
+		DepthTestFunc_Equal,
+		DepthTestFunc_Greater,
+		DepthTestFunc_GreaterEqual,
+		DepthTestFunc_NotEqual
+	};
+
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
@@ -56,6 +67,16 @@ public:
 	virtual void setUniform(const int32 index,    Renderer::IGPUBuffer *pBuffer) = 0; // UBO
 
 	virtual void setAutoUniform(const int32 location, const AutoUniform value) = 0;
+
+	virtual void setDepthCheck(bool state) = 0;
+	virtual bool depthCheck() const = 0;
+
+	virtual void setDepthWrite(bool state) = 0;
+	virtual bool depthWrite() const = 0;
+
+	virtual void setDepthFunc(DepthTestFunc func) = 0;
+	virtual DepthTestFunc depthFunc() const = 0;
+
 
 }; // class IGraphicsMaterial
 

@@ -53,7 +53,6 @@ int main() {
 	IGraphicsEngine *pGraphics = pCore->graphicsEngine();
 
 	pRenderCamera = pGraphics->createCamera();
-	pRenderCamera->setPosition(glm::vec3(0, 0, 1));
 
 	IImage *pImg = pCore->imageLoader()->load("box.jpg");
 	uint32 offs[3] = { 0, 0, 0 };
@@ -91,7 +90,7 @@ int main() {
 
 	IGraphicsScene *pRenderScene = pGraphics->createScene();
 	pRenderScene->rootNode()->setModel(pRenderModel);
-	pRenderScene->rootNode()->setPosition(glm::vec3(1,1,-8));
+	pRenderScene->rootNode()->setPosition(glm::vec3(1,1,-2.7f));
 
 	IGraphicsWindow *pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());
 	pRenderWindow->setCamera(pRenderCamera);

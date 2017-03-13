@@ -31,14 +31,15 @@ public:
 	void setModel(IGraphicsModel *pModel);
 
 private:
-	glm::mat4x4 m_cacheTransform, m_cacheGlobalTransform;
+	glm::mat4x4 m_cacheTransform, m_cacheWorldlTransform;
 	GraphicsSceneNode *m_pParentNode;
 	std::vector<GraphicsSceneNode*> m_childNodes;
 	glm::vec3 m_position;
 	glm::quat m_orientation;
 	IGraphicsModel *m_pModel;
 
-	void updateGlobalTransform();
+	void updateTransform();
+	void updateWorldTransform();
 };
 
 class GraphicsScene : public IGraphicsScene {

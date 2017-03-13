@@ -41,6 +41,9 @@ class ICore {
 public:
 	virtual ~ICore() = 0 {}
 
+	virtual int argc() const = 0;
+	virtual char **argv() const = 0;
+	
 	virtual void initialize() = 0;
 	virtual void deinitialize() = 0;
 

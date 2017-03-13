@@ -39,6 +39,15 @@ public:
 
 	void setAutoUniform(const int32 location, const AutoUniform value);
 
+	void setDepthCheck(bool state);
+	bool depthCheck() const;
+
+	void setDepthWrite(bool state);
+	bool depthWrite() const;
+
+	void setDepthFunc(DepthTestFunc func);
+	DepthTestFunc depthFunc() const;
+
 	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
 
 private:
@@ -67,6 +76,9 @@ private:
 
 	Utility::KeyGenerator m_uboBindingPointGenerator;
 	std::map<Renderer::IGPUBuffer*, int32> m_uniformBuffers;
+
+	bool m_depthCheck, m_depthWrite;
+	DepthTestFunc m_depthFunc;
 
 	void setUniformData(const int32 location, const UniformType type, void *pData);
 	int32 setUniformTexture(Renderer::IGPUTexture *pTexture);

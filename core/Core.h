@@ -14,9 +14,12 @@ namespace FreeWorldEngine {
 
 class Core : public ICore {
 public:
-	Core();
+	Core(int argc, char **argv);
 	~Core();
 
+	int argc() const;
+	char** argv() const;
+	
 	void initialize();
 	void deinitialize();
 
@@ -49,6 +52,9 @@ public:
 	ILogger *logger();
 
 private:
+	int m_argc;
+	char **m_argv;
+	
 	ILogger *m_pLogger;
 
 	IResourceManager *m_pManagerForOtherManagers;

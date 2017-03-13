@@ -21,14 +21,13 @@ struct GraphicsWindowUserData {
 };
 
 struct ModelRenderData {
+	IGraphicsSceneNode *pSceneNode;
 	Renderer::IGPUBufferContainer *pBufferContainer;
-	glm::quat orientation;
-	glm::vec3 position;
 	uint32 numIndices;
 	PrimitiveFormat primitiveFormat;
 	
-	ModelRenderData(Renderer::IGPUBufferContainer *pVAO, uint32 numInds, PrimitiveFormat primFormat, glm::quat& orient, glm::vec3& pos) :
-		pBufferContainer(pVAO), orientation(orient), position(pos), numIndices(numInds), primitiveFormat(primFormat) {}
+	ModelRenderData(IGraphicsSceneNode *pNode, Renderer::IGPUBufferContainer *pVAO, uint32 numInds, PrimitiveFormat primFormat) :
+		pSceneNode(pNode), pBufferContainer(pVAO), numIndices(numInds), primitiveFormat(primFormat) {}
 };
 
 GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) :
@@ -105,13 +104,15 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 		for (uint32 i = 0; i < pNode->numChildren(); ++i)
 			sceneNodes.push_back(pNode->childAt(i));
 		if (GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model()))
-			renderData.insert(std::make_pair(static_cast<GraphicsMaterial*>(pModel->material()),
-				ModelRenderData(pModel->bufferContainer(), pModel->numIndices(), pModel->primitiveFormat(), pNode->orientation(), pNode->position())));
+			renderData.insert(std::make_pair(
+				static_cast<GraphicsMaterial*>(pModel->material()),
+				ModelRenderData(pNode, pModel->bufferContainer(), pModel->numIndices(), pModel->primitiveFormat())));
 	}
 
+	pGPURenderer->mainFrameBuffer()->clearDepthBuffer();
+
 	for (auto it : renderData) {
-		glm::mat4x4 modelMatrix = glm::translate(glm::mat4x4(it.second.orientation), it.second.position);
-		it.first->bind(pCamera, modelMatrix);
+		it.first->bind(pCamera, it.second.pSceneNode->worldTransformation());
 		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second.pBufferContainer, it.second.primitiveFormat, TYPE_UNSIGNED_INT_32, it.second.numIndices);
 	}
 }

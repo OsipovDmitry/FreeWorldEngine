@@ -28,7 +28,10 @@ GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgra
 	m_textureSlotGenerator(0),
 	m_uniformTextures(),
 	m_uboBindingPointGenerator(0),
-	m_uniformBuffers()
+	m_uniformBuffers(),
+	m_depthCheck(true),
+	m_depthWrite(true),
+	m_depthFunc(DepthTestFunc_LessEqual)
 {
 }
 
@@ -141,6 +144,36 @@ void GraphicsMaterial::setAutoUniform(const int32 location, const AutoUniform va
 	m_autoUniformData.insert(std::make_pair(value, location));
 }
 
+void GraphicsMaterial::setDepthCheck(bool state)
+{
+	m_depthCheck = state;
+}
+
+bool GraphicsMaterial::depthCheck() const
+{
+	return m_depthCheck;
+}
+
+void GraphicsMaterial::setDepthWrite(bool state)
+{
+	m_depthWrite = state;
+}
+
+bool GraphicsMaterial::depthWrite() const
+{
+	return m_depthWrite;
+}
+
+void GraphicsMaterial::setDepthFunc(DepthTestFunc func)
+{
+	m_depthFunc = func;
+}
+
+IGraphicsMaterial::DepthTestFunc GraphicsMaterial::depthFunc() const
+{
+	return m_depthFunc;
+}
+
 void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const
 {
 	for (auto it = m_uniformData.cbegin(); it != m_uniformData.cend(); ++it) {
@@ -188,6 +221,16 @@ void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMa
 
 	for (auto it = m_uniformBuffers.cbegin(); it != m_uniformBuffers.cend(); ++it) {
 		pGPURenderer->setUniformBuffer(it->first, it->second);
+	}
+
+	pGPURenderer->setDepthWriteMask(m_depthWrite);
+	if ((!m_depthCheck || m_depthFunc == DepthTestFunc_Never) && !m_depthWrite)
+		pGPURenderer->disableDepthTest();
+	else {
+		Renderer::IGPURenderer::DepthTestFunc func = (Renderer::IGPURenderer::DepthTestFunc)m_depthFunc;
+		if (!m_depthCheck)
+			func = Renderer::IGPURenderer::DepthTestFunc_Never;
+		pGPURenderer->enableDepthTest(func);
 	}
 }
 

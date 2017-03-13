@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <3rdparty/glm/gtc/matrix_transform.hpp>
+
 #include "GraphicsScene.h"
 
 namespace FreeWorldEngine {
@@ -11,10 +13,9 @@ GraphicsSceneNode::GraphicsSceneNode(GraphicsSceneNode *pParentNode) :
 	m_pModel(nullptr),
 	m_childNodes(),
 	m_position(),
-	m_orientation(),
-	m_cacheTransform()
+	m_orientation()
 {
-	m_cacheGlobalTransform = m_pParentNode ? m_pParentNode->m_cacheGlobalTransform : glm::mat4x4();
+	updateTransform();
 }
 
 GraphicsSceneNode::~GraphicsSceneNode()
@@ -30,6 +31,7 @@ glm::vec3 GraphicsSceneNode::position() const
 void GraphicsSceneNode::setPosition(const glm::vec3& pos)
 {
 	m_position = pos;
+	updateTransform();
 }
 
 glm::quat GraphicsSceneNode::orientation()
@@ -40,16 +42,17 @@ glm::quat GraphicsSceneNode::orientation()
 void GraphicsSceneNode::setOrientation(const glm::quat& orient)
 {
 	m_orientation = orient;
+	updateTransform();
 }
 
 glm::mat4x4 GraphicsSceneNode::transformation() const
 {
-
+	return m_cacheTransform;
 }
 
 glm::mat4x4 GraphicsSceneNode::worldTransformation() const
 {
-
+	return m_cacheWorldlTransform;
 }
 
 IGraphicsSceneNode *GraphicsSceneNode::createChild()
@@ -93,10 +96,17 @@ void GraphicsSceneNode::setModel(IGraphicsModel *pModel)
 	m_pModel = pModel;
 }
 
-void GraphicsSceneNode::updateGlobalTransform()
+void GraphicsSceneNode::updateTransform()
 {
+	m_cacheTransform = glm::translate(glm::mat4x4(m_orientation), m_position);
+	updateWorldTransform();
+}
 
-
+void GraphicsSceneNode::updateWorldTransform()
+{
+	m_cacheWorldlTransform = m_cacheTransform * (m_pParentNode ? m_pParentNode->m_cacheWorldlTransform : glm::mat4x4());
+	for (auto it : m_childNodes)
+		it->updateWorldTransform();
 }
 
 GraphicsScene::GraphicsScene(const std::string& name) :

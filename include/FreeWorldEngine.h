@@ -31,7 +31,7 @@
 
 namespace FreeWorldEngine {
 
-CORE_FUNC_DLL bool initCoreEngine(); // Инициализация движка
+CORE_FUNC_DLL bool initCoreEngine(int argc = 0, char **argv = nullptr); // Инициализация движка
 CORE_FUNC_DLL ICore *getCoreEngine(); // Поучение синглтона движка
 CORE_FUNC_DLL void destroyCoreEngine(); // Уничтожение движка
 

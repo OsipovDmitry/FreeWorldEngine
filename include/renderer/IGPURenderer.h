@@ -95,6 +95,10 @@ public:
 	virtual void setDepthRange(const float near = 0.0f, const float far = 1.0f) = 0;
 	virtual void depthRange(float& near, float& far) const = 0;
 
+	virtual IGPUFrameBuffer *mainFrameBuffer() const = 0;
+
+	virtual void setColorWriteMask(bool red, bool green, bool blue, bool alpha) = 0;
+	virtual void setDepthWriteMask(bool depth) = 0;
 };
 
 } // namespace

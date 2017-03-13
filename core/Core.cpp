@@ -20,7 +20,9 @@ namespace {
 
 namespace FreeWorldEngine {
 
-Core::Core() :
+Core::Core(int argc, char **argv) :
+	m_argc(argc),
+	m_argv(argv),
 	m_pLogger(0),
 	m_pManagerForOtherManagers(0),
 	m_pLibraryManager(0),
@@ -37,6 +39,16 @@ Core::Core() :
 
 Core::~Core()
 {
+}
+
+int Core::argc() const
+{
+	return m_argc;
+}
+
+char **Core::argv() const
+{
+	return m_argv;
 }
 
 void Core::initialize()
@@ -198,15 +210,10 @@ ILogger *Core::logger()
 
 Core *coreEngine = 0;
 
-bool initCoreEngine()
+bool initCoreEngine(int argc, char **argv)
 {
-	/*if (!dInitODE2(0)) {
-		destroyCoreEngine();
-		return false;
-	}*/
-
 	if (!coreEngine)
-		coreEngine = new Core;
+		coreEngine = new Core(argc, argv);
 	return true;
 }
 

@@ -11,7 +11,8 @@ namespace Renderer {
 
 GLRenderer *pGLRenderer = 0;
 
-GLRenderer::GLRenderer()
+GLRenderer::GLRenderer() :
+	m_pMainFrameBuffer(new GLFrameBuffer(0))
 {
 	for (uint32 i = 0; i < TEXTURE_UNITS_COUNT; ++i)
 		m_cachedTextures[i] = 0;
@@ -39,6 +40,7 @@ GLRenderer::GLRenderer()
 
 GLRenderer::~GLRenderer()
 {
+	delete m_pMainFrameBuffer;
 }
 
 IGPUBuffer *GLRenderer::createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage, void *pData)
@@ -351,6 +353,21 @@ void GLRenderer::depthRange(float& near, float& far) const
 	glGetFloatv(GL_DEPTH_RANGE, dr);
 	near = dr[0];
 	far = dr[1];
+}
+
+IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
+{
+	return m_pMainFrameBuffer;
+}
+
+void GLRenderer::setColorWriteMask(bool red, bool green, bool blue, bool alpha)
+{
+	glColorMask(red, green, blue, alpha);
+}
+
+void GLRenderer::setDepthWriteMask(bool depth)
+{
+	glDepthMask(depth);
 }
 
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint) const

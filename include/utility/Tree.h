@@ -57,16 +57,10 @@ public:
 	typedef TreeNode<T> Node;
 
 private:
-	template <class Derived>
 	class Iterator : public std::iterator<std::forward_iterator_tag, Node*> {
 	public:
-		Derived operator ++(int) {
-			Node *pOldNode = m_pNode;
-			Derived::operator ++();
-			return Derived(m_pTree, pOldNode);
-		}
-		bool operator ==(const Derived& other) const { return m_pNode == other.m_pNode; }
-		bool operator !=(const Derived& other) const { return m_pNode != other.m_pNode; }
+		bool operator ==(const Iterator& other) const { return m_pNode == other.m_pNode; }
+		bool operator !=(const Iterator& other) const { return m_pNode != other.m_pNode; }
 		Node *operator *() { return m_pNode; }
 		int depth() const { int res = 0; Node *p = m_pNode; while (p->m_pParent) { p = p->m_pParent; ++res; } return res; }
 	protected:
@@ -76,7 +70,7 @@ private:
 	};
 
 public:
-	class DepthIterator : public Iterator<DepthIterator> {
+	class DepthIterator : public Iterator {
 	public:
 		DepthIterator& operator ++() {
 			if (!m_pNode->m_children.empty()) {
@@ -92,16 +86,26 @@ public:
 			}
 			return *this;
 		}
+		DepthIterator operator ++(int) {
+			Node *pOldNode = m_pNode;
+			operator ++();
+			return DepthIterator(m_pTree, pOldNode);
+		}
 	private:
 		DepthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
 		friend class Tree<T>;
 	};
 
-	class WidthIterator : public Iterator<WidthIterator> {
+	class WidthIterator : public Iterator {
 	public:
 		WidthIterator& operator ++() {
 			//
 			return *this;
+		}
+		WidthIterator operator ++(int) {
+			Node *pOldNode = m_pNode;
+			operator ++();
+			return WidthIterator(m_pTree, pOldNode);
 		}
 	private:
 		WidthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
