@@ -46,8 +46,9 @@ void GLBuffer::resize(uint64 newSize, IGPUBufferUsage usage)
 		GLBuffer *pNewBuffer = new GLBuffer(newId);
 		pGLRenderer->bindBuffer(pNewBuffer, GL_COPY_WRITE_BUFFER);
 		glBufferData(GL_COPY_WRITE_BUFFER, newSize, 0, newGLUsage);
-		if (oldSize)
-			glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, oldSize < newSize ? oldSize : newSize);
+		uint64 copySize = (oldSize < newSize) ? oldSize : newSize;
+		if (copySize)
+			glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, copySize);
 		pGLRenderer->bindBuffer(0, GL_COPY_WRITE_BUFFER);
 		delete pNewBuffer;
 	}

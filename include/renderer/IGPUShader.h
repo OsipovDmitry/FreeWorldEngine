@@ -13,10 +13,6 @@
 
 namespace FreeWorldEngine {
 
-namespace Utility {
-class File;
-}
-
 namespace Renderer {
 
 class IGPUShader {
@@ -31,10 +27,7 @@ public:
     virtual ~IGPUShader() {}
 
     virtual IGPUShaderType type() const = 0;
-
     virtual void loadFromData(const std::string& data) = 0;
-    virtual void loadFromFile(const Utility::File& file) = 0;
-
     virtual bool compile(std::string *pLogString = 0) const = 0;
 
 }; // class IGPUShader

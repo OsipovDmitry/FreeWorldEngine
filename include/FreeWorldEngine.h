@@ -22,6 +22,7 @@
 #include "graphics_engine/IGraphicsEngine.h"
 #include "graphics_engine/IGraphicsCamera.h"
 #include "graphics_engine/IGraphicsModel.h"
+#include "graphics_engine/IGraphicsMaterialManager.h"
 #include "graphics_engine/IGraphicsMaterial.h"
 #include "graphics_engine/IGraphicsScene.h"
 #include "graphics_engine/IGraphicsWindow.h"

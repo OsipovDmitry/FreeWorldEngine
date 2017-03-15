@@ -98,13 +98,13 @@ void GraphicsSceneNode::setModel(IGraphicsModel *pModel)
 
 void GraphicsSceneNode::updateTransform()
 {
-	m_cacheTransform = glm::translate(glm::mat4x4(m_orientation), m_position);
+	m_cacheTransform = glm::translate(glm::mat4x4(), m_position) * glm::mat4x4(m_orientation);
 	updateWorldTransform();
 }
 
 void GraphicsSceneNode::updateWorldTransform()
 {
-	m_cacheWorldlTransform = m_cacheTransform * (m_pParentNode ? m_pParentNode->m_cacheWorldlTransform : glm::mat4x4());
+	m_cacheWorldlTransform = (m_pParentNode ? m_pParentNode->m_cacheWorldlTransform : glm::mat4x4()) * m_cacheTransform;
 	for (auto it : m_childNodes)
 		it->updateWorldTransform();
 }

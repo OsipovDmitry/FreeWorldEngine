@@ -13,9 +13,10 @@ namespace Renderer {
 
 namespace GraphicsEngine {
 
+class IGraphicsMaterialManager;
+
 class IGraphicsCamera;
 class IGraphicsModel;
-class IGraphicsMaterial;
 class IGraphicsScene;
 class IGraphicsWindow;
 
@@ -33,10 +34,7 @@ public:
 	virtual void destroyModel(const std::string& name) = 0;
 	virtual void destroyModel(IGraphicsModel *pModel) = 0;
 
-	virtual IGraphicsMaterial *findMaterial(const std::string& name) const = 0;
-	virtual IGraphicsMaterial *createMaterial(Renderer::IGPUProgram *pPrgram, const std::string& name = "@utoname") = 0;
-	virtual void destroyMaterial(const std::string& name) = 0;
-	virtual void destroyMaterial(IGraphicsMaterial *pMaterial) = 0;
+	virtual IGraphicsMaterialManager *materialManager() const = 0;
 
 	virtual IGraphicsScene *findScene(const std::string& name) const = 0;
 	virtual IGraphicsScene *createScene(const std::string& name = "@utoname") = 0;

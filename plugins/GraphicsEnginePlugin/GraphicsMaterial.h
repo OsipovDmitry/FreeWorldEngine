@@ -39,16 +39,35 @@ public:
 
 	void setAutoUniform(const int32 location, const AutoUniform value);
 
-	void setDepthCheck(bool state);
+	void setDepthCheck(const bool state);
 	bool depthCheck() const;
 
-	void setDepthWrite(bool state);
+	void setDepthWrite(const bool state);
 	bool depthWrite() const;
 
-	void setDepthFunc(DepthTestFunc func);
+	void setDepthFunc(const DepthTestFunc func);
 	DepthTestFunc depthFunc() const;
 
+	void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA);
+	void setBlendEquation(const BlendEquation func);
+	BlendEquation blendEquationRGB() const;
+	BlendEquation blendEquationA() const;
+
+	void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA);
+	void setBlendFunc(const BlendFuncState func);
+	BlendFunc blendFuncSrcRGB() const;
+	BlendFunc blendFuncSrcA() const;
+	BlendFunc blendFuncDstRGB() const;
+	BlendFunc blendFuncDstA() const;
+
+	bool isTransparent() const;
+
 	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
+
+	class Comparator {
+	public:
+		bool operator ()(GraphicsMaterial *p1, GraphicsMaterial *p2);
+	};
 
 private:
 	std::string m_name;
@@ -79,6 +98,9 @@ private:
 
 	bool m_depthCheck, m_depthWrite;
 	DepthTestFunc m_depthFunc;
+
+	BlendEquation m_blendEquationRGB, m_blendEquationA;
+	BlendFunc m_blendSrcRGB, m_blendSrcA, m_blendDstRGB, m_blendDstA;
 
 	void setUniformData(const int32 location, const UniformType type, void *pData);
 	int32 setUniformTexture(Renderer::IGPUTexture *pTexture);

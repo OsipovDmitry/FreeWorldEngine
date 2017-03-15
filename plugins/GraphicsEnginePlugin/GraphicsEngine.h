@@ -35,10 +35,7 @@ public:
 	void destroyModel(const std::string& name);
 	void destroyModel(IGraphicsModel *pModel);
 
-	IGraphicsMaterial *findMaterial(const std::string& name) const;
-	IGraphicsMaterial *createMaterial(Renderer::IGPUProgram *pPrgram, const std::string& name = "@utoname");
-	void destroyMaterial(const std::string& name);
-	void destroyMaterial(IGraphicsMaterial *pMaterial);
+	IGraphicsMaterialManager *materialManager() const;
 
 	IGraphicsScene *findScene(const std::string& name) const;
 	IGraphicsScene *createScene(const std::string& name = "@utoname");
@@ -56,8 +53,9 @@ public:
 private:
 	ShaderManager *m_pShaderManager;
 	ProgramManager *m_pProgramManager;
-	IResourceManager *m_pCameraManager, *m_pModelManager, *m_pMaterialManager, *m_pSceneManager, *m_pWindowManager;
-	Utility::AutoNameGenerator *m_pCameraNameGenerator, *m_pModelNameGenerator, *m_pMaterialNameGenerator, *m_pSceneNameGenerator, *m_pWindowNameGenerator;
+	IGraphicsMaterialManager *m_pMaterialManager;
+	IResourceManager *m_pCameraManager, *m_pModelManager, *m_pSceneManager, *m_pWindowManager;
+	Utility::AutoNameGenerator *m_pCameraNameGenerator, *m_pModelNameGenerator, *m_pSceneNameGenerator, *m_pWindowNameGenerator;
 
 
 }; // class GraphicsEngine

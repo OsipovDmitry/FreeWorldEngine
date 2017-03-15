@@ -94,7 +94,7 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 	IGraphicsScene *pScene = pThis->m_pScene;
 	IGraphicsCamera *pCamera = pThis->m_pCamera;
 
-	std::multimap<GraphicsMaterial*, ModelRenderData> renderData;
+	std::multimap<GraphicsMaterial*, ModelRenderData, GraphicsMaterial::Comparator> renderData;
 	std::list<IGraphicsSceneNode*> sceneNodes;
 	sceneNodes.push_back(pScene->rootNode());
 
@@ -110,8 +110,9 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 	}
 
 	pGPURenderer->mainFrameBuffer()->clearDepthBuffer();
+	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.0f, 0.0f, 0.5f);
 
-	for (auto it : renderData) {
+	for (const auto& it : renderData) {
 		it.first->bind(pCamera, it.second.pSceneNode->worldTransformation());
 		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second.pBufferContainer, it.second.primitiveFormat, TYPE_UNSIGNED_INT_32, it.second.numIndices);
 	}

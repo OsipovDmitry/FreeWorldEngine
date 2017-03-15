@@ -236,6 +236,11 @@ void GLRenderer::setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint3
 	}
 }
 
+IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
+{
+	return m_pMainFrameBuffer;
+}
+
 void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const
 {
 	GLenum mode = GLPrimitiveFormat(primitiveFormat);
@@ -276,6 +281,16 @@ void GLRenderer::disableDepthTest()
 		m_cachedDepthTest = false;
 		glDisable(GL_DEPTH_TEST);
 	}
+}
+
+void GLRenderer::setColorWriteMask(bool red, bool green, bool blue, bool alpha)
+{
+	glColorMask(red, green, blue, alpha);
+}
+
+void GLRenderer::setDepthWriteMask(bool depth)
+{
+	glDepthMask(depth);
 }
 
 void GLRenderer::enableBlend(const int32 slot)
@@ -353,21 +368,6 @@ void GLRenderer::depthRange(float& near, float& far) const
 	glGetFloatv(GL_DEPTH_RANGE, dr);
 	near = dr[0];
 	far = dr[1];
-}
-
-IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
-{
-	return m_pMainFrameBuffer;
-}
-
-void GLRenderer::setColorWriteMask(bool red, bool green, bool blue, bool alpha)
-{
-	glColorMask(red, green, blue, alpha);
-}
-
-void GLRenderer::setDepthWriteMask(bool depth)
-{
-	glDepthMask(depth);
 }
 
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint) const

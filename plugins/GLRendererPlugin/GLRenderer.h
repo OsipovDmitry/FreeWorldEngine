@@ -43,12 +43,16 @@ public:
 	IGPUFrameBuffer *createFrameBuffer();
 	void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer);
 	void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const;
+	IGPUFrameBuffer *mainFrameBuffer() const;
 
 	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
 	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
 
 	void enableDepthTest(const DepthTestFunc func = DepthTestFunc_Less);
 	void disableDepthTest();
+
+	void setColorWriteMask(bool red, bool green, bool blue, bool alpha);
+	void setDepthWriteMask(bool depth);
 
 	void enableBlend(const int32 slot = -1);
 	void disableBlend(const int32 slot = -1);
@@ -60,11 +64,6 @@ public:
 
 	void setDepthRange(const float near = 0.0f, const float far = 1.0f);
 	void depthRange(float& near, float& far) const;
-
-	IGPUFrameBuffer *mainFrameBuffer() const;
-
-	void setColorWriteMask(bool red, bool green, bool blue, bool alpha);
-	void setDepthWriteMask(bool depth);
 
 	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint = 0) const;
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;

@@ -2,10 +2,10 @@
 #include <utility/AutoNameGenerator.h>
 
 #include "GraphicsEngine.h"
+#include "GraphicsMaterialManager.h"
 #include "ShaderManager.h"
 #include "GraphicsCamera.h"
 #include "GraphicsModel.h"
-#include "GraphicsMaterial.h"
 #include "GraphicsScene.h"
 #include "GraphicsWindow.h"
 
@@ -19,14 +19,13 @@ Renderer::IGPURenderer *pGPURenderer = 0;
 GraphicsEngine::GraphicsEngine() :
 	m_pShaderManager(new ShaderManager),
 	m_pProgramManager(new ProgramManager),
+	m_pMaterialManager(new GraphicsMaterialManager),
 	m_pCameraManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsCameras")),
 	m_pModelManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsModels")),
-	m_pMaterialManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsMaterials")),
 	m_pSceneManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsScenes")),
 	m_pWindowManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsWindows")),
 	m_pCameraNameGenerator(new Utility::AutoNameGenerator("CameraName")),
 	m_pModelNameGenerator(new Utility::AutoNameGenerator("ModelName")),
-	m_pMaterialNameGenerator(new Utility::AutoNameGenerator("MaterialName")),
 	m_pSceneNameGenerator(new Utility::AutoNameGenerator("SceneName")),
 	m_pWindowNameGenerator(new Utility::AutoNameGenerator("WindowName"))
 
@@ -37,15 +36,14 @@ GraphicsEngine::GraphicsEngine() :
 GraphicsEngine::~GraphicsEngine()
 {
 	delete m_pModelNameGenerator;
-	delete m_pMaterialNameGenerator;
 	delete m_pSceneNameGenerator;
 	delete m_pWindowNameGenerator;
 	delete m_pCameraNameGenerator;
 	getCoreEngine()->destroyResourceManager(m_pWindowManager);
 	getCoreEngine()->destroyResourceManager(m_pSceneManager);
 	getCoreEngine()->destroyResourceManager(m_pModelManager);
-	getCoreEngine()->destroyResourceManager(m_pMaterialManager);
 	getCoreEngine()->destroyResourceManager(m_pCameraManager);
+	delete m_pMaterialManager;
 	delete m_pShaderManager;
 	delete m_pProgramManager;
 }
@@ -104,31 +102,9 @@ void GraphicsEngine::destroyModel(IGraphicsModel *pModel)
 	m_pModelManager->destroyResource(pModel);
 }
 
-IGraphicsMaterial *GraphicsEngine::findMaterial(const std::string& name) const
+IGraphicsMaterialManager * GraphicsEngine::materialManager() const
 {
-	return static_cast<IGraphicsMaterial*>(m_pMaterialManager->findResource(name));
-}
-
-IGraphicsMaterial *GraphicsEngine::createMaterial(Renderer::IGPUProgram *pPrgram, const std::string& name)
-{
-	const std::string resName = (name == "@utoname") ? m_pMaterialNameGenerator->generateName() : name;
-	IGraphicsMaterial *pMaterial = findMaterial(resName);
-	if (pMaterial)
-		return pMaterial;
-
-	pMaterial = new GraphicsMaterial(resName, pPrgram);
-	m_pMaterialManager->addResource(pMaterial);
-	return pMaterial;
-}
-
-void GraphicsEngine::destroyMaterial(const std::string& name)
-{
-	m_pMaterialManager->destroyResource(name);
-}
-
-void GraphicsEngine::destroyMaterial(IGraphicsMaterial *pMaterial)
-{
-	m_pMaterialManager->destroyResource(pMaterial);
+	return m_pMaterialManager;
 }
 
 IGraphicsScene *GraphicsEngine::findScene(const std::string& name) const

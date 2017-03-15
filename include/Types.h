@@ -4,7 +4,8 @@
 #include <map> 
 #include <string>
 #include <vector>
-#include <3rdparty/glm/mat4x4.hpp>
+#include <3rdparty/glm/vec3.hpp>
+#include <3rdparty/glm/gtc/quaternion.hpp>
 #include <utility/Tree.h>
 
 namespace FreeWorldEngine {
@@ -120,7 +121,8 @@ struct SceneData {
 	struct NodeData {
 		std::string name;
 		std::vector<uint32> meshesIndices;
-		glm::mat4x4 transform;
+		glm::quat orientation;
+		glm::vec3 position;
 	};
 
 	MaterialList materials;

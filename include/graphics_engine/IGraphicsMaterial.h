@@ -44,6 +44,37 @@ public:
 		DepthTestFunc_NotEqual
 	};
 
+	enum BlendFunc {
+		BlendFunc_Zero,
+		BlendFunc_One,
+		BlendFunc_SrcColor,
+		BlendFunc_InvSrcColor,
+		BlendFunc_DstColor,
+		BlendFunc_InvDstColor,
+		BlendFunc_SrcAlpha,
+		BlendFunc_InvSrcAlpha,
+		BlendFunc_DstAlpha,
+		BlendFunc_InvDstAlpha,
+		BlendFunc_ConstColor,
+		BlendFunc_InvConstColor,
+		BlendFunc_ConstAlpha,
+		BlendFunc_InvConstAlpha,
+	};
+
+	enum BlendFuncState {
+		BlendFuncState_Replace,
+		BlendFuncState_Alpha,
+		BlendFuncState_Add,
+	};
+
+	enum BlendEquation {
+		BlendEquation_Add,
+		BlendEquation_Sub,
+		BlendEquation_ReverseSub,
+		BlendEquation_Min,
+		BlendEquation_Max
+	};
+
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
@@ -68,15 +99,26 @@ public:
 
 	virtual void setAutoUniform(const int32 location, const AutoUniform value) = 0;
 
-	virtual void setDepthCheck(bool state) = 0;
+	virtual void setDepthCheck(const bool state) = 0;
 	virtual bool depthCheck() const = 0;
 
-	virtual void setDepthWrite(bool state) = 0;
+	virtual void setDepthWrite(const bool state) = 0;
 	virtual bool depthWrite() const = 0;
 
-	virtual void setDepthFunc(DepthTestFunc func) = 0;
+	virtual void setDepthFunc(const DepthTestFunc func) = 0;
 	virtual DepthTestFunc depthFunc() const = 0;
 
+	virtual void setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA) = 0;
+	virtual void setBlendEquation(const BlendEquation func) = 0;
+	virtual BlendEquation blendEquationRGB() const = 0;
+	virtual BlendEquation blendEquationA() const = 0;
+
+	virtual void setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA) = 0;
+	virtual void setBlendFunc(const BlendFuncState func) = 0;
+	virtual BlendFunc blendFuncSrcRGB() const = 0;
+	virtual BlendFunc blendFuncSrcA() const = 0;
+	virtual BlendFunc blendFuncDstRGB() const = 0;
+	virtual BlendFunc blendFuncDstA() const = 0;
 
 }; // class IGraphicsMaterial
 

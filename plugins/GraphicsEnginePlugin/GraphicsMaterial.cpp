@@ -31,7 +31,13 @@ GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgra
 	m_uniformBuffers(),
 	m_depthCheck(true),
 	m_depthWrite(true),
-	m_depthFunc(DepthTestFunc_LessEqual)
+	m_depthFunc(DepthTestFunc_LessEqual),
+	m_blendEquationRGB(BlendEquation_Add),
+	m_blendEquationA(BlendEquation_Add),
+	m_blendSrcRGB(BlendFunc_One),
+	m_blendSrcA(BlendFunc_One),
+	m_blendDstRGB(BlendFunc_Zero),
+	m_blendDstA(BlendFunc_Zero)
 {
 }
 
@@ -144,7 +150,7 @@ void GraphicsMaterial::setAutoUniform(const int32 location, const AutoUniform va
 	m_autoUniformData.insert(std::make_pair(value, location));
 }
 
-void GraphicsMaterial::setDepthCheck(bool state)
+void GraphicsMaterial::setDepthCheck(const bool state)
 {
 	m_depthCheck = state;
 }
@@ -154,7 +160,7 @@ bool GraphicsMaterial::depthCheck() const
 	return m_depthCheck;
 }
 
-void GraphicsMaterial::setDepthWrite(bool state)
+void GraphicsMaterial::setDepthWrite(const bool state)
 {
 	m_depthWrite = state;
 }
@@ -164,7 +170,7 @@ bool GraphicsMaterial::depthWrite() const
 	return m_depthWrite;
 }
 
-void GraphicsMaterial::setDepthFunc(DepthTestFunc func)
+void GraphicsMaterial::setDepthFunc(const DepthTestFunc func)
 {
 	m_depthFunc = func;
 }
@@ -172,6 +178,84 @@ void GraphicsMaterial::setDepthFunc(DepthTestFunc func)
 IGraphicsMaterial::DepthTestFunc GraphicsMaterial::depthFunc() const
 {
 	return m_depthFunc;
+}
+
+void GraphicsMaterial::setBlendEquation(const BlendEquation funcRGB, const BlendEquation funcA)
+{
+	m_blendEquationRGB = funcRGB;
+	m_blendEquationA = funcA;
+}
+
+void GraphicsMaterial::setBlendEquation(const BlendEquation equation)
+{
+	m_blendEquationRGB = m_blendEquationA = equation;
+}
+
+IGraphicsMaterial::BlendEquation GraphicsMaterial::blendEquationRGB() const
+{
+	return m_blendEquationRGB;
+}
+
+IGraphicsMaterial::BlendEquation GraphicsMaterial::blendEquationA() const
+{
+	return m_blendEquationA;
+}
+
+void GraphicsMaterial::setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA)
+{
+	m_blendSrcRGB = funcSrcRGB;
+	m_blendSrcA = funcSrcA;
+	m_blendDstRGB = funcDstRGB;
+	m_blendDstA = funcDstA;
+}
+
+void GraphicsMaterial::setBlendFunc(const BlendFuncState func)
+{
+	switch (func) {
+	case BlendFuncState_Replace: {
+		m_blendSrcRGB = m_blendSrcA = BlendFunc_One;
+		m_blendDstRGB = m_blendDstA = BlendFunc_Zero;
+		break;
+	}
+	case BlendFuncState_Alpha: {
+		m_blendSrcRGB = m_blendSrcA = BlendFunc_SrcAlpha;
+		m_blendDstRGB = m_blendDstA = BlendFunc_InvSrcAlpha;
+		break;
+	}
+	case BlendFuncState_Add: {
+		m_blendSrcRGB = m_blendSrcA = BlendFunc_SrcAlpha;
+		m_blendDstRGB = m_blendDstA = BlendFunc_One;
+		break;
+	}
+	default: break;
+	}
+}
+
+IGraphicsMaterial::BlendFunc GraphicsMaterial::blendFuncSrcRGB() const
+{
+	return m_blendSrcRGB;
+}
+
+IGraphicsMaterial::BlendFunc GraphicsMaterial::blendFuncSrcA() const
+{
+	return m_blendSrcA;
+}
+
+IGraphicsMaterial::BlendFunc GraphicsMaterial::blendFuncDstRGB() const
+{
+	return m_blendDstRGB;
+}
+
+IGraphicsMaterial::BlendFunc GraphicsMaterial::blendFuncDstA() const
+{
+	return m_blendDstA;
+}
+
+bool GraphicsMaterial::isTransparent() const
+{
+	return !((m_blendSrcRGB == BlendFunc_One) && (m_blendSrcA == BlendFunc_One) &&
+		(m_blendDstRGB == BlendFunc_Zero) && (m_blendDstA == BlendFunc_Zero) &&
+		(m_blendEquationRGB == BlendEquation_Add) && (m_blendEquationA == BlendEquation_Add));
 }
 
 void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const
@@ -232,12 +316,19 @@ void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMa
 			func = Renderer::IGPURenderer::DepthTestFunc_Never;
 		pGPURenderer->enableDepthTest(func);
 	}
-}
 
-/*bool GraphicsMaterial::operator <(const GraphicsMaterial& other) const
-{
-	return m_pProgram < other.m_pProgram;
-}*/
+	if (!isTransparent()) {
+		pGPURenderer->disableBlend();
+	}
+	else {
+		pGPURenderer->setBlendEquation((Renderer::IGPURenderer::BlendEquation)m_blendEquationRGB, (Renderer::IGPURenderer::BlendEquation)m_blendEquationA);
+		pGPURenderer->setBlendFunc((Renderer::IGPURenderer::BlendFunc)m_blendSrcRGB,
+			(Renderer::IGPURenderer::BlendFunc)m_blendDstRGB,
+			(Renderer::IGPURenderer::BlendFunc)m_blendSrcA,
+			(Renderer::IGPURenderer::BlendFunc)m_blendDstA);
+		pGPURenderer->enableBlend();
+	}
+}
 
 void GraphicsMaterial::setUniformData(const int32 location, const UniformType type, void *pData)
 {
@@ -278,6 +369,20 @@ void GraphicsMaterial::clearUniforms()
 	m_uniformTextures.clear();
 
 	m_uniformBuffers.clear();
+}
+
+bool GraphicsMaterial::Comparator::operator()(GraphicsMaterial *p1, GraphicsMaterial *p2)
+{
+	bool isTransp1 = p1->isTransparent();
+	bool isTransp2 = p2->isTransparent();
+
+	if (isTransp2 && !isTransp1)
+		return true;
+
+	if (isTransp1 && !isTransp2)
+		return false;
+
+	return p1->m_pProgram < p2->m_pProgram;
 }
 
 } // namespace

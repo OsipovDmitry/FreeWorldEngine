@@ -76,12 +76,16 @@ public:
 	virtual IGPUFrameBuffer *createFrameBuffer() = 0;
 	virtual void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer) = 0;
 	virtual void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const = 0;
+	virtual IGPUFrameBuffer *mainFrameBuffer() const = 0;
 
 	virtual void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const = 0;
 	virtual void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const = 0;
 
 	virtual void enableDepthTest(const DepthTestFunc func = DepthTestFunc_Less) = 0;
 	virtual void disableDepthTest() = 0;
+
+	virtual void setColorWriteMask(bool red, bool green, bool blue, bool alpha) = 0;
+	virtual void setDepthWriteMask(bool depth) = 0;
 
 	// slot == -1 => вкл/выкл во всех слотах
 	virtual void enableBlend(const int32 slot = -1) = 0;
@@ -94,11 +98,6 @@ public:
 
 	virtual void setDepthRange(const float near = 0.0f, const float far = 1.0f) = 0;
 	virtual void depthRange(float& near, float& far) const = 0;
-
-	virtual IGPUFrameBuffer *mainFrameBuffer() const = 0;
-
-	virtual void setColorWriteMask(bool red, bool green, bool blue, bool alpha) = 0;
-	virtual void setDepthWriteMask(bool depth) = 0;
 };
 
 } // namespace

@@ -8,3 +8,10 @@ set(SOURCES main.cpp)
 add_executable(Demo ${SOURCES})
 
 target_link_libraries(Demo CoreEngine)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package(Qt4 4.4.3 REQUIRED QtGui QtOpenGL)
+target_link_libraries(Demo Qt4::QtGui)
+target_link_libraries(Demo Qt4::QtOpenGL)
+target_link_libraries(Demo OpenGL32)

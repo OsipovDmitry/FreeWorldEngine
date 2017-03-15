@@ -36,17 +36,6 @@ void GLShader::loadFromData(const std::string &data)
 	loadFromData(data.c_str());
 }
 
-void GLShader::loadFromFile(const Utility::File &file)
-{
-	file.open(Utility::File::OpenMode_ReadOnly);
-	int64 sz = file.size();
-	char *p = new char [sz+1];
-	file.readAll(sz, p);
-	p[sz] = 0;
-	loadFromData(p);
-	delete [] p;
-}
-
 bool GLShader::compile(std::string *pLogString) const
 {
     glCompileShader(m_id);

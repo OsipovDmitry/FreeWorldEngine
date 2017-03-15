@@ -14,10 +14,7 @@ public:
     ~GLShader();
 
     IGPUShaderType type() const;
-
     void loadFromData(const std::string& data);
-    void loadFromFile(const Utility::File& file);
-
     bool compile(std::string *pLogString = 0) const;
 
     GLuint GLid() const;

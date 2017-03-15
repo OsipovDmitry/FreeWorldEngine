@@ -65,8 +65,8 @@ private:
 		int depth() const { int res = 0; Node *p = m_pNode; while (p->m_pParent) { p = p->m_pParent; ++res; } return res; }
 	protected:
 		Node *m_pNode;
-		Tree<T> *m_pTree;
-		Iterator(Tree<T> *pTree, Node *pNode) : m_pTree(pTree), m_pNode(pNode) {}
+		const Tree<T> *m_pTree;
+		Iterator(const Tree<T> *pTree, Node *pNode) : m_pTree(pTree), m_pNode(pNode) {}
 	};
 
 public:
@@ -92,7 +92,7 @@ public:
 			return DepthIterator(m_pTree, pOldNode);
 		}
 	private:
-		DepthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
+		DepthIterator(const Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
 		friend class Tree<T>;
 	};
 
@@ -121,8 +121,8 @@ public:
 	const Node *rootNode() const;
 	Node *rootNode();
 
-	DepthIterator beginDepth() { return DepthIterator(this, m_pRootNode); }
-	DepthIterator endDepth() { return DepthIterator(this, m_pEnd); }
+	DepthIterator beginDepth() const { return DepthIterator(this, m_pRootNode); }
+	DepthIterator endDepth() const { return DepthIterator(this, m_pEnd); }
 
 	WidthIterator beginWidth() { return WidthIterator(this, m_pRootNode); }
 	WidthIterator endWidth() { return WidthIterator(this, m_pEnd); }
