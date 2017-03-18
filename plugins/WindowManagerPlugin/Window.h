@@ -58,7 +58,6 @@ public:
 
 	int32 width() const;
 	int32 height() const;
-	uint64 frameNumber() const;
 	void setMousePos(const int32 x, const int32 y) const;
 
 	void setUserData(void *pData);
@@ -87,7 +86,6 @@ private:
 	std::string m_name;
 	SDL_Window *m_window;
 	SDL_GLContext m_glContext;
-	uint64 m_frameNumber;
 	void *m_pUserData;
 
 	std::vector<ShowCallBack> m_showCallBacks;

@@ -9,7 +9,6 @@ namespace FreeWorldEngine {
 Window::Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable) :
 	QGLWidget(),
 	m_name(name),
-	m_frameNumber(-1),
 	m_lastUpdateTime(QDateTime::currentMSecsSinceEpoch()),
 	m_pUserData(0),
 	m_showCallBacks(),
@@ -302,11 +301,6 @@ int32 Window::height() const
 	return QGLWidget::height();
 }
 
-uint64 Window::frameNumber() const
-{
-	return m_frameNumber;
-}
-
 void Window::setMousePos(const int32 x, const int32 y) const
 {
 	QCursor::setPos(QGLWidget::mapToGlobal(QPoint(x, y)));
@@ -333,7 +327,6 @@ void Window::paintGL()
 	m_lastUpdateTime = time;
 	std::for_each(m_updateCallBacks.cbegin(), m_updateCallBacks.cend(), [time, dt, this](UpdateCallBack p) { p(time, dt, this); });
 
-	m_frameNumber++;
 	std::for_each(m_renderCallBacks.cbegin(), m_renderCallBacks.cend(), [this](RenderCallBack p) { p(this); });
 }
 

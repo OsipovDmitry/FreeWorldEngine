@@ -20,6 +20,9 @@ public:
 	virtual void setScene(IGraphicsScene *pGraphicsScene) = 0;
 	virtual const IGraphicsScene *scene() const = 0;
 
+	virtual float fps() const = 0;
+	virtual uint64 frameNumber() const = 0;
+
 }; // class IGraphicsWindow
 
 } // namespace

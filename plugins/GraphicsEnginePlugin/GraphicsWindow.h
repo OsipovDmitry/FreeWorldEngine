@@ -22,15 +22,23 @@ public:
 	void setScene(IGraphicsScene *pGraphicsScene);
 	const IGraphicsScene *scene() const;
 
+	float fps() const;
+	uint64 frameNumber() const;
+
 private:
 	std::string m_name;
 	IWindow *m_pTargetWindow;
 	IGraphicsCamera *m_pCamera;
 	IGraphicsScene *m_pScene;
 
+	float m_fps;
+	uint64 m_frameNumber;
+	uint32 m_lastFpsTime;
+	int32 m_frameCounter;
+
 	static void resizeCallBack(int32 width, int32 height, IWindow *pWindow);
 	static void renderCallBack(IWindow *pWindow);
-	static void updateCallBack(uint32 dt, uint32 time, IWindow *pWindow);
+	static void updateCallBack(uint32 time, uint32 dt, IWindow *pWindow);
 	static void closeCallBack(IWindow *pWindow);
 
 }; // class GraphicsWindow

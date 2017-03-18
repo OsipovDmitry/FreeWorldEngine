@@ -153,7 +153,6 @@ public:
 
 	virtual int32 width() const = 0;
 	virtual int32 height() const = 0;
-	virtual uint64 frameNumber() const = 0;
 	virtual void setMousePos(const int32 x, const int32 y) const = 0;
 
 	virtual void setUserData(void *pData) = 0;

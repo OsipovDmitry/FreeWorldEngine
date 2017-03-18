@@ -60,7 +60,6 @@ public:
 
 	int32 width() const;
 	int32 height() const;
-	uint64 frameNumber() const;
 	void setMousePos(const int32 x, const int32 y) const;
 
 	void setUserData(void *pData);
@@ -91,7 +90,7 @@ public:
 
 private:
 	std::string m_name;
-	uint64 m_frameNumber, m_lastUpdateTime;
+	uint64 m_lastUpdateTime;
 	void *m_pUserData;
 
 	std::vector<ShowCallBack> m_showCallBacks;

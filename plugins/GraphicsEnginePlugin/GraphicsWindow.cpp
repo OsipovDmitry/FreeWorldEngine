@@ -33,7 +33,11 @@ struct ModelRenderData {
 GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) :
 	m_name(name),
 	m_pTargetWindow(pTargetWindow),
-	m_pCamera(0)
+	m_pCamera(0),
+	m_lastFpsTime(0),
+	m_frameCounter(-1),
+	m_frameNumber(-1),
+	m_fps(-1.0f)
 {
 	m_pTargetWindow->registerResizeCallBack(GraphicsWindow::resizeCallBack);
 	m_pTargetWindow->registerRenderCallBack(GraphicsWindow::renderCallBack);
@@ -80,6 +84,16 @@ const IGraphicsScene * GraphicsWindow::scene() const
 	return m_pScene;
 }
 
+float GraphicsWindow::fps() const
+{
+	return m_fps;
+}
+
+uint64 GraphicsWindow::frameNumber() const
+{
+	return m_frameNumber;
+}
+
 void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
@@ -118,10 +132,26 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 	}
 }
 
-void GraphicsWindow::updateCallBack(uint32 dt, uint32 time, IWindow * pWindow)
+void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow * pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
 	static_cast<GraphicsCamera*>(pThis->m_pCamera)->update();
+
+
+	++(pThis->m_frameNumber);
+	if (pThis->m_frameCounter < 0) { // только при первом вызове updateCallBack
+		pThis->m_lastFpsTime = time;
+		pThis->m_frameCounter = 0;
+		pThis->m_fps = -1.0f;
+	}
+	else {
+		++pThis->m_frameCounter;
+		if (time - pThis->m_lastFpsTime > 1000) {
+			pThis->m_fps = (float)(pThis->m_frameCounter) / (float)(time - pThis->m_lastFpsTime) * 1000.0f;
+			pThis->m_frameCounter = 0;
+			pThis->m_lastFpsTime = time;
+		}
+	}
 }
 
 void GraphicsWindow::closeCallBack(IWindow *pWindow)

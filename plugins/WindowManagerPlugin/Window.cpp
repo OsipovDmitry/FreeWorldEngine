@@ -8,7 +8,6 @@ namespace FreeWorldEngine {
 
 Window::Window(const std::string& name, const std::string& title, const int32 width, const int32 height, const bool fullscreen, const bool resizable) :
 	m_name(name),
-	m_frameNumber(-1),
 	m_pUserData(0),
 	m_showCallBacks(),
 	m_hideCallBacks(),
@@ -320,11 +319,6 @@ int32 Window::height() const
 	return h;
 }
 
-uint64 Window::frameNumber() const
-{
-	return m_frameNumber;
-}
-
 void Window::setMousePos(const int32 x, const int32 y) const
 {
 	SDL_WarpMouseInWindow(m_window, x, y);
@@ -342,7 +336,6 @@ void *Window::userData() const
 
 void Window::render()
 {
-	m_frameNumber++;
 	std::for_each(m_renderCallBacks.cbegin(), m_renderCallBacks.cend(), [this](RenderCallBack p) { p(this); });
 	SDL_GL_SwapWindow(m_window);
 }
