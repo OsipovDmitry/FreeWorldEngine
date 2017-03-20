@@ -23,6 +23,8 @@ typedef glm::vec4 Plane;
 
 typedef Plane Frustum[6];
 
+typedef glm::vec4 Sphere;
+
 } // namespace
 } // namespace
 

@@ -108,6 +108,27 @@ float *MeshWrapper::attributeValue(const VertexAttributeType attributeType, cons
 	return m_pMesh->pVertexData + m_pMesh->vertexStride * vertexIndex + offset;
 }
 
+Sphere MeshWrapper::calculateBoundingSphere() const
+{
+	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0))
+		return Sphere(0.0f, 0.0f, 0.0f, 0.0f);
+
+	glm::vec3 pos(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < m_pMesh->numVertices; ++i)
+		pos += *((glm::vec3*)attributeValue(VertexAttributeType_Position, i));
+	pos /= m_pMesh->numVertices;
+
+	float r = 0.0f;
+	for (int i = 0; i < m_pMesh->numVertices; ++i) {
+		glm::vec3 v = *(glm::vec3*)attributeValue(VertexAttributeType_Position, i) - pos;
+		float lSq = glm::dot(v,v);
+		if (lSq > r)
+			r = lSq;
+	}
+
+	return Sphere(pos, glm::sqrt(r));
+}
+
 void MeshWrapper::interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const
 {
 	float *p0 = m_pMesh->pVertexData + vertIndex0 * m_pMesh->vertexStride;

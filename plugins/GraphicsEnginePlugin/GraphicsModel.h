@@ -1,6 +1,7 @@
 #ifndef __GRAPHICSMODEL__
 #define __GRAPHICSMODEL__
 
+#include <math/MathTypes.h>
 #include <graphics_engine/IGraphicsModel.h>
 
 namespace FreeWorldEngine {
@@ -38,6 +39,7 @@ public:
 
 private:
 	std::string m_name;
+	Math::Sphere m_boundSphere;
 	IGraphicsMaterial *m_pMaterial;
 	Renderer::IGPUBuffer *m_pVertexBuffer, *m_pIndexBuffer;
 	Renderer::IGPUBufferContainer *m_pVertexArray;

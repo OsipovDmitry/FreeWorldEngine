@@ -2,6 +2,8 @@
 #include <renderer/IGPUBuffer.h>
 #include <renderer/IGPUBufferContainer.h>
 
+#include <math/MeshWrapper.h>
+
 #include "GraphicsModel.h"
 #include "GraphicsEngine.h"
 #include "GraphicsMaterialManager.h"
@@ -12,6 +14,7 @@ namespace GraphicsEngine {
 
 GraphicsModel::GraphicsModel(const std::string& name) :
 	m_name(name),
+	m_boundSphere(),
 	m_pMaterial(pGraphicsEngine->materialManager()->findMaterial("StandardMaterial")),
 	m_pVertexBuffer(nullptr),
 	m_pIndexBuffer(nullptr),
@@ -88,6 +91,8 @@ void GraphicsModel::setMesh(Mesh *pMesh)
 		m_primitiveFormat = PrimitiveFormat_Triangles;
 		m_numIndices = 0;
 	}
+
+	m_boundSphere = Math::MeshWrapper(pMesh).calculateBoundingSphere();
 }
 
 Renderer::IGPUBufferContainer *GraphicsModel::bufferContainer() const

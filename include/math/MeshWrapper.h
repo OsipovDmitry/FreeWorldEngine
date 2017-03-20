@@ -31,6 +31,8 @@ public:
 	void setAttributeValue(const VertexAttributeType attributeType, const uint32 vertexIndex, float *pData);
 	float *attributeValue(const VertexAttributeType attributeType, const uint32 vertexIndex) const;
 
+	Sphere calculateBoundingSphere() const;
+
 	// »нтерпол€ци€ всех атрибутов мужду двум€ вершинами с индексами vertIndex0, vertIndex1 по coef. –езультат записываетс€ по адресу pDestVert.
 	void interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const;
 

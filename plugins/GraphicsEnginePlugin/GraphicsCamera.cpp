@@ -147,17 +147,17 @@ glm::quat GraphicsCamera::orientation() const
 
 glm::vec3 GraphicsCamera::rightDirection() const
 {
-	return m_orientMatrix[0];
+	return glm::vec3(m_orientMatrix[0][0], m_orientMatrix[1][0], m_orientMatrix[2][0]);
 }
 
 glm::vec3 GraphicsCamera::upDirection() const
 {
-	return m_orientMatrix[1];
+	return glm::vec3(m_orientMatrix[0][1], m_orientMatrix[1][1], m_orientMatrix[2][1]);
 }
 
 glm::vec3 GraphicsCamera::backwardDirection() const
 {
-	return m_orientMatrix[2];
+	return glm::vec3(m_orientMatrix[0][2], m_orientMatrix[1][2], m_orientMatrix[2][2]);
 }
 
 const Math::Frustum & GraphicsCamera::frustum() const

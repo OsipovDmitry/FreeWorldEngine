@@ -26,10 +26,45 @@ std::string fShader =
 "	outColor = texture(tex, tc);\n"\
 "}\n";
 
+ICore *pCore = 0;
+IGraphicsWindow *pRenderWindow = 0;
+IGraphicsCamera *pRenderCamera = 0;
+float cam_lat = 0, cam_long = 0;
+glm::vec3 cam_pos(0.0f, 0.0f, 3.0f);
+
+void update(uint32 time, uint32 dt, IWindow*) {
+	pCore->logger()->printMessage(std::to_string(pRenderWindow->fps()));
+
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_Left))
+		cam_long -= glm::half_pi<float>() * dt * 0.001f;
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_Right))
+		cam_long += glm::half_pi<float>() * dt * 0.001f;
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_Up))
+		cam_lat -= glm::half_pi<float>() * dt * 0.001f;
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_Down))
+		cam_lat += glm::half_pi<float>() * dt * 0.001f;
+
+	const float cam_move_speed = 3.0f;
+
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_W))
+		cam_pos -= pRenderCamera->backwardDirection() * (cam_move_speed * dt * 0.001f);
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_S))
+		cam_pos += pRenderCamera->backwardDirection() * (cam_move_speed * dt * 0.001f);
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_A))
+		cam_pos -= pRenderCamera->rightDirection() * (cam_move_speed * dt * 0.001f);
+	if (pCore->windowManager()->keyState(IWindow::KeyCode_D))
+		cam_pos += pRenderCamera->rightDirection() * (cam_move_speed * dt * 0.001f);
+
+	pRenderCamera->setOrientation(glm::mat3x3(glm::rotate(glm::mat4x4(), cam_lat, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4x4(), cam_long, glm::vec3(0.0f, 1.0f, 0.0f))));
+	pRenderCamera->setPosition(cam_pos);
+}
+
 int main() {
 	initCoreEngine();
-	ICore *pCore = getCoreEngine();
+	pCore = getCoreEngine();
 	pCore->initialize();
+
+	pCore->mainWindow()->registerUpdateCallBack(update);
 
 	IImage *pImg = pCore->imageLoader()->load("ASM4102.jpg");
 	IScene *pScene = pCore->sceneLoader()->load("ASM4102.3DS");
@@ -39,9 +74,7 @@ int main() {
 
 	IGraphicsEngine *pGraphics = pCore->graphicsEngine();
 
-	IGraphicsCamera *pRenderCamera = pGraphics->createCamera();
-	pRenderCamera->setPosition(glm::vec3(-0.5, -0.9f, 0.0f));
-	pRenderCamera->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(),0.5f,0.0f)));
+	pRenderCamera = pGraphics->createCamera();
 
 	uint32 offs[3] = { 0, 0, 0 };
 	Renderer::IGPUTexture *pTexture = pCore->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->data()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
@@ -81,39 +114,27 @@ int main() {
 	pRenderMaterial2->setUniform(pProgram->uniformLocationByName("tex"), pTexture2);
 	pRenderMaterial2->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
 
-
 	IGraphicsScene *pRenderScene = pGraphics->createScene();
 	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
 
-	for (auto it = pScene->data()->treeNodes.beginDepth(); it != pScene->data()->treeNodes.endDepth(); ++it) {
-		SceneData::NodeData *p = (*it)->data();
-		for (int i = 0; i < p->meshesIndices.size(); ++i) {
-			IGraphicsModel *pRenderModel = pGraphics->createModel();
-			pRenderModel->setMesh(pScene->data()->meshes[p->meshesIndices.at(i)]->pMeshData);
-			pRenderModel->setMaterial(pRenderMaterial);
-			IGraphicsSceneNode *pNode = pRootNode->createChild();
-			pNode->setModel(pRenderModel);
-			pNode->setPosition(p->position + glm::vec3(0.3f,0,0));
-			pNode->setOrientation(p->orientation);
-		}
-	}
+	IGraphicsModel *pRenderModel = pGraphics->createModel();
+	pRenderModel->setMesh(pScene->data()->meshes[0]->pMeshData);
+	pRenderModel->setMaterial(pRenderMaterial);
+	IGraphicsSceneNode *pNode = pRootNode->createChild();
 
-	for (auto it = pScene2->data()->treeNodes.beginDepth(); it != pScene2->data()->treeNodes.endDepth(); ++it) {
-		SceneData::NodeData *p = (*it)->data();
-		for (int i = 0; i < p->meshesIndices.size(); ++i) {
-			IGraphicsModel *pRenderModel = pGraphics->createModel();
-			pRenderModel->setMesh(pScene2->data()->meshes[p->meshesIndices.at(i)]->pMeshData);
-			pRenderModel->setMaterial(pRenderMaterial2);
-			IGraphicsSceneNode *pNode = pRootNode->createChild();
-			pNode->setModel(pRenderModel);
-			pNode->setPosition(p->position - glm::vec3(0.3f, 0, 0));
-			pNode->setOrientation(p->orientation);
-		}
-	}
-	
-	//pRootNode->setOrientation(glm::quat(glm::vec3(-0.78f, 0, 0)));
+	IGraphicsModel *pRenderModel2 = pGraphics->createModel();
+	pRenderModel2->setMesh(pScene2->data()->meshes[0]->pMeshData);
+	pRenderModel2->setMaterial(pRenderMaterial2);
 
-	IGraphicsWindow *pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());
+	for (int z = -10; z <= 10; ++z)
+		for (int x = -10; x <= 10; ++x) {
+			IGraphicsSceneNode *pNode = pRootNode->createChild();
+			pNode->setModel((rand()%2) ? pRenderModel : pRenderModel2);
+			pNode->setPosition(glm::vec3(x, -1, z));
+			pNode->setOrientation(glm::quat(glm::vec3(-1.57, 0.0f, 0.0f)));
+		}
+
+	pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());
 	pRenderWindow->setCamera(pRenderCamera);
 	pRenderWindow->setScene(pRenderScene);
 
