@@ -6,6 +6,7 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 set(HEADERS
 	TerminalLog.h
 	HtmlLog.h
+	TextFileLog.h
 	LoggerPlugin.h)
 
 set(INTERFACE_HEADERS
@@ -17,6 +18,7 @@ source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 set(SOURCES
 	TerminalLog.cpp
 	HtmlLog.cpp
+	TextFileLog.cpp
 	LoggerPlugin.cpp
 	main.cpp)
 

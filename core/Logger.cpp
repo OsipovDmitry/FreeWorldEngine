@@ -4,7 +4,6 @@
 #include "ILog.h"
 
 #include "Logger.h"
-#include "TextFileLog.h"
 #include "Core.h"
 
 namespace FreeWorldEngine {
@@ -20,16 +19,6 @@ Logger::~Logger()
 	coreEngine->destroyResourceManager(m_pResourceManager);
 }
 
-ILog *Logger::addTextFileLog(const std::string& filename, const bool rewrite)
-{
-	ILog *pLog = findLog(filename);
-	if (pLog)
-		return pLog;
-
-	pLog = new TextFileLog(filename, rewrite);
-	addLog(pLog);
-	return pLog;
-}
 
 void Logger::addLog(ILog *pLog)
 {
@@ -68,12 +57,13 @@ void Logger::destroyAllLogs()
 
 void Logger::printMessage(const std::string& message, const MessageType type) const
 {
-	std::string time = Utility::Time::current().toString();
-
 #ifndef _DEBUG // только release
 	if (type == MessageType_Debug)
 		return;
 #endif
+
+	std::string time = Utility::Time::current().toString();
+
 	std::for_each(m_pResourceManager->begin(), m_pResourceManager->end(), [&type, &time, &message](IResource* p) {
 		static_cast<ILog*>(p)->printMessage(type, time, message);
 	});

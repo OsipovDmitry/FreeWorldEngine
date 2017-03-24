@@ -37,21 +37,26 @@ public:
 	~ProgramManager();
 
 	Renderer::IGPUProgram *findProgram(const std::string& name) const;
+
 	Renderer::IGPUProgram *loadProgram(const std::string& vertShaderName, const std::string& fragShaderName, std::string *pLog = nullptr);
 	Renderer::IGPUProgram *loadProgram(const std::string& vertShaderName, const std::string& geomShaderName, const std::string& fragShaderName, std::string *pLog = nullptr);
+	
 	Renderer::IGPUProgram *loadProgram(const std::string& name, Renderer::IGPUShader *pVertShader, Renderer::IGPUShader *pGeomShader, Renderer::IGPUShader *pFragShader, std::string *pLog = nullptr);
+	
 	Renderer::IGPUProgram *loadProgram(const Utility::File& fileVertShader, const Utility::File& fileFragShader, std::string *pLog = nullptr);
 	Renderer::IGPUProgram *loadProgram(const Utility::File& fileVertShader, const Utility::File& fileGeomShader, const Utility::File& fileFragShader, std::string *pLog = nullptr);
+	
 	void destroyProgram(const std::string& name);
 	void destroyAllPrograms();
 
 private:
 	IResourceManager *m_pResourceManager;
 
+	static std::string programName(const std::string& vertShaderName, const std::string& geomShaderName, const std::string& fragShaderName);
+
 };
 
 } // namespace
-
 } // namespace
 
 #endif

@@ -43,7 +43,6 @@ set(HEADERS
     Library.h
     LibraryManager.h
     Logger.h
-    TextFileLog.h
     PluginManager.h
     ResourceManager.h
     Thread.h
@@ -58,7 +57,6 @@ set(SOURCES
     Library.cpp
     LibraryManager.cpp
     Logger.cpp
-    TextFileLog.cpp
     PluginManager.cpp
     ResourceManager.cpp
     Thread.cpp

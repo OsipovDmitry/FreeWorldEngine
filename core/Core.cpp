@@ -9,13 +9,11 @@
 #include "PluginManager.h"
 #include "ResourceManager.h"
 #include "LibraryManager.h"
-#include "TextFileLog.h"
 #include "ThreadManager.h"
 #include "ContentLoader.h"
 
 namespace {
 	const std::string c_pluginsFileName = "plugins.xml";
-	const std::string c_textLogFileName = "TextLog.txt";
 }
 
 namespace FreeWorldEngine {
@@ -56,7 +54,6 @@ void Core::initialize()
 	m_pManagerForOtherManagers = FreeWorldEngine::createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
 
 	m_pLogger = new Logger;
-	m_pLogger->addLog(new TextFileLog(c_textLogFileName, false));
 
 	m_pThreadManager = new ThreadManager();
 

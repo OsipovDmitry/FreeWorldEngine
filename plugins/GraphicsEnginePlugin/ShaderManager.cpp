@@ -59,7 +59,11 @@ Renderer::IGPUShader * ShaderManager::loadShaderFromFile(const Utility::File &fi
 {
 	bool isOpened = file.isOpened();
 	if (!isOpened)
-		file.open(Utility::File::OpenMode_ReadOnly);
+		if (!file.open(Utility::File::OpenMode_ReadOnly)) {
+			if (pLog)
+				*pLog += "Could not open file \"" + file.filename() + "\".";
+			return nullptr;
+		}
 
 	int64 len = file.size();
 	char *buf = new char[len + 1];
@@ -83,7 +87,7 @@ Renderer::IGPUShader * ShaderManager::loadShaderFromData(const std::string& name
 	pShader = pGPURenderer->createShader(type);
 	if (!pShader) {
 		if (pLog)
-			*pLog = "";
+			*pLog += "Could not create shader \"" + name + "\".";
 		return nullptr;
 	}
 
@@ -132,26 +136,34 @@ Renderer::IGPUProgram * ProgramManager::findProgram(const std::string& name) con
 
 Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string & vertShaderName, const std::string & fragShaderName, std::string * pLog)
 {
+	std::string name = programName(vertShaderName, "", fragShaderName);
+	Renderer::IGPUProgram *pProgram = findProgram(name);
+	if (pProgram)
+		return pProgram;
+
 	ShaderManager *pShaderManager = pGraphicsEngine->shaderManager();
 	Renderer::IGPUShader *pVertShader = pShaderManager->findShader(vertShaderName);
 	Renderer::IGPUShader *pFragShader = pShaderManager->findShader(fragShaderName);
 
-	std::string name = vertShaderName + '|' + fragShaderName;
 	return loadProgram(name, pVertShader, nullptr, pFragShader, pLog);
 }
 
 Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string& vertShaderName, const std::string& geomShaderName, const std::string& fragShaderName, std::string *pLog)
 {
+	std::string name = programName(vertShaderName, geomShaderName, fragShaderName);
+	Renderer::IGPUProgram *pProgram = findProgram(name);
+	if (pProgram)
+		return pProgram;
+
 	ShaderManager *pShaderManager = pGraphicsEngine->shaderManager();
 	Renderer::IGPUShader *pVertShader = pShaderManager->findShader(vertShaderName);
 	Renderer::IGPUShader *pGeomShader = pShaderManager->findShader(geomShaderName);
 	Renderer::IGPUShader *pFragShader = pShaderManager->findShader(fragShaderName);
 
-	std::string name = vertShaderName + '|' + geomShaderName + '|' + fragShaderName;
 	return loadProgram(name, pVertShader, pGeomShader, pFragShader, pLog);
 }
 
-Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string & name, Renderer::IGPUShader * pVertShader, Renderer::IGPUShader * pGeomShader, Renderer::IGPUShader * pFragShader, std::string * pLog)
+Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string& name, Renderer::IGPUShader * pVertShader, Renderer::IGPUShader * pGeomShader, Renderer::IGPUShader * pFragShader, std::string * pLog)
 {
 	Renderer::IGPUProgram *pProgram = findProgram(name);
 	if (pProgram)
@@ -180,24 +192,32 @@ Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string & name, Re
 	return pProgram;
 }
 
-Renderer::IGPUProgram * ProgramManager::loadProgram(const Utility::File & fileVertShader, const Utility::File & fileFragShader, std::string * pLog)
+Renderer::IGPUProgram * ProgramManager::loadProgram(const Utility::File& fileVertShader, const Utility::File& fileFragShader, std::string * pLog)
 {
+	std::string name = programName(fileVertShader.filename(), "", fileFragShader.filename());
+	Renderer::IGPUProgram *pProgram = findProgram(name);
+	if (pProgram)
+		return pProgram;
+
 	ShaderManager *pShaderManager = pGraphicsEngine->shaderManager();
 	Renderer::IGPUShader *pVertShader = pShaderManager->loadShaderFromFile(fileVertShader, Renderer::IGPUShader::IGPUShaderType_Vertex, pLog);
 	Renderer::IGPUShader *pFragShader = pShaderManager->loadShaderFromFile(fileFragShader, Renderer::IGPUShader::IGPUShaderType_Fragment, pLog);
 
-	std::string name = fileVertShader.filename() + '|' + fileFragShader.filename();
 	return loadProgram(name, pVertShader, nullptr, pFragShader, pLog);
 }
 
-Renderer::IGPUProgram * ProgramManager::loadProgram(const Utility::File & fileVertShader, const Utility::File & fileGeomShader, const Utility::File & fileFragShader, std::string * pLog)
+Renderer::IGPUProgram * ProgramManager::loadProgram(const Utility::File& fileVertShader, const Utility::File& fileGeomShader, const Utility::File& fileFragShader, std::string * pLog)
 {
+	std::string name = programName(fileVertShader.filename(), fileGeomShader.filename(), fileFragShader.filename());
+	Renderer::IGPUProgram *pProgram = findProgram(name);
+	if (pProgram)
+		return pProgram;
+
 	ShaderManager *pShaderManager = pGraphicsEngine->shaderManager();
 	Renderer::IGPUShader *pVertShader = pShaderManager->loadShaderFromFile(fileVertShader, Renderer::IGPUShader::IGPUShaderType_Vertex, pLog);
 	Renderer::IGPUShader *pGeomShader = pShaderManager->loadShaderFromFile(fileGeomShader, Renderer::IGPUShader::IGPUShaderType_Geometry, pLog);
 	Renderer::IGPUShader *pFragShader = pShaderManager->loadShaderFromFile(fileFragShader, Renderer::IGPUShader::IGPUShaderType_Fragment, pLog);
 
-	std::string name = fileVertShader.filename() + '|' + fileGeomShader.filename() + '|' + fileFragShader.filename();
 	return loadProgram(name, pVertShader, pGeomShader, pFragShader, pLog);
 }
 
@@ -206,6 +226,7 @@ void ProgramManager::destroyProgram(const std::string& name)
 	ProgramResource *pResource = static_cast<ProgramResource*>(m_pResourceManager->findResource(name));
 	if (!pResource)
 		return;
+
 	pGPURenderer->destroyProgram(pResource->program());
 	m_pResourceManager->destroyResource(pResource);
 }
@@ -214,6 +235,15 @@ void ProgramManager::destroyAllPrograms()
 {
 	while (m_pResourceManager->size())
 		destroyProgram((*(m_pResourceManager->begin()))->name());
+}
+
+std::string ProgramManager::programName(const std::string & vertShaderName, const std::string & geomShaderName, const std::string & fragShaderName)
+{
+	std::string name = vertShaderName;
+	if (!geomShaderName.empty())
+		name += "|" + geomShaderName;
+	name += "|" + fragShaderName;
+	return name;
 }
 
 } // namespace

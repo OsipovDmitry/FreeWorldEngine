@@ -18,7 +18,7 @@ GraphicsCamera::GraphicsCamera(const std::string & name) :
 	m_position(),
 	m_aspectRatio(1.0f),
 	m_zNear(0.5f),
-	m_zFar(1000.0f),
+	m_zFar(100000.0f),
 	m_fov(45.0f),
 	m_halfHeight(1.0f),
 	m_projType(ProjectionType_Perspective),
@@ -232,7 +232,7 @@ void GraphicsCamera::update()
 		m_frustum[5].w = vp[3][3] + vp[3][2];
 		// normalize
 		for (int32 i = 0; i < 6; i++) {
-			float len = glm::vec3(m_frustum[i]).length();
+			float len = glm::length(glm::vec3(m_frustum[i]));
 			if (len > Math::eps)
 				m_frustum[i] /= len;
 		}

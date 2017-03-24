@@ -81,6 +81,21 @@ uint32 *MeshWrapper::addIndices(const uint32 numIndices)
 	return p + oldSize;
 }
 
+uint32 MeshWrapper::numVertices() const
+{
+	return m_pMesh->numVertices;
+}
+
+uint32 MeshWrapper::numIndices() const
+{
+	return m_pMesh->numIndices;
+}
+
+PrimitiveFormat MeshWrapper::primitiveFormat() const
+{
+	return m_pMesh->primitiveFormat;
+}
+
 void MeshWrapper::setAttributeDeclaration(const VertexAttributeType attributeType, const uint16 attributeSize, const uint16 attributeOffset)
 {
 	m_pMesh->attributes[attributeType] = std::make_pair(attributeSize, attributeOffset);
@@ -108,15 +123,47 @@ float *MeshWrapper::attributeValue(const VertexAttributeType attributeType, cons
 	return m_pMesh->pVertexData + m_pMesh->vertexStride * vertexIndex + offset;
 }
 
-Sphere MeshWrapper::calculateBoundingSphere() const
+void MeshWrapper::setIndexValue(const uint32 index, const uint32 value)
+{
+	if (index >= m_pMesh->numIndices) {
+		int r = 123;
+		r++;
+	}
+	m_pMesh->pIndexData[index] = value;
+}
+
+uint32 MeshWrapper::indexValue(const uint32 index) const
+{
+	return m_pMesh->pIndexData[index];
+}
+
+Aabb MeshWrapper::computeAxisAlignedBoundingBox() const
+{
+	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0))
+		return Aabb(glm::vec3(), glm::vec3());
+
+	glm::vec3 a, b;
+	a = b = *((glm::vec3*)attributeValue(VertexAttributeType_Position, 0));
+	for (int i = 1; i < m_pMesh->numVertices; ++i) {
+		glm::vec3 *v = (glm::vec3*)attributeValue(VertexAttributeType_Position, i);
+		if (v->x < a.x) a.x = v->x;
+		else if (v->x > b.x) b.x = v->x;
+		if (v->y < a.y) a.y = v->y;
+		else if (v->y > b.y) b.y = v->y;
+		if (v->z < a.z) a.z = v->z;
+		else if (v->z > b.z) b.z = v->z;
+	}
+
+	return Aabb(a, b);
+}
+
+Sphere MeshWrapper::computeBoundingSphere() const
 {
 	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0))
 		return Sphere(0.0f, 0.0f, 0.0f, 0.0f);
 
-	glm::vec3 pos(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i < m_pMesh->numVertices; ++i)
-		pos += *((glm::vec3*)attributeValue(VertexAttributeType_Position, i));
-	pos /= m_pMesh->numVertices;
+	Aabb box = computeAxisAlignedBoundingBox();
+	glm::vec3 pos = 0.5f * (box.vMin + box.vMax);
 
 	float r = 0.0f;
 	for (int i = 0; i < m_pMesh->numVertices; ++i) {
@@ -137,6 +184,38 @@ void MeshWrapper::interpolateTwoVertices(const uint32 vertIndex0, const uint32 v
 	for (uint32 i = 0; i < m_pMesh->vertexStride; ++i)
 		interpolate(*(p0+i), *(p1+i), coef, *(pDestVert+i));
 
+}
+
+void MeshWrapper::translateMesh(float *pDeltaValue)
+{
+	if (m_pMesh->attributes.count(VertexAttributeType_Position) == 0)
+		return;
+
+	std::pair<uint16, uint16> size_offset = m_pMesh->attributes[VertexAttributeType_Position];
+	uint16 size = size_offset.first;
+	uint16 offs = size_offset.second;
+
+	for (uint32 v = 0; v < m_pMesh->numVertices; ++v) {
+		float *pVertex = attributeValue(VertexAttributeType_Position, v) + offs;
+		for (int i = 0; i < size; ++i)
+			pVertex[i] += pDeltaValue[i];
+	}
+}
+
+void MeshWrapper::scaleMesh(float *pDeltaValue)
+{
+	if (m_pMesh->attributes.count(VertexAttributeType_Position) == 0)
+		return;
+
+	std::pair<uint16, uint16> size_offset = m_pMesh->attributes[VertexAttributeType_Position];
+	uint16 size = size_offset.first;
+	uint16 offs = size_offset.second;
+
+	for (uint32 v = 0; v < m_pMesh->numVertices; ++v) {
+		float *pVertex = attributeValue(VertexAttributeType_Position, v) + offs;
+		for (int i = 0; i < size; ++i)
+			pVertex[i] *= pDeltaValue[i];
+	}
 }
 
 /*void MeshWrapper::primitiveIndices(const uint32 primitiveIndex, uint32 *pIndices) const

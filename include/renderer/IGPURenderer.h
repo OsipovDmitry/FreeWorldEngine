@@ -51,6 +51,12 @@ public:
 		BlendEquation_Max
 	};
 
+	enum CullFaceState {
+		CullFaceState_Disabled,
+		CullFaceState_RenderFrontFaces,
+		CullFaceState_RenderBackFaces
+	};
+
 	virtual ~IGPURenderer() {}
 
 	virtual IGPUBuffer *createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage usage = IGPUBuffer::IGPUBufferUsage_StaticDraw, void *pData = 0) = 0;
@@ -98,6 +104,9 @@ public:
 
 	virtual void setDepthRange(const float near = 0.0f, const float far = 1.0f) = 0;
 	virtual void depthRange(float& near, float& far) const = 0;
+
+	virtual void setCullFaceState(CullFaceState state) = 0;
+	virtual CullFaceState cullFaceState() const = 0;
 };
 
 } // namespace

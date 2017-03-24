@@ -36,6 +36,8 @@ GLRenderer::GLRenderer() :
 	m_cachedBlendASrc = m_cachedBlendADst = BlendFunc_InvSrcAlpha;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	m_cachedBlendRGBEquat = m_cachedBlendAEquat = BlendEquation_Add;
+
+	m_cachedCullFaceState = CullFaceState_Disabled;
 }
 
 GLRenderer::~GLRenderer()
@@ -244,7 +246,7 @@ IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
 void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const
 {
 	GLenum mode = GLPrimitiveFormat(primitiveFormat);
-	if (mode) {
+	if (mode != (GLenum)-1) {
 		bindProgram(static_cast<const GLProgram*>(pProgram));
 		bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
 		glDrawArrays(mode, firstVertex, numVertices);
@@ -255,7 +257,7 @@ void GLRenderer::renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBu
 {
 	GLenum mode = GLPrimitiveFormat(primitiveFormat);
 	GLenum type = GLType(indicesType);
-	if (mode && type) {
+	if ((mode != (GLenum)-1) && type) {
 		bindProgram(static_cast<const GLProgram*>(pProgram));
 		bindBufferContainer(static_cast<const GLBufferContainer*>(pBufferContainer));
 		glDrawElements(mode, numIndices, type, (const void*)offset);
@@ -370,6 +372,24 @@ void GLRenderer::depthRange(float& near, float& far) const
 	far = dr[1];
 }
 
+void GLRenderer::setCullFaceState(CullFaceState state)
+{
+	if (m_cachedCullFaceState == state)
+		return;
+
+	m_cachedCullFaceState = state;
+	switch (state) {
+	case CullFaceState_Disabled: { glDisable(GL_CULL_FACE); break; }
+	case CullFaceState_RenderBackFaces: { glEnable(GL_CULL_FACE); glCullFace(GL_FRONT); break; }
+	case CullFaceState_RenderFrontFaces: { glEnable(GL_CULL_FACE); glCullFace(GL_BACK); break; }
+	}
+}
+
+IGPURenderer::CullFaceState GLRenderer::cullFaceState() const
+{
+	return m_cachedCullFaceState;
+}
+
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint) const
 {
 	int32 cacheIdx = -1;
@@ -451,7 +471,7 @@ GLenum GLRenderer::GLPrimitiveFormat(PrimitiveFormat primitiveFormat)
 	case PrimitiveFormat_TriangleStrip: return GL_TRIANGLE_STRIP;
 	case PrimitiveFormat_TrangleFan: return GL_TRIANGLE_FAN;
 	}
-	return 0;
+	return (GLenum)-1; // не используется 0, так как GL_POINTS == 0
 }
 
 GLenum GLRenderer::GLType(Type type)

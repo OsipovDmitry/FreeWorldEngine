@@ -1,8 +1,8 @@
 #ifndef __SCENEDATAWRAPPER__
 #define __SCENEDATAWRAPPER__
 
-#include <Types.h>
-#include <math/MathSettings.h>
+#include "../Types.h"
+#include "MathSettings.h"
 
 namespace FreeWorldEngine {
 

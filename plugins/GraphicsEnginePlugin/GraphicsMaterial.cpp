@@ -37,7 +37,8 @@ GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgra
 	m_blendSrcRGB(BlendFunc_One),
 	m_blendSrcA(BlendFunc_One),
 	m_blendDstRGB(BlendFunc_Zero),
-	m_blendDstA(BlendFunc_Zero)
+	m_blendDstA(BlendFunc_Zero),
+	m_cullFaceState(CullFaceState_RenderFrontFaces)
 {
 }
 
@@ -251,6 +252,16 @@ IGraphicsMaterial::BlendFunc GraphicsMaterial::blendFuncDstA() const
 	return m_blendDstA;
 }
 
+void GraphicsMaterial::setCullFaceState(const CullFaceState state)
+{
+	m_cullFaceState = state;
+}
+
+IGraphicsMaterial::CullFaceState GraphicsMaterial::cullFaceState() const
+{
+	return m_cullFaceState;
+}
+
 bool GraphicsMaterial::isTransparent() const
 {
 	return !((m_blendSrcRGB == BlendFunc_One) && (m_blendSrcA == BlendFunc_One) &&
@@ -328,6 +339,8 @@ void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMa
 			(Renderer::IGPURenderer::BlendFunc)m_blendDstA);
 		pGPURenderer->enableBlend();
 	}
+
+	pGPURenderer->setCullFaceState((Renderer::IGPURenderer::CullFaceState)m_cullFaceState);
 }
 
 void GraphicsMaterial::setUniformData(const int32 location, const UniformType type, void *pData)

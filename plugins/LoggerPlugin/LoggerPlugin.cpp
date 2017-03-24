@@ -2,10 +2,12 @@
 
 #include <FreeWorldEngine.h>
 #include <utility/XML.h>
+#include <utility/File.h>
 
 #include "LoggerPlugin.h"
 #include "TerminalLog.h"
 #include "HtmlLog.h"
+#include "TextFileLog.h"
 
 namespace FreeWorldEngine {
 
@@ -38,13 +40,17 @@ bool LoggerPlugin::initialize()
 	if (!pCore)
 		return false;
 
+	ILogger *pLogger = pCore->logger();
+	if (!pLogger)
+		return false;
+
 	Utility::XMLRoot *pXML = Utility::XMLRoot::openFromFile(g_logerSettingsFileName);
 	if (!pXML) {
-		pCore->logger()->printMessage("Could not open file \"" + g_logerSettingsFileName + "\"", ILogger::MessageType_Error);
+		pLogger->printMessage("Could not open file \"" + g_logerSettingsFileName + "\"", ILogger::MessageType_Error);
 		return false;
 	}
 	if (pXML->name() != "logs_list") {
-		pCore->logger()->printMessage("The document \"" + g_logerSettingsFileName + "\" is damaged", ILogger::MessageType_Error);
+		pLogger->printMessage("The document \"" + g_logerSettingsFileName + "\" is damaged", ILogger::MessageType_Error);
 		Utility::XMLRoot::close(pXML);
 		return false;
 	}
@@ -68,7 +74,7 @@ bool LoggerPlugin::initialize()
 		if (logType == "text") {
 			const std::string filename = pNode->attributeValue("file");
 			const bool rewrite = pNode->attributeValue("rewrite", "true") != "false";
-			pLog = pCore->logger()->addTextFileLog(filename, rewrite);
+			pLog = new TextFileLog(filename, rewrite);
 		}
 		else if (logType == "terminal") {
 			pLog = new TerminalLog();
@@ -79,7 +85,7 @@ bool LoggerPlugin::initialize()
 			pLog = new HtmlLog(filename, backgroundColor);
 		}
 		else {
-			pCore->logger()->printMessage("Unresolved type log \"" + logType + "\"", ILogger::MessageType_Error);
+			pLogger->printMessage("Unresolved type log \"" + logType + "\"", ILogger::MessageType_Error);
 		}
 
 		if (!pLog)
@@ -91,10 +97,8 @@ bool LoggerPlugin::initialize()
 		pLog->setMessageColor(ILogger::MessageType_Critical, criticalColor);
 		pLog->setMessageColor(ILogger::MessageType_Debug, debugColor);
 
-		if (logType != "text") { // текстовый лог не нужно добавлять в логер, так как он добавится туда в инструкции pCore->logger()->addTextFileLog(filename)
-			m_logsList.push_back(pLog);
-			pCore->logger()->addLog(pLog);
-		}
+		m_logsList.push_back(pLog);
+		pCore->logger()->addLog(pLog);
 	}
 
 	Utility::XMLRoot::close(pXML);
@@ -107,8 +111,12 @@ void LoggerPlugin::deinitialize()
 	if (!pCore)
 		return;
 
+	ILogger *pLogger = pCore->logger();
+	if (!pLogger)
+		return;
+
 	for (std::list<ILog*>::iterator it = m_logsList.begin(); it != m_logsList.end(); ++it)
-		pCore->logger()->destroyLog(*it);
+		pLogger->destroyLog(*it);
 	m_logsList.clear();
 }
 

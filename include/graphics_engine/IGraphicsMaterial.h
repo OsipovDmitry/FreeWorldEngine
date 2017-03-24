@@ -75,6 +75,12 @@ public:
 		BlendEquation_Max
 	};
 
+	enum CullFaceState {
+		CullFaceState_Disabled,
+		CullFaceState_RenderFrontFaces,
+		CullFaceState_RenderBackFaces
+	};
+
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
@@ -119,6 +125,9 @@ public:
 	virtual BlendFunc blendFuncSrcA() const = 0;
 	virtual BlendFunc blendFuncDstRGB() const = 0;
 	virtual BlendFunc blendFuncDstA() const = 0;
+
+	virtual void setCullFaceState(const CullFaceState state) = 0;
+	virtual CullFaceState cullFaceState() const = 0;
 
 }; // class IGraphicsMaterial
 

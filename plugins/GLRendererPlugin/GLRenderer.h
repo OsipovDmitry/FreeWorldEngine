@@ -65,6 +65,9 @@ public:
 	void setDepthRange(const float near = 0.0f, const float far = 1.0f);
 	void depthRange(float& near, float& far) const;
 
+	void setCullFaceState(CullFaceState state);
+	CullFaceState cullFaceState() const;
+
 	void bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint = 0) const;
 	void bindBufferContainer(const GLBufferContainer *pBufferContainer) const;
 	void bindTexture(const GLTexture *pTexture, uint32 unit) const;
@@ -99,6 +102,8 @@ private:
 	mutable bool m_cachedBlend[BLEND_UNITS_COUNT];
 	mutable BlendFunc m_cachedBlendRGBSrc, m_cachedBlendRGBDst, m_cachedBlendASrc, m_cachedBlendADst;
 	mutable BlendEquation m_cachedBlendRGBEquat, m_cachedBlendAEquat;
+
+	mutable CullFaceState m_cachedCullFaceState;
 
 	IGPUFrameBuffer *m_pMainFrameBuffer;
 

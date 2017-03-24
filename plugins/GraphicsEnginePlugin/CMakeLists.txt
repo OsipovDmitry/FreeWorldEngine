@@ -24,6 +24,7 @@ set(HEADERS
 	GraphicsWindow.h
 	GraphicsMaterialManager.h
 	ShaderManager.h
+	GPUMesh.h
 	GraphicsEnginePlugin.h)
 
 set(SOURCES
@@ -35,6 +36,7 @@ set(SOURCES
 	GraphicsWindow.cpp
 	GraphicsMaterialManager.cpp
 	ShaderManager.cpp
+	GPUMesh.cpp
 	GraphicsEnginePlugin.cpp
 	main.cpp)
 

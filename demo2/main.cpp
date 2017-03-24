@@ -3,8 +3,9 @@ using namespace FreeWorldEngine;
 using namespace Renderer;
 using namespace GraphicsEngine;
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
+#include <utility/File.h>
 
-std::string vShader =
+/*std::string vShader =
 "#version 330 core\n"\
 "layout(location = 0) in vec3 pos;\n"\
 "layout(location = 4) in vec2 texcoord;\n"\
@@ -24,17 +25,16 @@ std::string fShader =
 "void main(void)\n"\
 "{\n"\
 "	outColor = texture(tex, tc);\n"\
-"}\n";
+"}\n";*/
 
 ICore *pCore = 0;
 IGraphicsWindow *pRenderWindow = 0;
 IGraphicsCamera *pRenderCamera = 0;
 float cam_lat = 0, cam_long = 0;
-glm::vec3 cam_pos(0.0f, 0.0f, 3.0f);
+glm::vec3 cam_pos(0.0f, 0.0f, 0.0f);
+std::string errorLog;
 
 void update(uint32 time, uint32 dt, IWindow*) {
-	pCore->logger()->printMessage(std::to_string(pRenderWindow->fps()));
-
 	if (pCore->windowManager()->keyState(IWindow::KeyCode_Left))
 		cam_long -= glm::half_pi<float>() * dt * 0.001f;
 	if (pCore->windowManager()->keyState(IWindow::KeyCode_Right))
@@ -44,7 +44,7 @@ void update(uint32 time, uint32 dt, IWindow*) {
 	if (pCore->windowManager()->keyState(IWindow::KeyCode_Down))
 		cam_lat += glm::half_pi<float>() * dt * 0.001f;
 
-	const float cam_move_speed = 3.0f;
+	const float cam_move_speed = 300.0f;
 
 	if (pCore->windowManager()->keyState(IWindow::KeyCode_W))
 		cam_pos -= pRenderCamera->backwardDirection() * (cam_move_speed * dt * 0.001f);
@@ -66,11 +66,11 @@ int main() {
 
 	pCore->mainWindow()->registerUpdateCallBack(update);
 
-	IImage *pImg = pCore->imageLoader()->load("ASM4102.jpg");
-	IScene *pScene = pCore->sceneLoader()->load("ASM4102.3DS");
+	IImage *pImg = pCore->imageLoader()->load("mi24.jpg");
+	IScene *pScene = pCore->sceneLoader()->load("mi24.3DS");
 
-	IImage *pImg2 = pCore->imageLoader()->load("AGVT150.jpg");
-	IScene *pScene2 = pCore->sceneLoader()->load("AGVT150.3DS");
+	IImage *pImg2 = pCore->imageLoader()->load("c300.jpg");
+	IScene *pScene2 = pCore->sceneLoader()->load("c300.3DS");
 
 	IGraphicsEngine *pGraphics = pCore->graphicsEngine();
 
@@ -89,49 +89,37 @@ int main() {
 	pTexture2->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
 	pTexture2->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
 
-	IGPUShader *pVSh = pCore->renderer()->createShader(IGPUShader::IGPUShaderType_Vertex);
-	pVSh->loadFromData(vShader);
-	if (!pVSh->compile()) {
-		pCore->logger()->printMessage("Error!", ILogger::MessageType_Error);
-	}
-	IGPUShader *pFSh = pCore->renderer()->createShader(IGPUShader::IGPUShaderType_Fragment);
-	pFSh->loadFromData(fShader);
-	if (!pFSh->compile()) {
-		pCore->logger()->printMessage("Error!", ILogger::MessageType_Error);
-	}
-	IGPUProgram *pProgram = pCore->renderer()->createProgram();
-	pProgram->attachShader(pVSh);
-	pProgram->attachShader(pFSh);
-	if (!pProgram->link()) {
-		pCore->logger()->printMessage("Error!", ILogger::MessageType_Error);
-	}
-
-	IGraphicsMaterial *pRenderMaterial = pGraphics->materialManager()->createMaterial(pProgram);
-	pRenderMaterial->setUniform(pProgram->uniformLocationByName("tex"), pTexture);
+	IGraphicsMaterial *pRenderMaterial = pGraphics->materialManager()->loadMaterial(Utility::File("vertex.glsl"), Utility::File("fragment.glsl"), "@utoname", &errorLog);
+	Renderer::IGPUProgram *pProgram = pRenderMaterial->program();
+	if (!errorLog.empty()) pCore->logger()->printMessage(errorLog, ILogger::MessageType_Error);
 	pRenderMaterial->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
+	pRenderMaterial->setUniform(pProgram->uniformLocationByName("tex"), pTexture);
 
-	IGraphicsMaterial *pRenderMaterial2 = pGraphics->materialManager()->createMaterial(pProgram);
-	pRenderMaterial2->setUniform(pProgram->uniformLocationByName("tex"), pTexture2);
-	pRenderMaterial2->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
-
-	IGraphicsScene *pRenderScene = pGraphics->createScene();
-	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
+	IGraphicsMaterial *pRenderMaterial2 = pGraphics->materialManager()->loadMaterial(Utility::File("vertex.glsl"), Utility::File("fragment.glsl"), "@utoname", &errorLog);
+	Renderer::IGPUProgram *pProgram2 = pRenderMaterial2->program();
+	if (!errorLog.empty()) pCore->logger()->printMessage(errorLog, ILogger::MessageType_Error);
+	pRenderMaterial2->setAutoUniform(pProgram2->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
+	pRenderMaterial2->setUniform(pProgram2->uniformLocationByName("tex"), pTexture2);
 
 	IGraphicsModel *pRenderModel = pGraphics->createModel();
 	pRenderModel->setMesh(pScene->data()->meshes[0]->pMeshData);
 	pRenderModel->setMaterial(pRenderMaterial);
-	IGraphicsSceneNode *pNode = pRootNode->createChild();
 
 	IGraphicsModel *pRenderModel2 = pGraphics->createModel();
 	pRenderModel2->setMesh(pScene2->data()->meshes[0]->pMeshData);
 	pRenderModel2->setMaterial(pRenderMaterial2);
 
-	for (int z = -10; z <= 10; ++z)
-		for (int x = -10; x <= 10; ++x) {
+	IGraphicsScene *pRenderScene = pGraphics->createScene();
+	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
+
+	const int c_n = 50;
+	const float c_coef = 20.0f;
+	for (int z = -c_n; z <= c_n; ++z)
+		for (int x = -c_n; x <= c_n; ++x) {
 			IGraphicsSceneNode *pNode = pRootNode->createChild();
 			pNode->setModel((rand()%2) ? pRenderModel : pRenderModel2);
-			pNode->setPosition(glm::vec3(x, -1, z));
-			pNode->setOrientation(glm::quat(glm::vec3(-1.57, 0.0f, 0.0f)));
+			pNode->setPosition(glm::vec3(x, -1, z) * c_coef);
+			pNode->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 		}
 
 	pRenderWindow = pCore->graphicsEngine()->createWindow(pCore->mainWindow());

@@ -11,7 +11,6 @@ public:
 	Logger();
 	~Logger();
 
-	ILog *addTextFileLog(const std::string& filename, const bool rewrite = true);
 	void addLog(ILog *pLog);
 	ILog *findLog(const std::string& name) const;
 	void destroyLog(const std::string& name);

@@ -1,8 +1,9 @@
-#include "utility/XML.h"
+#include <utility/XML.h>
+#include <utility/File.h>
 
-#include "ILibraryManager.h"
-#include "ILibrary.h"
-#include "IPlugin.h"
+#include <ILibraryManager.h>
+#include <ILibrary.h>
+#include <IPlugin.h>
 
 #include "Core.h"
 #include "PluginManager.h"

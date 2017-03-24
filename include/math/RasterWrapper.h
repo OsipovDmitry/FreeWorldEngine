@@ -1,8 +1,8 @@
 #ifndef __RASTERWRAPPER__
 #define __RASTERWRAPPER__
 
-#include <Types.h>
-#include <math/MathSettings.h>
+#include "../Types.h"
+#include "MathSettings.h"
 
 namespace FreeWorldEngine {
 

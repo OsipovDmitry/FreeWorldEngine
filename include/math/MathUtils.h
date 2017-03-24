@@ -1,8 +1,8 @@
 #ifndef __MATHUTILS__
 #define __MATHUTILS__
 
-#include <Types.h>
-#include <math/MathTypes.h>
+#include "../Types.h"
+#include "MathTypes.h"
 
 struct Mesh;
 
@@ -37,6 +37,14 @@ float distToPlane(const Plane& plane, const glm::vec3& v);
 // Классификация полигона относительно плоскости. verts - массив указателей на точки. Полигон может содержать 1,2,3 или более точек.
 ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts);
 
+// Классификация полигона относительно плоскости.
+inline ClassifyPlane classifySphereRelativePlane(const Plane& plane, const Sphere& sphere) {
+	float d = plane.x * sphere.x + plane.y * sphere.y + plane.z * sphere.z + plane.w;
+	if (d > sphere.w) return ClassifyPlane_Front;
+	else if (d < -sphere.w) return ClassifyPlane_Back;
+	else return ClassifyPlane_Intersect;
+}
+
 // Построить BoundBox для меша.
 Aabb buldAabb(Mesh *pMesh);
 
@@ -49,6 +57,14 @@ void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef);
 // Если в два из трех resultCoef[i] вернулось -1, то это значит, что плоскость проходит через одно ребро треугольника и противолежащуюю вершину.
 // Если в три из трех, то треугольник резать не нужно. Он лежит либо на плоскости, либо по одну сторону от плоскости
 void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20);
+
+
+inline bool sphereInFrustum(const Frustum& frustum, const Sphere& sphere) {
+	for (int32 i = 0; i < 6; ++i)
+		if (classifySphereRelativePlane(frustum[i], sphere) == ClassifyPlane_Back)
+			return false;
+	return true;
+}
 
 } // namespace
 } // namespace

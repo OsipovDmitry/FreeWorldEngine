@@ -60,6 +60,9 @@ public:
 	BlendFunc blendFuncDstRGB() const;
 	BlendFunc blendFuncDstA() const;
 
+	void setCullFaceState(const CullFaceState state);
+	CullFaceState cullFaceState() const;
+
 	bool isTransparent() const;
 
 	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
@@ -101,6 +104,8 @@ private:
 
 	BlendEquation m_blendEquationRGB, m_blendEquationA;
 	BlendFunc m_blendSrcRGB, m_blendSrcA, m_blendDstRGB, m_blendDstA;
+
+	CullFaceState m_cullFaceState;
 
 	void setUniformData(const int32 location, const UniformType type, void *pData);
 	int32 setUniformTexture(Renderer::IGPUTexture *pTexture);

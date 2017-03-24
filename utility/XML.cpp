@@ -2,8 +2,10 @@
 #include <fstream>
 #include <vector>
 
-#include <utility/XML.h>
 #include <3rdparty/rapidxml/rapidxml.hpp>
+
+#include <utility/XML.h>
+#include <utility/File.h>
 
 namespace FreeWorldEngine {
 
@@ -69,6 +71,7 @@ XMLNode::NodeList XMLNode::children() const
 	return m->children;
 }
 
+
 XMLNode::XMLNode() :
 	m(new XMLNodePrivate)
 {}
@@ -117,22 +120,22 @@ bool XMLRoot::parseBuffer()
 	}
 }
 
-XMLRoot *XMLRoot::openFromFile(const std::string& fileName)
+XMLRoot *XMLRoot::openFromFile(const File& file)
 {
 	XMLRoot *ans = new XMLRoot;
 
-	std::ifstream inFile;
-	inFile.open(fileName.c_str());
+	bool isOpened = file.isOpened();
+	if (!isOpened)
+		if (!file.open(Utility::File::OpenMode_ReadOnly))
+			return nullptr;
 
-	if (inFile.fail())
-		return nullptr;
+	int64 len = file.size();
+	ans->m->xmlBuffer.resize(len+1, 0);
+	file.readAll(len, ans->m->xmlBuffer.data());
+	ans->m->xmlBuffer[len] = '\0';
 
-	inFile.seekg(0, std::ios::end);
-	std::ifstream::pos_type len = inFile.tellg();
-	inFile.seekg(0, std::ios::beg);
-	ans->m->xmlBuffer.resize(static_cast<std::vector<char>::size_type>(len), 0);
-	inFile.read(ans->m->xmlBuffer.data(), len);
-	inFile.close();
+	if (!isOpened)
+		file.close();
 
 	if (!ans->parseBuffer())
 		return nullptr;

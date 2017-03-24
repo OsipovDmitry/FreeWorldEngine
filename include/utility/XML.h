@@ -10,6 +10,8 @@ namespace FreeWorldEngine {
 
 namespace Utility {
 
+class File;
+
 struct XMLNodePrivate;
 class UTILITY_DLL XMLNode {
 	friend class XMLRoot;
@@ -43,7 +45,7 @@ private:
 struct XMLRootPrivate;
 class UTILITY_DLL XMLRoot : public XMLNode {
 public:
-	static XMLRoot *openFromFile(const std::string& fileName);
+	static XMLRoot *openFromFile(const File& file);
 	static XMLRoot *openFromData(const char *xmlData);
 	static XMLRoot *openFromData(const std::string& xmlData);
 	static void close(XMLRoot*);
