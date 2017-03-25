@@ -134,7 +134,7 @@ Renderer::IGPUProgram * ProgramManager::findProgram(const std::string& name) con
 	return pResource ? pResource->program() : nullptr;
 }
 
-Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string & vertShaderName, const std::string & fragShaderName, std::string * pLog)
+Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string& vertShaderName, const std::string& fragShaderName, std::string *pLog)
 {
 	std::string name = programName(vertShaderName, "", fragShaderName);
 	Renderer::IGPUProgram *pProgram = findProgram(name);
@@ -172,7 +172,7 @@ Renderer::IGPUProgram * ProgramManager::loadProgram(const std::string& name, Ren
 	pProgram = pGPURenderer->createProgram();
 	if (!pProgram) {
 		if (pLog)
-			*pLog = "";
+			*pLog += "Could not create program \"" + name + "\".";
 		return nullptr;
 	}
 

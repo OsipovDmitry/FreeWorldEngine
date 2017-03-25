@@ -11,12 +11,6 @@ namespace FreeWorldEngine {
 
 namespace GraphicsEngine {
 
-namespace {
-
-	const std::string g_material_tag = "material";
-
-} // namespace
-
 GraphicsMaterialManager::GraphicsMaterialManager() :
 	m_pMaterialManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsMaterials")),
 	m_pMaterialNameGenerator(new Utility::AutoNameGenerator("MaterialName"))

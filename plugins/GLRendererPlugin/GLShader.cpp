@@ -46,7 +46,8 @@ bool GLShader::compile(std::string *pLogString) const
 	if (pLogString && (res == GL_FALSE)) {
 		char buf[1024];
 		glGetShaderInfoLog(m_id, 1024, 0, buf);
-		*pLogString = buf;
+		if (pLogString)
+			*pLogString += buf;
 	}
 
     return res != GL_FALSE;
