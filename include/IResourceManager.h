@@ -46,7 +46,6 @@ public:
 	virtual IResource *findResource(const std::string& name) const = 0;
 	virtual void addResource(IResource *pResource) = 0;
 	virtual void destroyResource(const std::string& name) = 0;
-	virtual void destroyResource(IResource *pResource) = 0;
 	virtual void destroyAllResources() = 0;
 	virtual uint32 size() const = 0;
 

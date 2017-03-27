@@ -15,7 +15,7 @@ public:
 	MeshPainter(const MeshWrapper& wrapper);
 	~MeshPainter();
 
-	// Only targetMesh with promitveFormat are Points or Lines or Triangles!
+	// Only targetMesh with primitveFormat are Points or Lines or Triangles!
 	void setTarget(Mesh *pTargetMesh);
 	Mesh *target() const;
 

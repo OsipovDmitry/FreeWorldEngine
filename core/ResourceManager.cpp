@@ -161,12 +161,6 @@ void ResourceManager<Container>::destroyResource(const std::string& name)
 }
 
 template <class Container>
-void ResourceManager<Container>::destroyResource(IResource *pResource)
-{
-	destroyResource(pResource->name());
-}
-
-template <class Container>
 void ResourceManager<Container>::destroyAllResources()
 {
 	std::for_each(m_data.begin(), m_data.end(), [](const std::pair<const std::string, IResource*>& elem) { delete elem.second; });

@@ -107,7 +107,7 @@ void ShaderManager::destroyShader(const std::string &name)
 	if (!pResource)
 		return;
 	pGPURenderer->destroyShader(pResource->shader());
-	m_pResourceManager->destroyResource(pResource);
+	m_pResourceManager->destroyResource(pResource->name());
 }
 
 void ShaderManager::destroyAllShaders()
@@ -228,7 +228,7 @@ void ProgramManager::destroyProgram(const std::string& name)
 		return;
 
 	pGPURenderer->destroyProgram(pResource->program());
-	m_pResourceManager->destroyResource(pResource);
+	m_pResourceManager->destroyResource(pResource->name());
 }
 
 void ProgramManager::destroyAllPrograms()

@@ -4,28 +4,8 @@ using namespace Renderer;
 using namespace GraphicsEngine;
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
 #include <utility/File.h>
-
-/*std::string vShader =
-"#version 330 core\n"\
-"layout(location = 0) in vec3 pos;\n"\
-"layout(location = 4) in vec2 texcoord;\n"\
-"uniform mat4 modelViewProjMatrix;\n"\
-"out vec2 tc;\n"\
-"void main(void)\n"\
-"{\n"\
-"	tc = texcoord;\n"\
-"	gl_Position = modelViewProjMatrix * vec4(pos, 1.0);\n"\
-"}\n";
-
-std::string fShader =
-"#version 330 core\n"\
-"uniform sampler2D tex;\n"\
-"in vec2 tc;\n"\
-"layout(location = 0) out vec4 outColor;\n"\
-"void main(void)\n"\
-"{\n"\
-"	outColor = texture(tex, tc);\n"\
-"}\n";*/
+#include <utility/Tree.h>
+#include <math/MeshWrapper.h>
 
 ICore *pCore = 0;
 IGraphicsWindow *pRenderWindow = 0;
@@ -67,39 +47,36 @@ int main() {
 	pCore->mainWindow()->registerUpdateCallBack(update);
 
 	IImage *pImg = pCore->imageLoader()->load("mi24.jpg");
-	IScene *pScene = pCore->sceneLoader()->load("mi24.3DS");
-
 	IImage *pImg2 = pCore->imageLoader()->load("c300.jpg");
+
+	IScene *pScene = pCore->sceneLoader()->load("mi24.3DS");
 	IScene *pScene2 = pCore->sceneLoader()->load("c300.3DS");
 
 	IGraphicsEngine *pGraphics = pCore->graphicsEngine();
 
 	pRenderCamera = pGraphics->createCamera();
 
-	uint32 offs[3] = { 0, 0, 0 };
-	Renderer::IGPUTexture *pTexture = pCore->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg->data()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
-	pTexture->setSubData(offs, pImg->data()->size, TextureFormat::ChannelsCount_3, pImg->data()->type, pImg->data()->pData);
-	pTexture->generateMipMaps();
-	pTexture->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
-	pTexture->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
+	IGraphicsTexture *pTexture = pCore->graphicsEngine()->textureManager()->createTexture2D(pImg->data());
+	pTexture->texture()->generateMipMaps();
+	pTexture->texture()->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
+	pTexture->texture()->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
 
-	Renderer::IGPUTexture *pTexture2 = pCore->renderer()->createTexture(IGPUTexture::IGPUTextureType_2D, pImg2->data()->size, TextureFormat(TextureFormat::PixelFormat_NormalizeUnsigned, TextureFormat::ChannelSize_8, TextureFormat::ChannelsCount_3));
-	pTexture2->setSubData(offs, pImg2->data()->size, TextureFormat::ChannelsCount_3, pImg2->data()->type, pImg2->data()->pData);
-	pTexture2->generateMipMaps();
-	pTexture2->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
-	pTexture2->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
+	IGraphicsTexture *pTexture2 = pCore->graphicsEngine()->textureManager()->createTexture2D(pImg2->data());
+	pTexture2->texture()->generateMipMaps();
+	pTexture2->texture()->setMinFilter(IGPUTexture::IGPUTextureMinFilter_LinearMipmapLinear);
+	pTexture2->texture()->setMagFilter(IGPUTexture::IGPUTextureMagFilter_Linear);
 
 	IGraphicsMaterial *pRenderMaterial = pGraphics->materialManager()->loadMaterial(Utility::File("vertex.glsl"), Utility::File("fragment.glsl"), "@utoname", &errorLog);
 	Renderer::IGPUProgram *pProgram = pRenderMaterial->program();
 	if (!errorLog.empty()) pCore->logger()->printMessage(errorLog, ILogger::MessageType_Error);
 	pRenderMaterial->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
-	pRenderMaterial->setUniform(pProgram->uniformLocationByName("tex"), pTexture);
+	pRenderMaterial->setUniform(pProgram->uniformLocationByName("tex"), pTexture->texture());
 
 	IGraphicsMaterial *pRenderMaterial2 = pGraphics->materialManager()->loadMaterial(Utility::File("vertex.glsl"), Utility::File("fragment.glsl"), "@utoname", &errorLog);
 	Renderer::IGPUProgram *pProgram2 = pRenderMaterial2->program();
 	if (!errorLog.empty()) pCore->logger()->printMessage(errorLog, ILogger::MessageType_Error);
 	pRenderMaterial2->setAutoUniform(pProgram2->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
-	pRenderMaterial2->setUniform(pProgram2->uniformLocationByName("tex"), pTexture2);
+	pRenderMaterial2->setUniform(pProgram2->uniformLocationByName("tex"), pTexture2->texture());
 
 	IGraphicsModel *pRenderModel = pGraphics->createModel();
 	pRenderModel->setMesh(pScene->data()->meshes[0]->pMeshData);
@@ -112,7 +89,7 @@ int main() {
 	IGraphicsScene *pRenderScene = pGraphics->createScene();
 	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
 
-	const int c_n = 50;
+	const int c_n = 10;
 	const float c_coef = 20.0f;
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int x = -c_n; x <= c_n; ++x) {

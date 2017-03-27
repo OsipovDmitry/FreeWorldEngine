@@ -37,6 +37,7 @@ struct TextureFormat {
     };
 
     TextureFormat(const PixelFormat pf, const ChannelSize cs, const ChannelsCount cc) : pixelFormat(pf), channelSize(cs), channelsCount(cc) {}
+	TextureFormat() : pixelFormat(PixelFormat_NormalizeUnsigned), channelSize(ChannelSize_8), channelsCount(ChannelsCount_4) {}
 
     PixelFormat pixelFormat;
     ChannelSize channelSize;

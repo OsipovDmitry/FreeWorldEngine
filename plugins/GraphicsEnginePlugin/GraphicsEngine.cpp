@@ -3,6 +3,7 @@
 
 #include "GraphicsEngine.h"
 #include "GraphicsMaterialManager.h"
+#include "GraphicsTextureManager.h"
 #include "ShaderManager.h"
 #include "GraphicsCamera.h"
 #include "GraphicsModel.h"
@@ -20,6 +21,7 @@ GraphicsEngine::GraphicsEngine() :
 	m_pShaderManager(new ShaderManager),
 	m_pProgramManager(new ProgramManager),
 	m_pMaterialManager(new GraphicsMaterialManager),
+	m_pTextureManager(new GraphicsTextureManager),
 	m_pCameraManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsCameras")),
 	m_pModelManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsModels")),
 	m_pSceneManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsScenes")),
@@ -43,6 +45,7 @@ GraphicsEngine::~GraphicsEngine()
 	getCoreEngine()->destroyResourceManager(m_pSceneManager);
 	getCoreEngine()->destroyResourceManager(m_pModelManager);
 	getCoreEngine()->destroyResourceManager(m_pCameraManager);
+	delete m_pTextureManager;
 	delete m_pMaterialManager;
 	delete m_pShaderManager;
 	delete m_pProgramManager;
@@ -72,7 +75,7 @@ void GraphicsEngine::destroyCamera(const std::string& name)
 
 void GraphicsEngine::destroyCamera(IGraphicsCamera *pCamera)
 {
-	m_pCameraManager->destroyResource(pCamera);
+	m_pCameraManager->destroyResource(pCamera->name());
 }
 
 IGraphicsModel *GraphicsEngine::findModel(const std::string& name) const
@@ -99,12 +102,17 @@ void GraphicsEngine::destroyModel(const std::string& name)
 
 void GraphicsEngine::destroyModel(IGraphicsModel *pModel)
 {
-	m_pModelManager->destroyResource(pModel);
+	m_pModelManager->destroyResource(pModel->name());
 }
 
-IGraphicsMaterialManager * GraphicsEngine::materialManager() const
+IGraphicsMaterialManager *GraphicsEngine::materialManager() const
 {
 	return m_pMaterialManager;
+}
+
+IGraphicsTextureManager *GraphicsEngine::textureManager() const
+{
+	return m_pTextureManager;
 }
 
 IGraphicsScene *GraphicsEngine::findScene(const std::string& name) const
@@ -131,7 +139,7 @@ void GraphicsEngine::destroyScene(const std::string& name)
 
 void GraphicsEngine::destroyScene(IGraphicsScene *pScene)
 {
-	m_pSceneManager->destroyResource(pScene);
+	m_pSceneManager->destroyResource(pScene->name());
 }
 
 IGraphicsWindow *GraphicsEngine::findWindow(const std::string& name) const
@@ -158,7 +166,7 @@ void GraphicsEngine::destroyWindow(const std::string& name)
 
 void GraphicsEngine::destroyWindow(IGraphicsWindow *pWindow)
 {
-	m_pWindowManager->destroyResource(pWindow);
+	m_pWindowManager->destroyResource(pWindow->name());
 }
 
 ShaderManager *GraphicsEngine::shaderManager() const

@@ -65,24 +65,42 @@ void GLTexture::setSubData(const uint32 *offset, const uint32 *size, TextureForm
 
 	case IGPUTexture::IGPUTextureType_2DArray:
 	case IGPUTexture::IGPUTextureType_3D: {
-		glTexSubImage3D(target, 0, offset[0], offset[1], offset[2], size[0], size[1], size[2], format, type, data);
+		GLint offs[3] = { 0, 0, 0 };
+		if (offset) {
+			offs[0] = offset[0];
+			offs[1] = offset[1];
+			offs[2] = offset[2];
+		}
+		glTexSubImage3D(target, 0, offs[0], offs[1], offs[2], size[0], size[1], size[2], format, type, data);
 		break;
 	}
 	
 	case IGPUTexture::IGPUTextureType_1DArray:
 	case IGPUTexture::IGPUTextureType_2D:
 	case IGPUTexture::IGPUTextureType_Rectangle: {
-		glTexSubImage2D(target, 0, offset[0], offset[1], size[0], size[1], format, type, data);
+		GLint offs[] = { 0, 0 };
+		if (offset) {
+			offs[0] = offset[0];
+			offs[1] = offset[1];
+		}
+		glTexSubImage2D(target, 0, offs[0], offs[1], size[0], size[1], format, type, data);
 		break;
 	}
 
 	case IGPUTexture::IGPUTextureType_CubeMap: {
+		GLint offs[3] = { 0, 0, 0 };
+		if (offset) {
+			offs[0] = offset[0];
+			offs[1] = offset[1];
+			offs[2] = offset[2];
+		}
 		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+offset[2], 0, offset[0], offset[1], size[0], size[1], format, type, data);
 		break;
 	}
 
     case IGPUTexture::IGPUTextureType_1D: {
-        glTexSubImage1D(target, 0, offset[0], size[0], format, type, data);
+		GLint offs = offset ? offset[0] : 0;
+        glTexSubImage1D(target, 0, offs, size[0], format, type, data);
 		break;
     }
 	

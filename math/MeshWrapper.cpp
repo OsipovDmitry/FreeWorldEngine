@@ -17,7 +17,7 @@ MeshWrapper::~MeshWrapper()
 Mesh *MeshWrapper::clone() const
 {
 	if (!m_pMesh)
-		return 0;
+		return nullptr;
 
 	Mesh *pNewMesh = new Mesh;
 	pNewMesh->attributes = m_pMesh->attributes;
@@ -216,6 +216,32 @@ void MeshWrapper::scaleMesh(float *pDeltaValue)
 		for (int i = 0; i < size; ++i)
 			pVertex[i] *= pDeltaValue[i];
 	}
+}
+
+bool MeshWrapper::combine(const Mesh *pOtherMesh)
+{
+	if (!m_pMesh)
+		return false;
+
+	if (!pOtherMesh)
+		return true;
+
+	if (m_pMesh->primitiveFormat != pOtherMesh->primitiveFormat ||
+		m_pMesh->attributes != pOtherMesh->attributes ||
+		m_pMesh->vertexStride != pOtherMesh->vertexStride)
+		return false;
+
+	memcpy(addVertices(pOtherMesh->numVertices), pOtherMesh->pVertexData, pOtherMesh->numVertices * pOtherMesh->vertexStride * sizeof(float));
+
+	const uint32 numNewIndices = pOtherMesh->numIndices;
+	const uint32 numThisVertices = m_pMesh->numVertices;
+	uint32 *pOldIndices = pOtherMesh->pIndexData;
+	uint32 *pNewIndices = addIndices(numNewIndices);
+
+	for (uint32 i = 0; i < numNewIndices; ++i)
+		pNewIndices[i] = pOldIndices[i] + numThisVertices;
+
+	return true;
 }
 
 /*void MeshWrapper::primitiveIndices(const uint32 primitiveIndex, uint32 *pIndices) const

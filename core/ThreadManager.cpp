@@ -37,7 +37,7 @@ void ThreadManager::destroyThread(const std::string& name)
 
 void ThreadManager::destroyThread(IThread *pThread)
 {
-	m_pResourceManager->destroyResource(pThread);
+	m_pResourceManager->destroyResource(pThread->name());
 }
 
 

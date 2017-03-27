@@ -9,6 +9,8 @@ set(INTERFACE_HEADERS
 	../../include/graphics_engine/IGraphicsCamera.h
 	../../include/graphics_engine/IGraphicsModel.h
 	../../include/graphics_engine/IGraphicsMaterial.h
+	../../include/graphics_engine/IGraphicsTexture.h
+	../../include/graphics_engine/IGraphicsTextureManager.h
 	../../include/graphics_engine/IGraphicsScene.h
 	../../include/graphics_engine/IGraphicsWindow.h
 	../../include/graphics_engine/IGraphicsMaterialManager.h)
@@ -23,6 +25,8 @@ set(HEADERS
 	GraphicsScene.h
 	GraphicsWindow.h
 	GraphicsMaterialManager.h
+	GraphicsTexture.h
+	GraphicsTextureManager.h
 	ShaderManager.h
 	GPUMesh.h
 	GraphicsEnginePlugin.h)
@@ -35,6 +39,8 @@ set(SOURCES
 	GraphicsScene.cpp
 	GraphicsWindow.cpp
 	GraphicsMaterialManager.cpp
+	GraphicsTexture.cpp
+	GraphicsTextureManager.cpp
 	ShaderManager.cpp
 	GPUMesh.cpp
 	GraphicsEnginePlugin.cpp

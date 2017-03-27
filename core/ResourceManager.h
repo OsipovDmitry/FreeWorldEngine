@@ -21,7 +21,6 @@ public:
 	IResource *findResource(const std::string& name) const;
 	void addResource(IResource *pResource);
 	void destroyResource(const std::string& name);
-	void destroyResource(IResource *pResource);
 	void destroyAllResources();
 	uint32 size() const;
 

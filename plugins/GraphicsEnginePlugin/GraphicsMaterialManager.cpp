@@ -54,14 +54,14 @@ IGraphicsMaterial *GraphicsMaterialManager::findMaterial(const std::string& name
 	return static_cast<IGraphicsMaterial*>(m_pMaterialManager->findResource(name));
 }
 
-IGraphicsMaterial * GraphicsMaterialManager::createMaterial(Renderer::IGPUProgram * pPrgram, const std::string & name)
+IGraphicsMaterial * GraphicsMaterialManager::createMaterial(Renderer::IGPUProgram * pProgram, const std::string & name)
 {
 	const std::string resName = (name == "@utoname") ? m_pMaterialNameGenerator->generateName() : name;
 	IGraphicsMaterial *pMaterial = findMaterial(resName);
 	if (pMaterial)
 		return pMaterial;
 
-	pMaterial = new GraphicsMaterial(resName, pPrgram);
+	pMaterial = new GraphicsMaterial(resName, pProgram);
 	m_pMaterialManager->addResource(pMaterial);
 	return pMaterial;
 }
@@ -73,7 +73,7 @@ void GraphicsMaterialManager::destroyMaterial(const std::string & name)
 
 void GraphicsMaterialManager::destroyMaterial(IGraphicsMaterial * pMaterial)
 {
-	m_pMaterialManager->destroyResource(pMaterial);
+	m_pMaterialManager->destroyResource(pMaterial->name());
 }
 
 } // namespace

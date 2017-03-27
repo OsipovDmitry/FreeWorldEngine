@@ -122,7 +122,7 @@ IResourceManager *Core::findResourceManager(const std::string& resourceManagerNa
 
 void Core::destroyResourceManager(IResourceManager *pResourceManager)
 {
-	m_pManagerForOtherManagers->destroyResource(pResourceManager);
+	m_pManagerForOtherManagers->destroyResource(pResourceManager->name());
 }
 
 void Core::destroyResourceManager(const std::string& resourceManagerName)

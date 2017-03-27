@@ -36,6 +36,7 @@ public:
 	void destroyModel(IGraphicsModel *pModel);
 
 	IGraphicsMaterialManager *materialManager() const;
+	IGraphicsTextureManager *textureManager() const;
 
 	IGraphicsScene *findScene(const std::string& name) const;
 	IGraphicsScene *createScene(const std::string& name = "@utoname");
@@ -54,6 +55,7 @@ private:
 	ShaderManager *m_pShaderManager;
 	ProgramManager *m_pProgramManager;
 	IGraphicsMaterialManager *m_pMaterialManager;
+	IGraphicsTextureManager *m_pTextureManager;
 	IResourceManager *m_pCameraManager, *m_pModelManager, *m_pSceneManager, *m_pWindowManager;
 	Utility::AutoNameGenerator *m_pCameraNameGenerator, *m_pModelNameGenerator, *m_pSceneNameGenerator, *m_pWindowNameGenerator;
 

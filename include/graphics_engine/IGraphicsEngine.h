@@ -14,6 +14,7 @@ namespace Renderer {
 namespace GraphicsEngine {
 
 class IGraphicsMaterialManager;
+class IGraphicsTextureManager;
 
 class IGraphicsCamera;
 class IGraphicsModel;
@@ -35,6 +36,7 @@ public:
 	virtual void destroyModel(IGraphicsModel *pModel) = 0;
 
 	virtual IGraphicsMaterialManager *materialManager() const = 0;
+	virtual IGraphicsTextureManager *textureManager() const = 0;
 
 	virtual IGraphicsScene *findScene(const std::string& name) const = 0;
 	virtual IGraphicsScene *createScene(const std::string& name = "@utoname") = 0;

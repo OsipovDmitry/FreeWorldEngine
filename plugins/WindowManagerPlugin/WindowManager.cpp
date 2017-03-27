@@ -84,7 +84,7 @@ void WindowManager::mainLoop() {
 						break;
 					pWindow->sendEvent(event.window); // ѕересылаем событие окну.
 					if (event.window.event == SDL_WINDOWEVENT_CLOSE) { // ≈сли событие было на закрытие окна, то дополнительно уничтожаем его и удал€ем из менеджера.
-						m_pResourceManager->destroyResource(pWindow);
+						m_pResourceManager->destroyResource(pWindow->name());
 						if (m_pResourceManager->size() == 0) { // ≈сли последний SDL_WINDOWEVENT_CLOSE посылалс€ искусственно, то SDL_QUIT не придет и нужно его симулировать.
 							SDL_Event quitEvent;
 							quitEvent.type = SDL_QUIT;

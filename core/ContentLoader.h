@@ -76,7 +76,7 @@ inline void ContentLoader<DataType>::destory(const std::string & name)
 template<class DataType>
 inline void ContentLoader<DataType>::destory(IContent<DataType>* pContent)
 {
-	m_pResourceManager->destroyResource(pContent);
+	m_pResourceManager->destroyResource(pContent->name());
 }
 
 template<class DataType>

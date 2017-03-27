@@ -9,3 +9,4 @@ add_executable(Demo2 ${SOURCES})
 
 target_link_libraries(Demo2 CoreEngine)
 target_link_libraries(Demo2 FWEUtility)
+target_link_libraries(Demo2 FWEMath)

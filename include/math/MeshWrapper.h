@@ -46,6 +46,8 @@ public:
 	void translateMesh(float *pDeltaValue);
 	void scaleMesh(float *pDeltaValue);
 
+	bool combine(const Mesh *pOtherMesh); // true, если удалось объеденить (должны совпадать primitiveFrmat, attributes и vertexStride)
+
 private:
 	Mesh *m_pMesh;
 
