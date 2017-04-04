@@ -22,10 +22,14 @@ public:
 
 	void setBuffer(const IGPUBuffer* pBuffer) const;
 
-	void setMinFilter(IGPUTextureMinFilter filter) const;
-	void setMagFilter(IGPUTextureMagFilter filter) const;
+	void setMinFilter(IGPUTextureMinFilter filter);
+	void setMagFilter(IGPUTextureMagFilter filter);
 
-	void generateMipMaps() const;
+	void setWrapS(IGPUTextureWrap wrap);
+	void setWrapT(IGPUTextureWrap wrap);
+	void setWrapR(IGPUTextureWrap wrap);
+
+	void generateMipMaps();
 
     GLuint GLid() const;
 
@@ -35,6 +39,7 @@ public:
     static GLenum GLtarget(IGPUTextureType type);
 	static GLenum GLMinFilter(IGPUTextureMinFilter filter);
 	static GLenum GLMagFilter(IGPUTextureMagFilter filter);
+	static GLenum GLWrap(IGPUTextureWrap wrap);
 
 private:
 	GLuint m_id;

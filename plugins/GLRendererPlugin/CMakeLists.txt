@@ -9,7 +9,8 @@ set(INTERFACE_HEADERS
 	../../include/renderer/IGPUTexture.h
 	../../include/renderer/IGPUShader.h
 	../../include/renderer/IGPUBuffer.h
-	../../include/renderer/IGPUBufferContainer.h)
+	../../include/renderer/IGPUBufferContainer.h
+	../../include/renderer/IGPUOcclusionQuery.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
@@ -19,6 +20,7 @@ set(HEADERS
 	GLShader.h
 	GLTexture.h
 	GLFrameBuffer.h
+	GLOcclusionQuery.h
 	GLRenderer.h
 	GLRendererPlugin.h)
 
@@ -28,6 +30,7 @@ set(SOURCES
 	GLShader.cpp
 	GLTexture.cpp
 	GLFrameBuffer.cpp
+	GLOcclusionQuery.cpp
 	GLRenderer.cpp
 	GLRendererPlugin.cpp
 	main.cpp)

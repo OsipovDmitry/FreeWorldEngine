@@ -15,11 +15,6 @@ Plane buildPlane(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2)
 	return Plane(n, -glm::dot(n, v0));
 }
 
-float distToPlane(const Plane& plane, const glm::vec3& v)
-{
-	return plane.x*v.x + plane.y*v.y + plane.z*v.z + plane.w;
-}
-
 ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts, uint32 numVerts)
 {
 	bool front = false, back = false;
@@ -40,32 +35,6 @@ ClassifyPlane classifyPolygonRelativePlane(const Plane& plane, glm::vec3 **verts
 		return ClassifyPlane_Back;
 
 	return ClassifyPlane_Touch;
-}
-
-Aabb buldAabb(Mesh *pMesh)
-{
-	MeshWrapper mesh(pMesh);
-
-	if (pMesh->numVertices == 0)
-		return Aabb(glm::vec3(), glm::vec3());
-
-	float *pVertex = mesh.attributeValue(VertexAttributeType_Position, 0);
-	glm::vec3 vMin(pVertex[0], pVertex[1], pVertex[2]), vMax(pVertex[0], pVertex[1], pVertex[2]);
-
-	for (uint32 i = 1; i < pMesh->numVertices; ++i) {
-		pVertex = mesh.attributeValue(VertexAttributeType_Position, i);
-		
-		if (pVertex[0] < vMin.x) vMin.x = pVertex[0];
-		else if (pVertex[0] > vMax.x) vMax.x = pVertex[0];
-
-		if (pVertex[1] < vMin.y) vMin.y = pVertex[1];
-		else if (pVertex[1] > vMax.y) vMax.y = pVertex[1];
-
-		if (pVertex[2] < vMin.z) vMin.z = pVertex[2];
-		else if (pVertex[2] > vMax.z) vMax.z = pVertex[2];
-	}
-
-	return Aabb(vMin, vMax);
 }
 
 void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef)

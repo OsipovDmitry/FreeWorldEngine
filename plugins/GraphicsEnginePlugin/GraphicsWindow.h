@@ -3,12 +3,24 @@
 
 #include <graphics_engine/IGraphicsWindow.h>
 
+#include "GraphicsMaterial.h";
+
 namespace FreeWorldEngine {
 
 class IWindow;
 
 namespace GraphicsEngine {
-	
+
+class GPUMesh;
+
+struct ModelRenderData {
+	GPUMesh *pGpuMesh;
+	glm::mat4x4 modelMatrix;
+
+	ModelRenderData(GPUMesh *pMesh, const glm::mat4x4& matrix) :
+		pGpuMesh(pMesh), modelMatrix(matrix) {}
+};
+
 class GraphicsWindow : public IGraphicsWindow {
 public:
 	GraphicsWindow(const std::string& name, IWindow *pTargetWindow);
@@ -27,6 +39,7 @@ public:
 
 	void switchFrustumCulling();
 	void switchRenderSpheres();
+	void switchRenderNodeBoxes();
 
 private:
 	std::string m_name;
@@ -39,7 +52,15 @@ private:
 	uint32 m_lastFpsTime;
 	int32 m_frameCounter;
 
-	bool m_frustumCulling, m_renderSpheres;
+	bool m_frustumCulling, m_renderSpheres, m_renderNodeBoxes;
+
+	typedef std::multimap<GraphicsMaterial*, ModelRenderData, GraphicsMaterial::Comparator> RenderDataContainer;
+	RenderDataContainer m_renderData;
+
+	void renderSolid(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
+	void renderTransparent(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
+	void renderHud(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
+	void renderData(const IGraphicsMaterial::Tag tag, RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
 
 	static void resizeCallBack(int32 width, int32 height, IWindow *pWindow);
 	static void renderCallBack(IWindow *pWindow);

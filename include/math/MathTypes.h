@@ -16,7 +16,7 @@ const float eps = 0.0001f;
 struct Aabb {
 	glm::vec3 vMin, vMax;
 
-	Aabb(const glm::vec3& vertexMin, const glm::vec3& vertexMax) : vMin(vertexMin), vMax(vertexMax) {}
+	Aabb(const glm::vec3& vertexMin = glm::vec3(), const glm::vec3& vertexMax = glm::vec3()) : vMin(vertexMin), vMax(vertexMax) {}
 };
 
 typedef glm::vec4 Plane;

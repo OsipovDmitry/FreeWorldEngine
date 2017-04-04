@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
 
 #include <IWindow.h>
@@ -7,15 +9,13 @@
 #include "GraphicsWindow.h"
 #include "GraphicsCamera.h"
 #include "GraphicsModel.h"
-#include "GraphicsMaterial.h"
 #include "GraphicsScene.h"
 #include "GraphicsEngine.h"
 #include "GPUMesh.h"
 
-
-
 //
 #include <FreeWorldEngine.h>
+#include <utility/File.h>
 //
 
 namespace FreeWorldEngine {
@@ -28,14 +28,6 @@ struct GraphicsWindowUserData {
 	GraphicsWindowUserData(GraphicsWindow *pWindow) : pThis(pWindow) {}
 };
 
-struct ModelRenderData {
-	IGraphicsSceneNode *pSceneNode;
-	GPUMesh *pGPUMesh;
-	
-	ModelRenderData(IGraphicsSceneNode *pNode, GPUMesh *pMesh) :
-		pSceneNode(pNode), pGPUMesh(pMesh) {}
-};
-
 GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) :
 	m_name(name),
 	m_pTargetWindow(pTargetWindow),
@@ -44,8 +36,9 @@ GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) 
 	m_frameCounter(-1),
 	m_frameNumber(-1),
 	m_fps(-1.0f),
-	m_frustumCulling(false),
-	m_renderSpheres(false)
+	m_frustumCulling(true),
+	m_renderSpheres(false),
+	m_renderNodeBoxes(false)
 {
 	m_pTargetWindow->registerResizeCallBack(GraphicsWindow::resizeCallBack);
 	m_pTargetWindow->registerRenderCallBack(GraphicsWindow::renderCallBack);
@@ -54,6 +47,14 @@ GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) 
 	m_pTargetWindow->registerKeyDownCallBack(GraphicsWindow::keyDownCallBack);
 
 	m_pTargetWindow->setUserData(new GraphicsWindowUserData(this));
+
+	std::string logString;
+	IGraphicsMaterial *pColorMaterial = pGraphicsEngine->materialManager()->loadMaterial(Utility::File("color_material_vertex.glsl"), Utility::File("color_material_fragment.glsl"), "ColorMaterial", &logString);
+	Renderer::IGPUProgram *pProgram = pColorMaterial->program();
+	pColorMaterial->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
+	pColorMaterial->setUniform(pProgram->uniformLocationByName("color"), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	if (!logString.empty())
+		getCoreEngine()->logger()->printMessage(logString, ILogger::MessageType_Error);
 }
 
 GraphicsWindow::~GraphicsWindow()
@@ -114,6 +115,62 @@ void GraphicsWindow::switchRenderSpheres()
 	m_renderSpheres = !m_renderSpheres;
 }
 
+void GraphicsWindow::switchRenderNodeBoxes()
+{
+	m_renderNodeBoxes = !m_renderNodeBoxes;
+}
+
+void GraphicsWindow::renderSolid(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+{
+	while (itBegin != itEnd) {
+		itBegin->first->bind(m_pCamera, itBegin->second.modelMatrix);
+		const GPUMesh *pGpuMesh = itBegin->second.pGpuMesh;
+		pGPURenderer->renderIndexedGeometry(itBegin->first->program(), pGpuMesh->bufferContainer(), pGpuMesh->primitiveFormat(), TYPE_UNSIGNED_INT_32, pGpuMesh->numIndices());
+		++itBegin;
+	}
+}
+
+void GraphicsWindow::renderTransparent(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+{
+	glm::vec3 cameraPos = m_pCamera->position();
+
+	typedef std::pair<float, const RenderDataContainer::value_type*> SortedDataItem;
+	std::vector<SortedDataItem> sortedData;
+	sortedData.reserve(std::distance(itBegin, itEnd));
+	std::transform(itBegin, itEnd, std::back_inserter(sortedData), [&cameraPos](const RenderDataContainer::value_type& val) {
+		glm::vec3 v = cameraPos - glm::vec3(val.second.modelMatrix[3]);
+		return std::make_pair(glm::dot(v, v), &val);
+	});
+
+	std::sort(sortedData.begin(), sortedData.end(), [](const SortedDataItem& val1, const SortedDataItem& val2) {
+		return (bool)(val1.first > val2.first);
+	});
+
+	for (const auto& it : sortedData) {
+		it.second->first->bind(m_pCamera, it.second->second.modelMatrix);
+		const GPUMesh *pGpuMesh = it.second->second.pGpuMesh;
+		pGPURenderer->renderIndexedGeometry(it.second->first->program(), pGpuMesh->bufferContainer(), pGpuMesh->primitiveFormat(), TYPE_UNSIGNED_INT_32, pGpuMesh->numIndices());
+	}
+}
+
+void GraphicsWindow::renderHud(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+{
+	while (itBegin != itEnd) {
+		++itBegin;
+	}
+}
+
+void GraphicsWindow::renderData(const IGraphicsMaterial::Tag tag, RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+{
+	typedef void (GraphicsWindow::*RenderFunc)(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
+	static RenderFunc funcs[IGraphicsMaterial::Tag_Count] = {
+		&GraphicsWindow::renderSolid,
+		&GraphicsWindow::renderTransparent,
+		&GraphicsWindow::renderHud,
+	};
+	(this->*funcs[tag])(itBegin, itEnd);
+}
+
 void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
@@ -122,24 +179,33 @@ void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow
 	pGPURenderer->setViewport(0, 0, width, height);
 }
 
-void GraphicsWindow::renderCallBack(IWindow * pWindow)
+void GraphicsWindow::renderCallBack(IWindow *pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
 	IGraphicsScene *pScene = pThis->m_pScene;
 	IGraphicsCamera *pCamera = pThis->m_pCamera;
 	const Math::Frustum& frustum = pCamera->frustum();
+	IGraphicsMaterial *pColorMaterial = pGraphicsEngine->materialManager()->findMaterial("ColorMaterial");
 
-	std::multimap<GraphicsMaterial*, ModelRenderData, GraphicsMaterial::Comparator> renderData;
-	std::list<IGraphicsSceneNode*> sceneNodes;
-	sceneNodes.push_back(pScene->rootNode());
+	std::list<GraphicsSceneNode*> sceneNodes;
+	sceneNodes.push_back(static_cast<GraphicsSceneNode*>(pScene->rootNode()));
 
 	uint32 numDips = 0;
+	pThis->m_renderData.clear();
 
 	while (!sceneNodes.empty()) {
-		IGraphicsSceneNode *pNode = sceneNodes.front();
+		GraphicsSceneNode *pNode = sceneNodes.front();
 		sceneNodes.pop_front();
+
+		if (pThis->m_frustumCulling && !Math::geomInFrustum(frustum, pNode->boundingBox()))
+			continue;
+
 		for (uint32 i = 0; i < pNode->numChildren(); ++i)
-			sceneNodes.push_back(pNode->childAt(i));
+			sceneNodes.push_back(static_cast<GraphicsSceneNode*>(pNode->childAt(i)));
+
+		if (pThis->m_renderNodeBoxes)
+			pThis->m_renderData.insert(std::make_pair(
+				static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pNode->gpuMeshAabb(), glm::mat4x4())));
 
 		GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model());
 		if (!pModel)
@@ -150,36 +216,38 @@ void GraphicsWindow::renderCallBack(IWindow * pWindow)
 			glm::vec4 newSpherePos = pNode->worldTransformation() * glm::vec4(boundSphere.x, boundSphere.y, boundSphere.z, 1.0f);
 			Math::Sphere nodeBoundSphere(newSpherePos.x, newSpherePos.y, newSpherePos.z, boundSphere.w);
 
-			if (!Math::sphereInFrustum(frustum, nodeBoundSphere))
+			if (!Math::geomInFrustum(frustum, nodeBoundSphere))
 				continue;
 		}
-		
+
 		++numDips;
 
-		renderData.insert(std::make_pair(
-			static_cast<GraphicsMaterial*>(pModel->material()),
-			ModelRenderData(pNode, pModel->gpuMesh())));
-
-		if (pThis->m_renderSpheres) {
-			renderData.insert(std::make_pair(
-				static_cast<GraphicsMaterial*>(pModel->material()),
-				ModelRenderData(pNode, pModel->gpuMeshBoundSphere())));
-		}
+		pThis->m_renderData.insert(std::make_pair(
+			static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), pNode->worldTransformation())));
+	
+		if (pThis->m_renderSpheres)
+			pThis->m_renderData.insert(std::make_pair(
+				static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMeshBoundSphere(), pNode->worldTransformation())));
 	}
 
-	pGPURenderer->mainFrameBuffer()->clearDepthBuffer();
-	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.0f, 0.0f, 0.5f);
+	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.3f, 0.3f, 0.3f, 1.0f);
+	pGPURenderer->mainFrameBuffer()->clearDepthBuffer(1.0f);
 
-	for (const auto& it : renderData) {
-		it.first->bind(pCamera, it.second.pSceneNode->worldTransformation());
-		pGPURenderer->renderIndexedGeometry(it.first->program(), it.second.pGPUMesh->bufferContainer(), it.second.pGPUMesh->primitiveFormat(), TYPE_UNSIGNED_INT_32, it.second.pGPUMesh->numIndices());
+	RenderDataContainer::const_iterator beginIterator, endIterator = pThis->m_renderData.cbegin();
+	while (endIterator != pThis->m_renderData.cend()) {
+		beginIterator = endIterator;
+		endIterator = std::upper_bound(beginIterator, pThis->m_renderData.cend(), *beginIterator,
+			[](const RenderDataContainer::value_type& val1, const RenderDataContainer::value_type& val2) {
+			return val1.first->tag() != val2.first->tag();
+		});
+		pThis->renderData(beginIterator->first->tag(), beginIterator, endIterator);
 	}
-
-	getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        FPS: " + std::to_string(pThis->fps()));
+	
+	//getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        FPS: " + std::to_string(pThis->fps()));
 
 }
 
-void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow * pWindow)
+void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow *pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
 	static_cast<GraphicsCamera*>(pThis->m_pCamera)->update();
@@ -215,6 +283,9 @@ void GraphicsWindow::keyDownCallBack(IWindow::KeyCode keyCode, IWindow *pWindow)
 
 	if (keyCode == IWindow::KeyCode_B)
 		pThis->switchRenderSpheres();
+
+	if (keyCode == IWindow::KeyCode_N)
+		pThis->switchRenderNodeBoxes();
 }
 
 } // namespace

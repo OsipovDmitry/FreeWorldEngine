@@ -94,7 +94,7 @@ void GLTexture::setSubData(const uint32 *offset, const uint32 *size, TextureForm
 			offs[1] = offset[1];
 			offs[2] = offset[2];
 		}
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+offset[2], 0, offset[0], offset[1], size[0], size[1], format, type, data);
+		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+offs[2], 0, offs[0], offs[1], size[0], size[1], format, type, data);
 		break;
 	}
 
@@ -125,7 +125,7 @@ void GLTexture::setBuffer(const IGPUBuffer* pBuffer) const
 	glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, static_cast<const GLBuffer*>(pBuffer)->GLid());
 }
 
-void GLTexture::setMinFilter(IGPUTextureMinFilter filter) const
+void GLTexture::setMinFilter(IGPUTextureMinFilter filter)
 {
 	GLenum target = GLtarget(m_type);
 	GLenum gl_filter = GLMinFilter(filter);
@@ -137,7 +137,7 @@ void GLTexture::setMinFilter(IGPUTextureMinFilter filter) const
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, gl_filter);
 }
 
-void GLTexture::setMagFilter(IGPUTextureMagFilter filter) const
+void GLTexture::setMagFilter(IGPUTextureMagFilter filter)
 {
 	GLenum target = GLtarget(m_type);
 	GLenum gl_filter = GLMagFilter(filter);
@@ -149,7 +149,43 @@ void GLTexture::setMagFilter(IGPUTextureMagFilter filter) const
 	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, gl_filter);
 }
 
-void GLTexture::generateMipMaps() const
+void GLTexture::setWrapS(IGPUTextureWrap wrap)
+{
+	GLenum target = GLtarget(m_type);
+	GLenum gl_wrap = GLWrap(wrap);
+
+	if (!target || !gl_wrap)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, gl_wrap);
+}
+
+void GLTexture::setWrapT(IGPUTextureWrap wrap)
+{
+	GLenum target = GLtarget(m_type);
+	GLenum gl_wrap = GLWrap(wrap);
+
+	if (!target || !gl_wrap)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, gl_wrap);
+}
+
+void GLTexture::setWrapR(IGPUTextureWrap wrap)
+{
+	GLenum target = GLtarget(m_type);
+	GLenum gl_wrap = GLWrap(wrap);
+
+	if (!target || !gl_wrap)
+		return;
+
+	pGLRenderer->bindTexture(this, 0);
+	glTexParameteri(target, GL_TEXTURE_WRAP_R, gl_wrap);
+}
+
+void GLTexture::generateMipMaps()
 {
 	GLenum target = GLtarget(m_type);
 
@@ -430,6 +466,17 @@ GLenum GLTexture::GLMagFilter(IGPUTextureMagFilter filter)
 	}
 	return 0;
 }
+
+GLenum GLTexture::GLWrap(IGPUTextureWrap wrap)
+{
+	switch (wrap) {
+	case IGPUTextureWrap_Clamp: return GL_CLAMP_TO_EDGE;
+	case IGPUTextureWrap_Repeat: return GL_REPEAT;
+	case IGPUTextureWrap_MirroredRepeat: return GL_MIRRORED_REPEAT;
+	}
+	return 0;
+}
+
 
 } // namespace
 

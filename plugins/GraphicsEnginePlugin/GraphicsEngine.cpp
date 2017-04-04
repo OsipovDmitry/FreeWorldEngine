@@ -30,9 +30,7 @@ GraphicsEngine::GraphicsEngine() :
 	m_pModelNameGenerator(new Utility::AutoNameGenerator("ModelName")),
 	m_pSceneNameGenerator(new Utility::AutoNameGenerator("SceneName")),
 	m_pWindowNameGenerator(new Utility::AutoNameGenerator("WindowName"))
-
 {
-	//IGraphicsMaterial *pStandardMaterial = createMaterial("StandardMaterial");
 }
 
 GraphicsEngine::~GraphicsEngine()

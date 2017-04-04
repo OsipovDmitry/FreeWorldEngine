@@ -4,6 +4,7 @@
 #include "GLTexture.h"
 #include "GLShader.h"
 #include "GLFrameBuffer.h"
+#include "GLOcclusionQuery.h"
 
 namespace FreeWorldEngine {
 
@@ -30,10 +31,16 @@ GLRenderer::GLRenderer() :
 	m_cachedDepthTest = false;
 	m_cachedDepthTestFunc = DepthTestFunc_Less;
 
+	m_cachedColorMask[0] = true;
+	m_cachedColorMask[1] = true;
+	m_cachedColorMask[2] = true;
+	m_cachedColorMask[3] = true;
+	m_cachedDepthMask = true;
+
 	for (uint32 i = 0; i < BLEND_UNITS_COUNT; ++i)
 		m_cachedBlend[i] = false;
-	m_cachedBlendRGBSrc = m_cachedBlendASrc = BlendFunc_SrcAlpha;
-	m_cachedBlendASrc = m_cachedBlendADst = BlendFunc_InvSrcAlpha;
+	m_cachedBlendRGBSrc = m_cachedBlendASrc = (BlendFunc)-1;
+	m_cachedBlendRGBDst = m_cachedBlendADst = (BlendFunc)-1;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	m_cachedBlendRGBEquat = m_cachedBlendAEquat = BlendEquation_Add;
 
@@ -243,6 +250,24 @@ IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
 	return m_pMainFrameBuffer;
 }
 
+IGPUOcclusionQuery * GLRenderer::createOcclusionQuery()
+{
+	GLuint id;
+	glGenQueries(1, &id);
+	if (!id)
+		return 0;
+
+	return new GLOcclusionQuery(id);
+}
+
+void GLRenderer::destroyOcclusionQuery(IGPUOcclusionQuery *pQuery)
+{
+	GLOcclusionQuery *pGLQuery = static_cast<GLOcclusionQuery*>(pQuery);
+	GLuint id = pGLQuery->GLid();
+	glDeleteQueries(1, &id);
+	delete pQuery;
+}
+
 void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const
 {
 	GLenum mode = GLPrimitiveFormat(primitiveFormat);
@@ -287,12 +312,21 @@ void GLRenderer::disableDepthTest()
 
 void GLRenderer::setColorWriteMask(bool red, bool green, bool blue, bool alpha)
 {
-	glColorMask(red, green, blue, alpha);
+	if (m_cachedColorMask[0] != red || m_cachedColorMask[1] != green || m_cachedColorMask[2] != blue || m_cachedColorMask[3] != alpha) {
+		m_cachedColorMask[0] = red;
+		m_cachedColorMask[1] = green;
+		m_cachedColorMask[2] = blue;
+		m_cachedColorMask[3] = alpha;
+		glColorMask(red ? GL_TRUE : GL_FALSE, green ? GL_TRUE : GL_FALSE, blue ? GL_TRUE : GL_FALSE, alpha ? GL_TRUE : GL_FALSE);
+	}
 }
 
 void GLRenderer::setDepthWriteMask(bool depth)
 {
-	glDepthMask(depth);
+	if (m_cachedDepthMask != depth) {
+		m_cachedDepthMask = depth;
+		glDepthMask(depth ? GL_TRUE : GL_FALSE);
+	}
 }
 
 void GLRenderer::enableBlend(const int32 slot)
@@ -332,9 +366,9 @@ void GLRenderer::setBlendEquation(const BlendEquation funcRGB, const BlendEquati
 
 void GLRenderer::setBlendFunc(const BlendFunc funcSrcRGB, const BlendFunc funcDstRGB, const BlendFunc funcSrcA, const BlendFunc funcDstA)
 {
-	if (m_cachedBlendRGBSrc != funcSrcRGB &&
-		m_cachedBlendRGBDst != funcDstRGB &&
-		m_cachedBlendASrc != funcSrcA &&
+	if (m_cachedBlendRGBSrc != funcSrcRGB ||
+		m_cachedBlendRGBDst != funcDstRGB ||
+		m_cachedBlendASrc != funcSrcA ||
 		m_cachedBlendADst != funcDstA) {
 		m_cachedBlendRGBSrc = funcSrcRGB;
 		m_cachedBlendRGBDst = funcDstRGB;

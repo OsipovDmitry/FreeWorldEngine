@@ -72,6 +72,11 @@ public:
 		IGPUTextureMagFilter_Nearest,
 		IGPUTextureMagFilter_Linear
 	};
+	enum IGPUTextureWrap {
+		IGPUTextureWrap_Clamp,
+		IGPUTextureWrap_Repeat,
+		IGPUTextureWrap_MirroredRepeat
+	};
 
     virtual ~IGPUTexture() {}
 
@@ -84,10 +89,14 @@ public:
 
 	virtual void setBuffer(const IGPUBuffer* pBuffer) const = 0; // специально для IGPUTextureType_Buffer текстур
 
-	virtual void setMinFilter(IGPUTextureMinFilter filter) const = 0;
-	virtual void setMagFilter(IGPUTextureMagFilter filter) const = 0;
+	virtual void setMinFilter(IGPUTextureMinFilter filter) = 0;
+	virtual void setMagFilter(IGPUTextureMagFilter filter) = 0;
 
-	virtual void generateMipMaps() const = 0;
+	virtual void setWrapS(IGPUTextureWrap wrap) = 0;
+	virtual void setWrapT(IGPUTextureWrap wrap) = 0;
+	virtual void setWrapR(IGPUTextureWrap wrap) = 0;
+
+	virtual void generateMipMaps() = 0;
 };
 
 } // namespace

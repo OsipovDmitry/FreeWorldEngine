@@ -81,6 +81,13 @@ public:
 		CullFaceState_RenderBackFaces
 	};
 
+	enum Tag {
+		Tag_Solid,
+		Tag_Transparent,
+		Tag_Hud,
+		Tag_Count
+	};
+
 	virtual ~IGraphicsMaterial() {}
 
 	virtual Renderer::IGPUProgram *program() const = 0;
@@ -128,6 +135,9 @@ public:
 
 	virtual void setCullFaceState(const CullFaceState state) = 0;
 	virtual CullFaceState cullFaceState() const = 0;
+
+	virtual void setTag(const Tag tag) = 0;
+	virtual Tag tag() const = 0;
 
 }; // class IGraphicsMaterial
 

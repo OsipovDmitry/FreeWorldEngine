@@ -23,9 +23,14 @@ public:
 	~GraphicsTextureManager();
 	
 	IGraphicsTexture *createTexture(Renderer::IGPUTexture *pTexture, const std::string& name = "@utoname", std::string *pLogString = nullptr);
-	IGraphicsTexture *createTexture1D(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr);
-	IGraphicsTexture *createTexture2D(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr);
-
+	IGraphicsTexture *createTexture1D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTexture2D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTexture3D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTextureCubeMap(const Raster *pRasters[], const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTexture1DArray(const Raster *pRasters[], const uint32 numRasters, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTexture2DArray(const Raster *pRasters[], const uint32 numRasters, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTextureRectangle(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr);
+	IGraphicsTexture *createTextureBuffer(Renderer::IGPUBuffer *pBuffer, const std::string& name = "@utoname", std::string *pLogString = nullptr);
 
 	IGraphicsTexture *findTexture(const std::string& name) const;
 

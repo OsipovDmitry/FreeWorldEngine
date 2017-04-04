@@ -7,6 +7,7 @@ namespace FreeWorldEngine {
 
 namespace Renderer {
 	class IGPUTexture;
+	class IGPUBuffer;
 } // namespace
 
 namespace Utility {
@@ -24,9 +25,14 @@ public:
 	virtual ~IGraphicsTextureManager() {}
 	
 	virtual IGraphicsTexture *createTexture(Renderer::IGPUTexture *pTexture, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
-	virtual IGraphicsTexture *createTexture1D(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
-	virtual IGraphicsTexture *createTexture2D(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
-
+	virtual IGraphicsTexture *createTexture1D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTexture2D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTexture3D(const Raster *pRaster, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTextureCubeMap(const Raster *pRasters[], const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTexture1DArray(const Raster *pRasters[], const uint32 numRasters, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTexture2DArray(const Raster *pRasters[], const uint32 numRasters, const bool generateMipmaps = true, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTextureRectangle(const Raster *pRaster, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
+	virtual IGraphicsTexture *createTextureBuffer(Renderer::IGPUBuffer *pBuffer, const std::string& name = "@utoname", std::string *pLogString = nullptr) = 0;
 
 	virtual IGraphicsTexture *findTexture(const std::string& name) const = 0;
 	

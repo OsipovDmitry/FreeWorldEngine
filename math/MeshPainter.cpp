@@ -168,10 +168,10 @@ void MeshPainter::paintBox(const float lenX, const float lenY, const float lenZ)
 	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 17, (float*)verts[2]);
 	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 18, (float*)verts[6]);
 	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 19, (float*)verts[5]);
-	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 20, (float*)verts[1]);
-	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 21, (float*)verts[2]);
-	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 22, (float*)verts[6]);
-	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 23, (float*)verts[5]);
+	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 20, (float*)verts[3]);
+	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 21, (float*)verts[0]);
+	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 22, (float*)verts[4]);
+	wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + 23, (float*)verts[7]);
 
 	uint32 numIndices = wrapper.numIndices();
 	switch (wrapper.primitiveFormat()) {
@@ -216,6 +216,73 @@ void MeshPainter::paintBox(const float lenX, const float lenY, const float lenZ)
 void MeshPainter::paintCube(const float len)
 {
 	paintBox(len, len, len);
+}
+
+void MeshPainter::paintQuad(const float lenX, const float lenY)
+{
+	if (!m_pMesh)
+		return;
+
+	if (lenX < 0.0f || lenY < 0.0f)
+		return;
+
+	const float size[2] = { 0.5f*lenX, 0.5f*lenY };
+
+	bool generateTexCoord = m_pMesh->attributes.count(VertexAttributeType_TexCoord0) != 0;
+
+	MeshWrapper wrapper(m_pMesh);
+	uint32 numVertices = wrapper.numVertices();
+	wrapper.addVertices(4);
+
+	const float verts[4][3] = {
+		{ -size[0], -size[1], 0.0f },
+		{ +size[0], -size[1], 0.0f },
+		{ +size[0], +size[1], 0.0f },
+		{ -size[0], +size[1], 0.0f },
+	};
+
+	const float texcoord[4][2] = {
+		{ 0.0f, 0.0f },
+		{ 1.0f, 0.0f },
+		{ 1.0f, 1.0f },
+		{ 0.0f, 1.0f },
+	};
+
+	for (int i = 0; i < 4; ++i)
+		wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + i, (float*)verts[i]);
+
+	if (generateTexCoord) {
+		for (int i = 0; i < 4; ++i)
+			wrapper.setAttributeValue(VertexAttributeType_TexCoord0, numVertices + i, (float*)texcoord[i]);
+	}
+
+	uint32 numIndices = wrapper.numIndices();
+	switch (wrapper.primitiveFormat()) {
+	case PrimitiveFormat_Points: {
+		wrapper.addIndices(4);
+		for (uint32 i = 0; i < 4; ++i)
+			wrapper.setIndexValue(numIndices + i, numVertices + i);
+		break;
+	}
+	case PrimitiveFormat_Lines: {
+		wrapper.addIndices(8);
+		for (uint32 i = 0; i < 4; ++i) {
+			wrapper.setIndexValue(numIndices + 2 * i + 0, numVertices + i);
+			wrapper.setIndexValue(numIndices + 2 * i + 1, numVertices + i % 4);
+		}
+		break;
+	}
+	case PrimitiveFormat_Triangles: {
+		wrapper.addIndices(6);
+		wrapper.setIndexValue(numIndices + 0, numVertices + 0);
+		wrapper.setIndexValue(numIndices + 1, numVertices + 1);
+		wrapper.setIndexValue(numIndices + 2, numVertices + 2);
+		wrapper.setIndexValue(numIndices + 3, numVertices + 0);
+		wrapper.setIndexValue(numIndices + 4, numVertices + 2);
+		wrapper.setIndexValue(numIndices + 5, numVertices + 3);
+		break;
+	}
+	}
 }
 
 

@@ -31,14 +31,15 @@ GraphicsMaterial::GraphicsMaterial(const std::string& name, Renderer::IGPUProgra
 	m_uniformBuffers(),
 	m_depthCheck(true),
 	m_depthWrite(true),
-	m_depthFunc(DepthTestFunc_LessEqual),
+	m_depthFunc(DepthTestFunc_Less),
 	m_blendEquationRGB(BlendEquation_Add),
 	m_blendEquationA(BlendEquation_Add),
 	m_blendSrcRGB(BlendFunc_One),
 	m_blendSrcA(BlendFunc_One),
 	m_blendDstRGB(BlendFunc_Zero),
 	m_blendDstA(BlendFunc_Zero),
-	m_cullFaceState(CullFaceState_RenderFrontFaces)
+	m_cullFaceState(CullFaceState_RenderFrontFaces),
+	m_tag(Tag_Solid)
 {
 }
 
@@ -262,11 +263,14 @@ IGraphicsMaterial::CullFaceState GraphicsMaterial::cullFaceState() const
 	return m_cullFaceState;
 }
 
-bool GraphicsMaterial::isTransparent() const
+void GraphicsMaterial::setTag(const Tag tag)
 {
-	return !((m_blendSrcRGB == BlendFunc_One) && (m_blendSrcA == BlendFunc_One) &&
-		(m_blendDstRGB == BlendFunc_Zero) && (m_blendDstA == BlendFunc_Zero) &&
-		(m_blendEquationRGB == BlendEquation_Add) && (m_blendEquationA == BlendEquation_Add));
+	m_tag = tag;
+}
+
+IGraphicsMaterial::Tag GraphicsMaterial::tag() const
+{
+	return m_tag;
 }
 
 void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const
@@ -324,23 +328,30 @@ void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMa
 	else {
 		Renderer::IGPURenderer::DepthTestFunc func = (Renderer::IGPURenderer::DepthTestFunc)m_depthFunc;
 		if (!m_depthCheck)
-			func = Renderer::IGPURenderer::DepthTestFunc_Never;
+			func = Renderer::IGPURenderer::DepthTestFunc_Always;
 		pGPURenderer->enableDepthTest(func);
 	}
 
-	if (!isTransparent()) {
+	if (!needBlend()) {
 		pGPURenderer->disableBlend();
 	}
 	else {
+		pGPURenderer->enableBlend();
 		pGPURenderer->setBlendEquation((Renderer::IGPURenderer::BlendEquation)m_blendEquationRGB, (Renderer::IGPURenderer::BlendEquation)m_blendEquationA);
 		pGPURenderer->setBlendFunc((Renderer::IGPURenderer::BlendFunc)m_blendSrcRGB,
 			(Renderer::IGPURenderer::BlendFunc)m_blendDstRGB,
 			(Renderer::IGPURenderer::BlendFunc)m_blendSrcA,
 			(Renderer::IGPURenderer::BlendFunc)m_blendDstA);
-		pGPURenderer->enableBlend();
 	}
 
 	pGPURenderer->setCullFaceState((Renderer::IGPURenderer::CullFaceState)m_cullFaceState);
+}
+
+bool GraphicsMaterial::needBlend() const
+{
+	return !((m_blendSrcRGB == BlendFunc_One) && (m_blendSrcA == BlendFunc_One) &&
+		(m_blendDstRGB == BlendFunc_Zero) && (m_blendDstA == BlendFunc_Zero) &&
+		(m_blendEquationRGB == BlendEquation_Add) && (m_blendEquationA == BlendEquation_Add));
 }
 
 void GraphicsMaterial::setUniformData(const int32 location, const UniformType type, void *pData)
@@ -386,14 +397,11 @@ void GraphicsMaterial::clearUniforms()
 
 bool GraphicsMaterial::Comparator::operator()(GraphicsMaterial *p1, GraphicsMaterial *p2)
 {
-	bool isTransp1 = p1->isTransparent();
-	bool isTransp2 = p2->isTransparent();
+	Tag tag1 = p1->tag();
+	Tag tag2 = p2->tag();
 
-	if (isTransp2 && !isTransp1)
-		return true;
-
-	if (isTransp1 && !isTransp2)
-		return false;
+	if (tag1 != tag2)
+		return tag1 < tag2;
 
 	return p1->m_pProgram < p2->m_pProgram;
 }

@@ -63,7 +63,8 @@ public:
 	void setCullFaceState(const CullFaceState state);
 	CullFaceState cullFaceState() const;
 
-	bool isTransparent() const;
+	void setTag(const Tag tag);
+	Tag tag() const;
 
 	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
 
@@ -107,6 +108,9 @@ private:
 
 	CullFaceState m_cullFaceState;
 
+	Tag m_tag;
+
+	bool needBlend() const;
 	void setUniformData(const int32 location, const UniformType type, void *pData);
 	int32 setUniformTexture(Renderer::IGPUTexture *pTexture);
 	int32 setUniformBuffer(Renderer::IGPUBuffer *pBuffer);

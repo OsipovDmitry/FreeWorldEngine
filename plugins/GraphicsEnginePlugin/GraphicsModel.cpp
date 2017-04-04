@@ -15,9 +15,11 @@ namespace GraphicsEngine {
 GraphicsModel::GraphicsModel(const std::string& name) :
 	m_name(name),
 	m_boundSphere(),
+	m_aabb(),
 	m_pMaterial(pGraphicsEngine->materialManager()->findMaterial("StandardMaterial")),
 	m_pGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Triangles)),
-	m_pBoudSphereGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Lines))
+	m_pBoudSphereGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Lines)),
+	m_pAabbGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Triangles))
 {
 }
 
@@ -28,6 +30,9 @@ GraphicsModel::~GraphicsModel()
 
 	m_pBoudSphereGPUMesh->destroy();
 	delete m_pBoudSphereGPUMesh;
+
+	m_pAabbGPUMesh->destroy();
+	delete m_pAabbGPUMesh;
 }
 
 std::string GraphicsModel::name() const
@@ -47,8 +52,8 @@ void GraphicsModel::setMaterial(IGraphicsMaterial *pMaterial)
 
 void GraphicsModel::setMesh(Mesh *pMesh)
 {
+	Math::MeshWrapper(pMesh).computeAabbAndBoundingSphere(m_aabb, m_boundSphere);
 	
-	m_boundSphere = Math::MeshWrapper(pMesh).computeBoundingSphere();
 	Mesh sphereMesh;
 	Math::MeshWrapper sphereWrapper(&sphereMesh);
 	sphereWrapper.setAttributeDeclaration(VertexAttributeType_Position, 3, 0);
@@ -57,8 +62,18 @@ void GraphicsModel::setMesh(Mesh *pMesh)
 	Math::MeshPainter(sphereWrapper).paintSphere(m_boundSphere.w, 8);
 	sphereWrapper.translateMesh((float*)&(m_boundSphere.x));
 
+	Mesh aabbMesh;
+	Math::MeshWrapper aabbWrapper(&aabbMesh);
+	aabbWrapper.setAttributeDeclaration(VertexAttributeType_Position, 3, 0);
+	aabbWrapper.setPrimitiveFormat(PrimitiveFormat_Triangles);
+	aabbWrapper.setVertexStride(3);
+	glm::vec3 boxPos = 0.5f*(m_aabb.vMin + m_aabb.vMax), boxSize = m_aabb.vMax - m_aabb.vMin;
+	Math::MeshPainter(aabbWrapper).paintBox(boxSize.x, boxSize.y, boxSize.z);
+	aabbWrapper.translateMesh((float*)&(boxPos.x));
+
 	m_pGPUMesh->setMesh(pMesh);
 	m_pBoudSphereGPUMesh->setMesh(&sphereMesh);
+	m_pAabbGPUMesh->setMesh(&aabbMesh);
 }
 
 GPUMesh *GraphicsModel::gpuMesh() const
@@ -71,9 +86,19 @@ GPUMesh *GraphicsModel::gpuMeshBoundSphere() const
 	return m_pBoudSphereGPUMesh;
 }
 
+GPUMesh * GraphicsModel::gpuMeshAabb() const
+{
+	return m_pAabbGPUMesh;
+}
+
 const Math::Sphere &GraphicsModel::boundingSphere() const
 {
 	return m_boundSphere;
+}
+
+const Math::Aabb & GraphicsModel::aabb() const
+{
+	return m_aabb;
 }
 
 } // namespace

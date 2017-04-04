@@ -125,10 +125,6 @@ float *MeshWrapper::attributeValue(const VertexAttributeType attributeType, cons
 
 void MeshWrapper::setIndexValue(const uint32 index, const uint32 value)
 {
-	if (index >= m_pMesh->numIndices) {
-		int r = 123;
-		r++;
-	}
 	m_pMesh->pIndexData[index] = value;
 }
 
@@ -159,21 +155,32 @@ Aabb MeshWrapper::computeAxisAlignedBoundingBox() const
 
 Sphere MeshWrapper::computeBoundingSphere() const
 {
-	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0))
-		return Sphere(0.0f, 0.0f, 0.0f, 0.0f);
+	Aabb box;
+	Sphere sphere;
+	computeAabbAndBoundingSphere(box, sphere);
+	return sphere;
+}
 
-	Aabb box = computeAxisAlignedBoundingBox();
-	glm::vec3 pos = 0.5f * (box.vMin + box.vMax);
-
-	float r = 0.0f;
-	for (int i = 0; i < m_pMesh->numVertices; ++i) {
-		glm::vec3 v = *(glm::vec3*)attributeValue(VertexAttributeType_Position, i) - pos;
-		float lSq = glm::dot(v,v);
-		if (lSq > r)
-			r = lSq;
+void MeshWrapper::computeAabbAndBoundingSphere(Aabb& resAabb, Sphere& resBoundingSphere) const
+{
+	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0)) {
+		resAabb = Aabb(glm::vec3(), glm::vec3());
+		resBoundingSphere = Sphere(0.0f, 0.0f, 0.0f, 0.0f);
+		return;
 	}
 
-	return Sphere(pos, glm::sqrt(r));
+	resAabb = computeAxisAlignedBoundingBox();
+	glm::vec3 pos = 0.5f * (resAabb.vMin + resAabb.vMax);
+
+	float rSq = 0.0f;
+	for (int i = 0; i < m_pMesh->numVertices; ++i) {
+		glm::vec3 v = *(glm::vec3*)attributeValue(VertexAttributeType_Position, i) - pos;
+		float lSq = glm::dot(v, v);
+		if (lSq > rSq)
+			rSq = lSq;
+	}
+
+	resBoundingSphere = Sphere(pos, glm::sqrt(rSq));
 }
 
 void MeshWrapper::interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const

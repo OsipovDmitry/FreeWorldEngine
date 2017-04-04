@@ -88,6 +88,7 @@ void GLFrameBuffer::attachDepthBuffer(const IGPUTexture *pTexture, const uint32 
 
 void GLFrameBuffer::clearColorBuffer(const uint32 slot, const float red, const float green, const float blue, const float alpha)
 {
+	pGLRenderer->setColorWriteMask(true, true, true, true);
 	pGLRenderer->bindFrameBuffer(this);
 	const GLfloat color[4] = {red, green, blue, alpha};
 	glClearBufferfv(GL_COLOR, slot, color);
@@ -95,6 +96,7 @@ void GLFrameBuffer::clearColorBuffer(const uint32 slot, const float red, const f
 
 void GLFrameBuffer::clearDepthBuffer(const float depth)
 {
+	pGLRenderer->setDepthWriteMask(true);
 	pGLRenderer->bindFrameBuffer(this);
 	glClearBufferfv(GL_DEPTH, 0, &depth);
 }

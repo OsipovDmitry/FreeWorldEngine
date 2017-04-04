@@ -45,6 +45,9 @@ public:
 	void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const;
 	IGPUFrameBuffer *mainFrameBuffer() const;
 
+	IGPUOcclusionQuery *createOcclusionQuery();
+	void destroyOcclusionQuery(IGPUOcclusionQuery *pQuery);
+
 	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
 	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
 
@@ -97,6 +100,9 @@ private:
 
 	mutable bool m_cachedDepthTest;
 	mutable DepthTestFunc m_cachedDepthTestFunc;
+
+	bool m_cachedDepthMask;
+	bool m_cachedColorMask[4];
 
 	static const uint32 BLEND_UNITS_COUNT = 16;
 	mutable bool m_cachedBlend[BLEND_UNITS_COUNT];

@@ -29,15 +29,18 @@ public:
 
 	GPUMesh *gpuMesh() const;
 	GPUMesh *gpuMeshBoundSphere() const;
+	GPUMesh *gpuMeshAabb() const;
 
 	const Math::Sphere& boundingSphere() const;
+	const Math::Aabb& aabb() const;
 
 private:
 	std::string m_name;
 	Math::Sphere m_boundSphere;
+	Math::Aabb m_aabb;
 	IGraphicsMaterial *m_pMaterial;
 
-	GPUMesh *m_pGPUMesh, *m_pBoudSphereGPUMesh;
+	GPUMesh *m_pGPUMesh, *m_pBoudSphereGPUMesh, *m_pAabbGPUMesh;
 
 }; // class GraphicsModel
 

@@ -39,6 +39,7 @@ public:
 
 	Aabb computeAxisAlignedBoundingBox() const;
 	Sphere computeBoundingSphere() const;
+	void computeAabbAndBoundingSphere(Aabb& resAabb, Sphere& resBoundingSphere) const;
 
 	// »нтерпол€ци€ всех атрибутов мужду двум€ вершинами с индексами vertIndex0, vertIndex1 по coef. –езультат записываетс€ по адресу pDestVert.
 	void interpolateTwoVertices(const uint32 vertIndex0, const uint32 vertIndex1, const float coef, float *pDestVert) const;

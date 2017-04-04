@@ -8,6 +8,7 @@
 #include <renderer/IGPUBufferContainer.h>
 #include <renderer/IGPUShader.h>
 #include <renderer/IGPUFrameBuffer.h>
+#include <renderer/IGPUOcclusionQuery.h>
 
 namespace FreeWorldEngine {
 
@@ -83,6 +84,9 @@ public:
 	virtual void destroyFrameBuffer(IGPUFrameBuffer *pFrameBuffer) = 0;
 	virtual void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const = 0;
 	virtual IGPUFrameBuffer *mainFrameBuffer() const = 0;
+
+	virtual IGPUOcclusionQuery *createOcclusionQuery() = 0;
+	virtual void destroyOcclusionQuery(IGPUOcclusionQuery *pQuery) = 0;
 
 	virtual void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const = 0;
 	virtual void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const = 0;

@@ -23,6 +23,7 @@ public:
 	void paintSphere(const float radius, const uint32 numSegs);
 	void paintBox(const float lenX, const float lenY, const float lenZ);
 	void paintCube(const float len);
+	void paintQuad(const float lenX, const float lenY);
 
 private:
 	Mesh *m_pMesh;
