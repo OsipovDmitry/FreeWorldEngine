@@ -4,10 +4,10 @@
 #include "GraphicsEngine.h"
 #include "GraphicsMaterialManager.h"
 #include "GraphicsTextureManager.h"
+#include "GraphicsSceneManager.h"
 #include "ShaderManager.h"
 #include "GraphicsCamera.h"
 #include "GraphicsModel.h"
-#include "GraphicsScene.h"
 #include "GraphicsWindow.h"
 
 namespace FreeWorldEngine {
@@ -22,13 +22,12 @@ GraphicsEngine::GraphicsEngine() :
 	m_pProgramManager(new ProgramManager),
 	m_pMaterialManager(new GraphicsMaterialManager),
 	m_pTextureManager(new GraphicsTextureManager),
+	m_pSceneManager(new GraphicsSceneManager),
 	m_pCameraManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsCameras")),
 	m_pModelManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsModels")),
-	m_pSceneManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsScenes")),
 	m_pWindowManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsWindows")),
 	m_pCameraNameGenerator(new Utility::AutoNameGenerator("CameraName")),
 	m_pModelNameGenerator(new Utility::AutoNameGenerator("ModelName")),
-	m_pSceneNameGenerator(new Utility::AutoNameGenerator("SceneName")),
 	m_pWindowNameGenerator(new Utility::AutoNameGenerator("WindowName"))
 {
 }
@@ -36,13 +35,12 @@ GraphicsEngine::GraphicsEngine() :
 GraphicsEngine::~GraphicsEngine()
 {
 	delete m_pModelNameGenerator;
-	delete m_pSceneNameGenerator;
 	delete m_pWindowNameGenerator;
 	delete m_pCameraNameGenerator;
 	getCoreEngine()->destroyResourceManager(m_pWindowManager);
-	getCoreEngine()->destroyResourceManager(m_pSceneManager);
 	getCoreEngine()->destroyResourceManager(m_pModelManager);
 	getCoreEngine()->destroyResourceManager(m_pCameraManager);
+	delete m_pSceneManager;
 	delete m_pTextureManager;
 	delete m_pMaterialManager;
 	delete m_pShaderManager;
@@ -113,31 +111,9 @@ IGraphicsTextureManager *GraphicsEngine::textureManager() const
 	return m_pTextureManager;
 }
 
-IGraphicsScene *GraphicsEngine::findScene(const std::string& name) const
+IGraphicsSceneManager *GraphicsEngine::sceneManager() const
 {
-	return static_cast<IGraphicsScene*>(m_pSceneManager->findResource(name));
-}
-
-IGraphicsScene *GraphicsEngine::createScene(const std::string& name)
-{
-	const std::string resName = (name == "@utoname") ? m_pSceneNameGenerator->generateName() : name;
-	IGraphicsScene *pScene = findScene(resName);
-	if (pScene)
-		return pScene;
-
-	pScene = new GraphicsScene(resName);
-	m_pSceneManager->addResource(pScene);
-	return pScene;
-}
-
-void GraphicsEngine::destroyScene(const std::string& name)
-{
-	m_pSceneManager->destroyResource(name);
-}
-
-void GraphicsEngine::destroyScene(IGraphicsScene *pScene)
-{
-	m_pSceneManager->destroyResource(pScene->name());
+	return m_pSceneManager;
 }
 
 IGraphicsWindow *GraphicsEngine::findWindow(const std::string& name) const

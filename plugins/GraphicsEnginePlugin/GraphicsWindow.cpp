@@ -12,6 +12,7 @@
 #include "GraphicsScene.h"
 #include "GraphicsEngine.h"
 #include "GPUMesh.h"
+#include "KdTree.h"
 
 //
 #include <FreeWorldEngine.h>
@@ -36,7 +37,7 @@ GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) 
 	m_frameCounter(-1),
 	m_frameNumber(-1),
 	m_fps(-1.0f),
-	m_frustumCulling(true),
+	m_frustumCulling(false),
 	m_renderSpheres(false),
 	m_renderNodeBoxes(false)
 {
@@ -194,27 +195,42 @@ void GraphicsWindow::renderCallBack(IWindow *pWindow)
 	pThis->m_renderData.clear();
 
 	while (!sceneNodes.empty()) {
-		GraphicsSceneNode *pNode = sceneNodes.front();
+		GraphicsSceneNode *pSceneNode = sceneNodes.front();
 		sceneNodes.pop_front();
 
-		if (pThis->m_frustumCulling && !Math::geomInFrustum(frustum, pNode->boundingBox()))
-			continue;
+		const glm::mat4x4& nodeWorldTransformation = pSceneNode->worldTransformation();
 
-		for (uint32 i = 0; i < pNode->numChildren(); ++i)
-			sceneNodes.push_back(static_cast<GraphicsSceneNode*>(pNode->childAt(i)));
+		std::list<KdNode*> treeNodes;
+		treeNodes.push_back(pSceneNode->kdTree()->rootNode());
+		while (!treeNodes.empty()) {
+			KdNode *pTreeNode = treeNodes.front();
+			treeNodes.pop_front();
 
-		if (pThis->m_renderNodeBoxes)
-			pThis->m_renderData.insert(std::make_pair(
-				static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pNode->gpuMeshAabb(), glm::mat4x4())));
+			if (!pTreeNode)
+				continue;
 
-		GraphicsModel *pModel = static_cast<GraphicsModel*>(pNode->model());
+			if (pThis->m_frustumCulling && !Math::geomInFrustum(frustum, pTreeNode->worldBoundingBox(nodeWorldTransformation)))
+				continue;
+
+			const KdNode::SceneNodesList& treeNodeSceneNodes = pTreeNode->sceneNodes();
+			std::copy(treeNodeSceneNodes.cbegin(), treeNodeSceneNodes.cend(), std::back_inserter(sceneNodes));
+
+			treeNodes.push_back(pTreeNode->firstChild());
+			treeNodes.push_back(pTreeNode->secondChild());
+
+			if (pThis->m_renderNodeBoxes)
+				pThis->m_renderData.insert(std::make_pair(
+					static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pTreeNode->boundingBoxGpuMesh(), glm::mat4x4())));
+		}
+
+		GraphicsModel *pModel = static_cast<GraphicsModel*>(pSceneNode->model());
 		if (!pModel)
 			continue;
 
 		if (pThis->m_frustumCulling) {
-			const Math::Sphere& boundSphere = pModel->boundingSphere();
-			glm::vec4 newSpherePos = pNode->worldTransformation() * glm::vec4(boundSphere.x, boundSphere.y, boundSphere.z, 1.0f);
-			Math::Sphere nodeBoundSphere(newSpherePos.x, newSpherePos.y, newSpherePos.z, boundSphere.w);
+			const Math::Sphere& modelBoundSphere = pModel->boundingSphere();
+			glm::vec4 newSpherePos = nodeWorldTransformation * glm::vec4(modelBoundSphere.x, modelBoundSphere.y, modelBoundSphere.z, 1.0f);
+			Math::Sphere nodeBoundSphere(newSpherePos.x, newSpherePos.y, newSpherePos.z, modelBoundSphere.w);
 
 			if (!Math::geomInFrustum(frustum, nodeBoundSphere))
 				continue;
@@ -223,11 +239,11 @@ void GraphicsWindow::renderCallBack(IWindow *pWindow)
 		++numDips;
 
 		pThis->m_renderData.insert(std::make_pair(
-			static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), pNode->worldTransformation())));
+			static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), nodeWorldTransformation)));
 	
 		if (pThis->m_renderSpheres)
 			pThis->m_renderData.insert(std::make_pair(
-				static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMeshBoundSphere(), pNode->worldTransformation())));
+				static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMeshBoundSphere(), nodeWorldTransformation)));
 	}
 
 	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.3f, 0.3f, 0.3f, 1.0f);
@@ -243,8 +259,7 @@ void GraphicsWindow::renderCallBack(IWindow *pWindow)
 		pThis->renderData(beginIterator->first->tag(), beginIterator, endIterator);
 	}
 	
-	//getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        FPS: " + std::to_string(pThis->fps()));
-
+	getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        FPS: " + std::to_string(pThis->fps()));
 }
 
 void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow *pWindow)

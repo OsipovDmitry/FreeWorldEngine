@@ -24,6 +24,7 @@ public:
 	virtual void setPosition(const glm::vec3& pos) = 0;
 	virtual glm::quat orientation() = 0;
 	virtual void setOrientation(const glm::quat& orient) = 0;
+	virtual const glm::mat4x4& localTransformation() const = 0;
 	virtual const glm::mat4x4& worldTransformation() const = 0;
 
 	virtual IGraphicsSceneNode *createChild() = 0;

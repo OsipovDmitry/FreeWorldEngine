@@ -27,6 +27,7 @@
 #include "graphics_engine/IGraphicsTextureManager.h"
 #include "graphics_engine/IGraphicsTexture.h"
 #include "graphics_engine/IGraphicsScene.h"
+#include "graphics_engine/IGraphicsSceneManager.h"
 #include "graphics_engine/IGraphicsWindow.h"
 
 #include "Types.h"

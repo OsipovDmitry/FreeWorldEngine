@@ -9,11 +9,12 @@ set(INTERFACE_HEADERS
 	../../include/graphics_engine/IGraphicsCamera.h
 	../../include/graphics_engine/IGraphicsModel.h
 	../../include/graphics_engine/IGraphicsMaterial.h
+	../../include/graphics_engine/IGraphicsMaterialManager.h
 	../../include/graphics_engine/IGraphicsTexture.h
 	../../include/graphics_engine/IGraphicsTextureManager.h
 	../../include/graphics_engine/IGraphicsScene.h
-	../../include/graphics_engine/IGraphicsWindow.h
-	../../include/graphics_engine/IGraphicsMaterialManager.h)
+	../../include/graphics_engine/IGraphicsSceneManager.h
+	../../include/graphics_engine/IGraphicsWindow.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
@@ -23,12 +24,14 @@ set(HEADERS
 	GraphicsModel.h
 	GraphicsMaterial.h
 	GraphicsScene.h
+	GraphicsSceneManager.h
 	GraphicsWindow.h
 	GraphicsMaterialManager.h
 	GraphicsTexture.h
 	GraphicsTextureManager.h
 	ShaderManager.h
 	GPUMesh.h
+	KdTree.h
 	GraphicsEnginePlugin.h)
 
 set(SOURCES
@@ -37,12 +40,14 @@ set(SOURCES
 	GraphicsModel.cpp
 	GraphicsMaterial.cpp
 	GraphicsScene.cpp
+	GraphicsSceneManager.cpp
 	GraphicsWindow.cpp
 	GraphicsMaterialManager.cpp
 	GraphicsTexture.cpp
 	GraphicsTextureManager.cpp
 	ShaderManager.cpp
 	GPUMesh.cpp
+	KdTree.cpp
 	GraphicsEnginePlugin.cpp
 	main.cpp)
 

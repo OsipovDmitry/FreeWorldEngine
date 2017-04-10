@@ -16,7 +16,7 @@ add_subdirectory(utility)
 add_subdirectory(math)
 add_subdirectory(core)
 add_subdirectory(plugins)
-add_subdirectory(demo)
+#add_subdirectory(demo)
 add_subdirectory(demo2)
 
 if (FWE_TESTS)

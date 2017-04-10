@@ -15,10 +15,10 @@ namespace GraphicsEngine {
 
 class IGraphicsMaterialManager;
 class IGraphicsTextureManager;
+class IGraphicsSceneManager;
 
 class IGraphicsCamera;
 class IGraphicsModel;
-class IGraphicsScene;
 class IGraphicsWindow;
 
 class IGraphicsEngine {
@@ -37,11 +37,7 @@ public:
 
 	virtual IGraphicsMaterialManager *materialManager() const = 0;
 	virtual IGraphicsTextureManager *textureManager() const = 0;
-
-	virtual IGraphicsScene *findScene(const std::string& name) const = 0;
-	virtual IGraphicsScene *createScene(const std::string& name = "@utoname") = 0;
-	virtual void destroyScene(const std::string& name) = 0;
-	virtual void destroyScene(IGraphicsScene *pScene) = 0;
+	virtual IGraphicsSceneManager *sceneManager() const = 0;
 
 	virtual IGraphicsWindow *findWindow(const std::string& name) const = 0;
 	virtual IGraphicsWindow *createWindow(IWindow *pTargetWindow, const std::string& name = "@utoname") = 0;

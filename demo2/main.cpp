@@ -47,8 +47,8 @@ void update(uint32 time, uint32 dt, IWindow*) {
 	pRenderCamera->setOrientation(glm::mat3x3(glm::rotate(glm::mat4x4(), cam_lat, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4x4(), cam_long, glm::vec3(0.0f, 1.0f, 0.0f))));
 	pRenderCamera->setPosition(cam_pos);
 
-	pNode01->setOrientation(glm::quat(glm::vec3(0.0f, 0.0f, -glm::pi<float>()*0.2f*time*0.001f)));
-	pNode02->setOrientation(glm::quat(glm::vec3(0.0f, glm::pi<float>()*0.1f*time*0.001f, 0.0f)));
+	//pNode01->setOrientation(glm::quat(glm::vec3(0.0f, 0.0f, -glm::pi<float>()*0.2f*time*0.001f)));
+	//pNode02->setOrientation(glm::quat(glm::vec3(0.0f, glm::pi<float>()*0.1f*time*0.001f, 0.0f)));
 }
 
 int main() {
@@ -125,13 +125,13 @@ int main() {
 	quadMesh.destroyTarget();
 
 
-	IGraphicsScene *pRenderScene = pGraphics->createScene();
+	IGraphicsScene *pRenderScene = pGraphics->sceneManager()->createScene();
 	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
 
 	int32 s1 = Utility::DateTime::current().time.seconds;
 
-	/*const int c_n = 7;
-	const float c_coef = 30.0f;
+	const int c_n = 7;
+	const float c_coef = 60.0f;
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int y = -c_n; y <= c_n; ++y) {
 			if (y == 0)
@@ -144,6 +144,7 @@ int main() {
 			}
 		}
 
+	/*
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int x = -c_n; x <= c_n; ++x) {
 			IGraphicsSceneNode *pNode = pRootNode->createChild();
@@ -151,9 +152,9 @@ int main() {
 			pNode->setOrientation(glm::quat(glm::vec3(0.0f, random(0.0f, glm::pi<float>()), 0.0f)));
 			pNode->setPosition(glm::vec3(x + random(-0.2f, 0.2f), 0.0f, z + random(-0.2f, 0.2f)) * c_coef);
 		}
-		*/
+	*/
 
-	float c_step = 25.0f;
+	/*float c_step = 25.0f;
 	pNode01 = pRootNode->createChild();
 	pNode01->setPosition(glm::vec3(6.0f, -1.0f, -4.0f)*c_step);
 
@@ -188,7 +189,7 @@ int main() {
 	pNode023 = pNode02->createChild();
 	pNode023->setPosition(glm::vec3(0.0f, 0.0f, 0.5f) * c_step);
 	pNode023->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
-	pNode023->setModel(pRenderModel2);
+	pNode023->setModel(pRenderModel2);*/
 		
 	s1 = Utility::DateTime::current().time.seconds - s1;
 	if (s1 < 0)
