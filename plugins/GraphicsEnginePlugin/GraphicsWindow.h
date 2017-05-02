@@ -52,7 +52,7 @@ private:
 	uint32 m_lastFpsTime;
 	int32 m_frameCounter;
 
-	bool m_frustumCulling, m_renderSpheres, m_renderNodeBoxes;
+	bool m_frustumCulling, m_renderSpheres, m_renderKdNodesBoxes;
 
 	typedef std::multimap<GraphicsMaterial*, ModelRenderData, GraphicsMaterial::Comparator> RenderDataContainer;
 	RenderDataContainer m_renderData;

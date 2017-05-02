@@ -127,10 +127,16 @@ int main() {
 
 	IGraphicsScene *pRenderScene = pGraphics->sceneManager()->createScene();
 	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
+	pRootNode->setModel(pRenderModel);
 
+	/*IGraphicsSceneNode *pNode = pRenderScene->createNode();
+	pNode->setModel(pRenderModel);
+	pNode->setPosition(glm::vec3(20, 0, 0));
+	pRootNode->attachChild(pNode);
+	*/
 	int32 s1 = Utility::DateTime::current().time.seconds;
 
-	const int c_n = 7;
+	/*const int c_n = 7;
 	const float c_coef = 60.0f;
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int y = -c_n; y <= c_n; ++y) {
@@ -144,7 +150,7 @@ int main() {
 			}
 		}
 
-	/*
+	
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int x = -c_n; x <= c_n; ++x) {
 			IGraphicsSceneNode *pNode = pRootNode->createChild();

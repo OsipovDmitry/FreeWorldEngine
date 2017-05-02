@@ -60,21 +60,25 @@ void GPUMesh::setMesh(Mesh *pMesh)
 	if (!m_pVertexBuffer)
 		m_pVertexBuffer = pGPURenderer->createBuffer(verticesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StreamDraw, pMesh ? pMesh->pVertexData : nullptr);
 	else {
-		m_pVertexBuffer->resize(verticesSize);
-		void *pVerties = m_pVertexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
-		if (pMesh)
-			memcpy(pVerties, pMesh->pVertexData, verticesSize);
-		m_pVertexBuffer->unmap();
+		//m_pVertexBuffer->resize(verticesSize);
+		pGPURenderer->destroyBuffer(m_pVertexBuffer);
+		m_pVertexBuffer = pGPURenderer->createBuffer(verticesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StreamDraw, pMesh ? pMesh->pVertexData : nullptr);
+		//void *pVerties = m_pVertexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
+		//if (pMesh)
+			//memcpy(pVerties, pMesh->pVertexData, verticesSize);
+		//m_pVertexBuffer->unmap();
 	}
 
 	if (!m_pIndexBuffer)
 		m_pIndexBuffer = pGPURenderer->createBuffer(indicesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StreamDraw, pMesh ? pMesh->pIndexData : nullptr);
 	else {
-		m_pIndexBuffer->resize(indicesSize);
-		void *pIndices = m_pIndexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
-		if (pMesh)
-			memcpy(pIndices, pMesh->pIndexData, indicesSize);
-		m_pIndexBuffer->unmap();
+		//m_pIndexBuffer->resize(indicesSize);
+		pGPURenderer->destroyBuffer(m_pIndexBuffer);
+		m_pIndexBuffer = pGPURenderer->createBuffer(indicesSize, Renderer::IGPUBuffer::IGPUBufferUsage_StreamDraw, pMesh ? pMesh->pIndexData : nullptr);
+		//void *pIndices = m_pIndexBuffer->map(Renderer::IGPUBuffer::IGPUBufferAccess_WriteOnly);
+		//if (pMesh)
+			//memcpy(pIndices, pMesh->pIndexData, indicesSize);
+		//m_pIndexBuffer->unmap();
 	}
 
 	if (m_pVertexArray)

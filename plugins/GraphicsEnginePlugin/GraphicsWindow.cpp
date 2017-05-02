@@ -39,7 +39,7 @@ GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) 
 	m_fps(-1.0f),
 	m_frustumCulling(false),
 	m_renderSpheres(false),
-	m_renderNodeBoxes(false)
+	m_renderKdNodesBoxes(false)
 {
 	m_pTargetWindow->registerResizeCallBack(GraphicsWindow::resizeCallBack);
 	m_pTargetWindow->registerRenderCallBack(GraphicsWindow::renderCallBack);
@@ -118,7 +118,7 @@ void GraphicsWindow::switchRenderSpheres()
 
 void GraphicsWindow::switchRenderNodeBoxes()
 {
-	m_renderNodeBoxes = !m_renderNodeBoxes;
+	m_renderKdNodesBoxes = !m_renderKdNodesBoxes;
 }
 
 void GraphicsWindow::renderSolid(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
@@ -183,67 +183,48 @@ void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow
 void GraphicsWindow::renderCallBack(IWindow *pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
-	IGraphicsScene *pScene = pThis->m_pScene;
+	GraphicsScene *pScene = static_cast<GraphicsScene*>(pThis->m_pScene);
 	IGraphicsCamera *pCamera = pThis->m_pCamera;
 	const Math::Frustum& frustum = pCamera->frustum();
 	IGraphicsMaterial *pColorMaterial = pGraphicsEngine->materialManager()->findMaterial("ColorMaterial");
 
-	std::list<GraphicsSceneNode*> sceneNodes;
-	sceneNodes.push_back(static_cast<GraphicsSceneNode*>(pScene->rootNode()));
+	std::list<KdNode*> kdNodes;
+	if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pScene->kdTree()->rootNode()->boundingBox()))
+		kdNodes.push_back(pScene->kdTree()->rootNode());
 
 	uint32 numDips = 0;
 	pThis->m_renderData.clear();
 
-	while (!sceneNodes.empty()) {
-		GraphicsSceneNode *pSceneNode = sceneNodes.front();
-		sceneNodes.pop_front();
+	while (!kdNodes.empty()) {
+		KdNode *pTreeNode = kdNodes.front();
+		kdNodes.pop_front();
 
-		const glm::mat4x4& nodeWorldTransformation = pSceneNode->worldTransformation();
+		if (!pTreeNode->isLeaf()) {
+			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pTreeNode->firstChild()->boundingBox()))
+				kdNodes.push_back(pTreeNode->firstChild());
+			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pTreeNode->secondChild()->boundingBox()))
+				kdNodes.push_back(pTreeNode->secondChild());
+		}
 
-		std::list<KdNode*> treeNodes;
-		treeNodes.push_back(pSceneNode->kdTree()->rootNode());
-		while (!treeNodes.empty()) {
-			KdNode *pTreeNode = treeNodes.front();
-			treeNodes.pop_front();
+		for (const auto& it : pTreeNode->sceneNodes())
+			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, it->worldBoundingSphere())) {
+				GraphicsModel *pModel = static_cast<GraphicsModel*>(it->model());
+				if (!pModel)
+					continue;
 
-			if (!pTreeNode)
-				continue;
+				++numDips;
 
-			if (pThis->m_frustumCulling && !Math::geomInFrustum(frustum, pTreeNode->worldBoundingBox(nodeWorldTransformation)))
-				continue;
-
-			const KdNode::SceneNodesList& treeNodeSceneNodes = pTreeNode->sceneNodes();
-			std::copy(treeNodeSceneNodes.cbegin(), treeNodeSceneNodes.cend(), std::back_inserter(sceneNodes));
-
-			treeNodes.push_back(pTreeNode->firstChild());
-			treeNodes.push_back(pTreeNode->secondChild());
-
-			if (pThis->m_renderNodeBoxes)
 				pThis->m_renderData.insert(std::make_pair(
-					static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pTreeNode->boundingBoxGpuMesh(), glm::mat4x4())));
-		}
+					static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), it->worldTransformation())));
 
-		GraphicsModel *pModel = static_cast<GraphicsModel*>(pSceneNode->model());
-		if (!pModel)
-			continue;
+				if (pThis->m_renderSpheres)
+					pThis->m_renderData.insert(std::make_pair(
+						static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pModel->gpuMeshBoundSphere(), it->worldTransformation())));
+			}
 
-		if (pThis->m_frustumCulling) {
-			const Math::Sphere& modelBoundSphere = pModel->boundingSphere();
-			glm::vec4 newSpherePos = nodeWorldTransformation * glm::vec4(modelBoundSphere.x, modelBoundSphere.y, modelBoundSphere.z, 1.0f);
-			Math::Sphere nodeBoundSphere(newSpherePos.x, newSpherePos.y, newSpherePos.z, modelBoundSphere.w);
-
-			if (!Math::geomInFrustum(frustum, nodeBoundSphere))
-				continue;
-		}
-
-		++numDips;
-
-		pThis->m_renderData.insert(std::make_pair(
-			static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), nodeWorldTransformation)));
-	
-		if (pThis->m_renderSpheres)
+		if (pThis->m_renderKdNodesBoxes)
 			pThis->m_renderData.insert(std::make_pair(
-				static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMeshBoundSphere(), nodeWorldTransformation)));
+				static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pTreeNode->boundingBoxGpuMesh(), glm::mat4x4())));
 	}
 
 	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.3f, 0.3f, 0.3f, 1.0f);

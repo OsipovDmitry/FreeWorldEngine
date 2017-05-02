@@ -1,6 +1,8 @@
 #ifndef __MATHUTILS__
 #define __MATHUTILS__
 
+#include <3rdparty/glm/gtx/component_wise.hpp>
+
 #include "../Types.h"
 #include "MathTypes.h"
 
@@ -34,6 +36,10 @@ inline void interpolate(const T1& v0, const T1& v1, const T2& coef, T1& result) 
 
 // Построить плоскость по трем точкам.
 Plane buildPlane(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
+
+inline Aabb buildEmptyBoundingBox() {
+	return Aabb(glm::vec3(FLT_MAX), glm::vec3(-FLT_MAX));
+}
 
 // Расстояние от точки до плоскости со знаком.
 inline float distToPlane(const Plane& plane, const glm::vec3& v) {
@@ -80,7 +86,8 @@ void cutLine(glm::vec3 **verts, const Plane& plane, float &resultCoef);
 // Если в три из трех, то треугольник резать не нужно. Он лежит либо на плоскости, либо по одну сторону от плоскости
 void cutTriangle(glm::vec3 **verts, const Plane& plane, float &resultCoef01, float &resultCoef12, float &resultCoef20);
 
-
+// Проверка на попадание ограничивающего тела внутрь фрустума.
+// Для типа Т должна существовать функция ClassifyPlane classifyRelativePlane(const Plane&, const T&).
 template <class T>
 inline bool geomInFrustum(const Frustum& frustum, const T& geom) {
 	for (int32 i = 0; i < 6; ++i)
@@ -89,6 +96,29 @@ inline bool geomInFrustum(const Frustum& frustum, const T& geom) {
 	return true;
 }
 
+// Объединение двух Aabb
+inline Aabb mergeBoundingBoxes(const Aabb& box1, const Aabb& box2) {
+	return Aabb(
+		glm::vec3(glm::min(box1.vMin.x, box2.vMin.x), glm::min(box1.vMin.y, box2.vMin.y), glm::min(box1.vMin.z, box2.vMin.z)),
+		glm::vec3(glm::max(box1.vMax.x, box2.vMax.x), glm::max(box1.vMax.y, box2.vMax.y), glm::max(box1.vMax.z, box2.vMax.z))
+	);
+}
+
+// Находится box2 внутри box1?
+inline bool containsBoundingBox(const Aabb& box1, const Aabb& box2) {
+	return
+		(box1.vMin.x <= box2.vMin.x) &&
+		(box1.vMin.y <= box2.vMin.y) &&
+		(box1.vMin.z <= box2.vMin.z) &&
+		(box1.vMax.x >= box2.vMax.x) &&
+		(box1.vMax.y >= box2.vMax.y) &&
+		(box1.vMax.z >= box2.vMax.z);
+}
+
+// Объем Aabb
+inline float volumeBoundingBox(const Aabb& box1) {
+	return glm::compMul(box1.vMax - box1.vMin);
+}
 
 } // namespace
 } // namespace
