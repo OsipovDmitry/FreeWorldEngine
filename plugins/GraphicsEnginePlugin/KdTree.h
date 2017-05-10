@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <math/MathTypes.h>
+#include <math/MathUtils.h>
 
 namespace FreeWorldEngine {
 
@@ -21,7 +21,6 @@ public:
 	~KdNode();
 
 	void clear();
-	void build(const GraphicsSceneNode* pNode);
 
 	inline KdNode *firstChild() const { return m_childNodes[0]; }
 	inline KdNode *secondChild() const { return m_childNodes[1]; }
@@ -45,7 +44,7 @@ private:
 
 	void rebuild();
 	void updateBoundingBox(const Math::Aabb& newChildBox);
-	void buildRecursive(const SceneNodesList& sceneNodesList);
+	void buildRecursive(SceneNodesList& sceneNodesList, const Math::Aabb& boundingBox = Math::buildEmptyBoundingBox());
 	KdNode *findDeepestCoveringNode(const Math::Aabb& boundBox);
 
 	friend class KdTree;

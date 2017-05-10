@@ -45,8 +45,8 @@ public:
 	void setFrameBuffer(const IGPUFrameBuffer *pFrameBuffer, const uint32 numDrawBuffers = 1) const;
 	IGPUFrameBuffer *mainFrameBuffer() const;
 
-	IGPUOcclusionQuery *createOcclusionQuery();
-	void destroyOcclusionQuery(IGPUOcclusionQuery *pQuery);
+	//IGPUOcclusionQuery *createOcclusionQuery();
+	//void destroyOcclusionQuery(IGPUOcclusionQuery *pQuery);
 
 	void renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const;
 	void renderIndexedGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const Type indicesType, const uint32 numIndices, const uint32 offset = 0) const;
@@ -78,11 +78,16 @@ public:
 	void bindRenderBuffer(const GLRenderBuffer *pRenderBuffer) const;
 	void bindFrameBuffer(const GLFrameBuffer *pFrameBuffer) const;
 
+	void deleteBufferFromCache(const GLBuffer *pBuffer) const;
+
 	static GLenum GLPrimitiveFormat(PrimitiveFormat primitiveFormat);
 	static GLenum GLType(Type type);
 	static GLenum GLDepthTestFunc(DepthTestFunc func);
 	static GLenum GLBlendFunc(BlendFunc func);
 	static GLenum GLBlendEquation(BlendEquation func);
+
+	static GLenum GLBufferTarget(int32 bufferIdx, uint32& bindingPoint);
+	static int32 bufferCacheIndex(GLenum GLBufferTarget, uint32 bindingPoint);
 
 private:
 	static const uint32 TEXTURE_UNITS_COUNT = 16;

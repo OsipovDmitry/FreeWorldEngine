@@ -43,7 +43,7 @@ public:
 	virtual ~IGraphicsScene() {}
 	
 	virtual IGraphicsSceneNode *rootNode() const = 0;
-	virtual IGraphicsSceneNode *createNode(IGraphicsSceneNode *pParentNode, const glm::vec3& pos = glm::vec3(), const glm::quat& orient = glm::quat(), IGraphicsModel *pModel = nullptr) = 0;
+	virtual IGraphicsSceneNode *createNode() = 0;
 	virtual void destroyNode(IGraphicsSceneNode *pNode) = 0;
 
 }; // class IGraphicsModel

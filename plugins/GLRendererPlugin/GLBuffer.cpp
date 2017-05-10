@@ -39,7 +39,7 @@ void GLBuffer::resize(uint64 newSize, IGPUBufferUsage usage)
 		if (usage == IGPUBuffer::IGPUBufferUsage_OldValue)
 			glGetBufferParameteriv(GL_COPY_READ_BUFFER, GL_BUFFER_USAGE, (GLint*)&newGLUsage);
 		else {
-			newGLUsage = toGLUsage(usage);
+			newGLUsage = GLUsage(usage);
 			if (!newGLUsage)
 				newGLUsage = GL_STATIC_DRAW;
 		}
@@ -88,7 +88,7 @@ GLuint GLBuffer::GLid() const
 	return m_id;
 }
 
-GLenum GLBuffer::toGLUsage(IGPUBufferUsage usage)
+GLenum GLBuffer::GLUsage(IGPUBufferUsage usage)
 {
 	switch (usage) {
 	case IGPUBufferUsage_StreamDraw: return GL_STREAM_DRAW;

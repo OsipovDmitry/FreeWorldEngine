@@ -2,7 +2,6 @@
 
 #include <math/MeshWrapper.h>
 #include <math/MeshPainter.h>
-#include <math/MathUtils.h>
 
 #include "KdTree.h"
 #include "GPUMesh.h"
@@ -36,6 +35,7 @@ void KdNode::clear()
 		delete m_childNodes[0];
 		m_childNodes[0] = nullptr;
 	}
+
 	if (m_childNodes[1]) {
 		m_childNodes[1]->clear();
 		delete m_childNodes[1];
@@ -44,17 +44,9 @@ void KdNode::clear()
 	
 	m_pBoundingBoxGpuMesh->setMesh(nullptr);
 	m_boundingBox = Math::buildEmptyBoundingBox();
+	
+	std::for_each(m_sceneNodes.begin(), m_sceneNodes.end(), std::bind2nd(std::mem_fun(&GraphicsSceneNode::setKdNode), nullptr));
 	m_sceneNodes.clear();
-}
-
-void KdNode::build(const GraphicsSceneNode* pNode)
-{
-	/*SceneNodesList list;
-	list.reserve(pNode->m_childNodes.size());
-	std::copy(pNode->m_childNodes.cbegin(), pNode->m_childNodes.cend(), std::back_inserter(list));
-	buildRecursive(list, pNode->worldTransformation(), static_cast<GraphicsModel*>(pNode->model()));
-
-	pNode->updateBoundingBoxRecursiveUp();*/
 }
 
 const KdNode::SceneNodesList& KdNode::sceneNodes() const
@@ -131,63 +123,85 @@ void KdNode::updateBoundingBox(const Math::Aabb& newChildBox)
 	}
 }
 
-void KdNode::buildRecursive(const SceneNodesList& sceneNodesList)
+void KdNode::buildRecursive(SceneNodesList& sceneNodesList, const Math::Aabb& boundingBox)
 {
 	clear();
 
-	if (sceneNodesList.empty())
+	uint32 numSceneNodes = sceneNodesList.size();
+
+	if (!numSceneNodes)
 		return;
 
-	std::vector<Math::Aabb> boxes;
-	int32 numBoxes = sceneNodesList.size() / 2;
-	boxes.resize(numBoxes);
-	for (int32 i = 0; i < numBoxes; ++i)
-		boxes[i] = Math::mergeBoundingBoxes(sceneNodesList[2*i+0]->worldBoundingBox(), sceneNodesList[2*i+1]->worldBoundingBox());
-	if (sceneNodesList.size() % 2)
-		boxes[0] = numBoxes ? 
-		Math::mergeBoundingBoxes(boxes[0], sceneNodesList.back()->worldBoundingBox()) :
-		sceneNodesList.back()->worldBoundingBox();
-	while (numBoxes > 1) {
-		if (numBoxes%2)
-			boxes[0] = Math::mergeBoundingBoxes(boxes[0], boxes.back());
-		numBoxes /= 2;
+	if (Math::isEmptyBoundingBox(boundingBox)) {
+		std::vector<Math::Aabb> boxes;
+		int32 numBoxes = numSceneNodes / 2;
+		boxes.resize(numBoxes + 1);
 		for (int32 i = 0; i < numBoxes; ++i)
-			boxes[i] = Math::mergeBoundingBoxes(boxes[2*i+0], boxes[2*i+1]);
+			boxes[i] = Math::mergeBoundingBoxes(sceneNodesList[2 * i + 0]->worldBoundingBox(), sceneNodesList[2 * i + 1]->worldBoundingBox());
+		if (numSceneNodes % 2)
+			boxes[0] = numBoxes ?
+			Math::mergeBoundingBoxes(boxes[0], sceneNodesList.back()->worldBoundingBox()) :
+			sceneNodesList.back()->worldBoundingBox();
+		while (numBoxes > 1) {
+			if (numBoxes % 2)
+				boxes[0] = Math::mergeBoundingBoxes(boxes[0], boxes.back());
+			numBoxes /= 2;
+			for (int32 i = 0; i < numBoxes; ++i)
+				boxes[i] = Math::mergeBoundingBoxes(boxes[2 * i + 0], boxes[2 * i + 1]);
+		}
+		m_boundingBox = boxes[0];
+	}
+	else
+		m_boundingBox = boundingBox;
+
+	if (numSceneNodes > s_maxSceneNodeInKdNode) {
+		const glm::vec3 worldBoxSize(m_boundingBox.vMax - m_boundingBox.vMin);
+		if (worldBoxSize.x <= glm::epsilon<float>() || worldBoxSize.y <= glm::epsilon<float>() || worldBoxSize.z <= glm::epsilon<float>())
+			return;
+
+		int32 mainAxis = (worldBoxSize[1] > worldBoxSize[0]) ? 1 : 0;
+		if (worldBoxSize[2] > worldBoxSize[mainAxis]) mainAxis = 2;
+
+		std::vector<float> dists(numSceneNodes);
+		for (uint32 i = 0; i < numSceneNodes; ++i)
+			dists[i] = sceneNodesList[i]->worldBoundingSphere()[mainAxis];
+		std::sort(dists.begin(), dists.end());
+		auto last = std::unique(dists.begin(), dists.end());
+		if (last != dists.end())
+			dists.erase(last, dists.end());
+		float dist = dists[dists.size() / 2];
+		Math::Plane splitPlane(0.0f, 0.0f, 0.0f, -dist);
+		splitPlane[mainAxis] = 1.0f;
+
+		SceneNodesList backList, frontList, thisList;
+		for (const auto& it : sceneNodesList) {
+			Math::ClassifyPlane classify = Math::classifyRelativePlane(splitPlane, it->worldBoundingBox());
+			if (classify == Math::ClassifyPlane_Front)
+				frontList.push_back(it);
+			else if (classify == Math::ClassifyPlane_Back)
+				backList.push_back(it);
+			else
+				thisList.push_back(it);
+		}
+
+		Math::Aabb backBox = m_boundingBox, frontBox = m_boundingBox;
+		backBox.vMin[mainAxis] = dist;
+		frontBox.vMax[mainAxis] = dist;
+
+		m_sceneNodes.swap(thisList);
+		
+		if (!backList.empty() || !frontList.empty()) {
+			m_childNodes[0] = new KdNode(this);
+			m_childNodes[0]->buildRecursive(backList, backBox);
+			m_childNodes[1] = new KdNode(this);
+			m_childNodes[1]->buildRecursive(frontList, frontBox);
+		}
+	}
+	else {
+		m_sceneNodes.swap(sceneNodesList);
 	}
 
-	const glm::vec3 worldBoxSize(boxes[0].vMax - boxes[0].vMin);
-	const glm::vec3 worldBoxPos(0.5f * (boxes[0].vMax + boxes[0].vMin));
-
-	if (worldBoxSize.x <= glm::epsilon<float>() || worldBoxSize.y <= glm::epsilon<float>() || worldBoxSize.z <= glm::epsilon<float>())
-		return;
-
-	int32 mainAxis = (worldBoxSize[1] > worldBoxSize[0]) ? 1 : 0;
-	if (worldBoxSize[2] > worldBoxSize[mainAxis]) mainAxis = 2;
-
-	Math::Plane splitPlane(0.0f, 0.0f, 0.0f, -worldBoxPos[mainAxis]);
-	splitPlane[mainAxis] = (worldBoxPos[mainAxis] >= 0.0f) ? 1.0f : -1.0f;
-	
-	SceneNodesList backList, frontList, thisList;
-	for (const auto& it : sceneNodesList) {
-		Math::ClassifyPlane classify = Math::classifyRelativePlane(splitPlane, it->worldBoundingBox());
-		if (classify == Math::ClassifyPlane_Front)
-			frontList.push_back(it);
-		else if (classify == Math::ClassifyPlane_Back)
-			backList.push_back(it);
-		else
-			thisList.push_back(it);
-	}
-
-	m_boundingBox = boxes[0];
-	m_sceneNodes.swap(thisList);
 	std::for_each(m_sceneNodes.begin(), m_sceneNodes.end(), std::bind2nd(std::mem_fun(&GraphicsSceneNode::setKdNode), this));
-
-	if (!backList.empty() || !frontList.empty()) {
-		m_childNodes[0] = new KdNode(this);
-		m_childNodes[0]->buildRecursive(backList);
-		m_childNodes[1] = new KdNode(this);
-		m_childNodes[1]->buildRecursive(frontList);
-	}
 
 	Mesh aabbMesh;
 	Math::MeshWrapper aabbWrapper(&aabbMesh);
@@ -230,10 +244,11 @@ KdNode *KdTree::rootNode() const
 void KdTree::reinsertSceneNode(GraphicsSceneNode *pSceneNode)
 {
 	KdNode *pNode = m_pRootNode->findDeepestCoveringNode(pSceneNode->worldBoundingBox());
-	if (!pNode)
-		pNode = m_pRootNode;
-	
-	if (pNode != pSceneNode->kdNode()) {
+
+	if (pNode != pSceneNode->kdNode() || !pNode) {
+		if (!pNode)
+			pNode = m_pRootNode;
+
 		removeSceneNode(pSceneNode);
 		pNode->insertSceneNode(pSceneNode);
 	}

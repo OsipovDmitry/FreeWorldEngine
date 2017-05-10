@@ -15,7 +15,7 @@ float cam_lat = 0, cam_long = 0;
 glm::vec3 cam_pos(0.0f, 0.0f, 0.0f);
 std::string errorLog;
 
-IGraphicsSceneNode *pNode01, *pNode02, *pNode011, *pNode012, *pNode013, *pNode021, *pNode022, *pNode023;
+IGraphicsSceneNode *pNode01, *pNode02, *pNode011, *pNode012, *pNode013, *pNode014, *pNode021, *pNode022, *pNode023, *pNode024;
 
 float random(float a = 0.0f, float b = 1.0f) {
 	return a + (b - a) * (float)rand() / (float)(RAND_MAX-1);
@@ -47,8 +47,17 @@ void update(uint32 time, uint32 dt, IWindow*) {
 	pRenderCamera->setOrientation(glm::mat3x3(glm::rotate(glm::mat4x4(), cam_lat, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4x4(), cam_long, glm::vec3(0.0f, 1.0f, 0.0f))));
 	pRenderCamera->setPosition(cam_pos);
 
-	//pNode01->setOrientation(glm::quat(glm::vec3(0.0f, 0.0f, -glm::pi<float>()*0.2f*time*0.001f)));
-	//pNode02->setOrientation(glm::quat(glm::vec3(0.0f, glm::pi<float>()*0.1f*time*0.001f, 0.0f)));
+	pNode01->setOrientation(glm::quat(glm::vec3(0.0f, 0.0f, -glm::pi<float>()*0.2f*time*0.001f)));
+	pNode02->setOrientation(glm::quat(glm::vec3(0.0f, glm::pi<float>()*0.1f*time*0.001f, 0.0f)));
+}
+
+void keyDown(IWindow::KeyCode keyCode, IWindow*)
+{
+	if (keyCode == IWindow::KeyCode_0) {
+		glm::vec3 p = pNode01->position();
+		p.x += 0.1f;
+		pNode01->setPosition(p);
+	}
 }
 
 int main() {
@@ -57,6 +66,7 @@ int main() {
 	pCore->initialize();
 
 	pCore->mainWindow()->registerUpdateCallBack(update);
+	pCore->mainWindow()->registerKeyDownCallBack(keyDown);
 
 	IImage *pImg = pCore->imageLoader()->load("mi24.jpg");
 	IImage *pImg2 = pCore->imageLoader()->load("c300.jpg");
@@ -127,9 +137,15 @@ int main() {
 
 	IGraphicsScene *pRenderScene = pGraphics->sceneManager()->createScene();
 	IGraphicsSceneNode *pRootNode = pRenderScene->rootNode();
-	pRootNode->setModel(pRenderModel);
+	
+	/*for (int i = 0; i < 30; ++i) {
+		IGraphicsSceneNode *pNode = pRenderScene->createNode();
+		pNode->setPosition(glm::vec3(random(-300, 300), random(-300, 300), random(-300, 300)));
+		pNode->setModel(pRenderModel);
+		pRootNode->attachChildNode(pNode);
+	}
 
-	/*IGraphicsSceneNode *pNode = pRenderScene->createNode();
+	IGraphicsSceneNode *pNode = pRenderScene->createNode();
 	pNode->setModel(pRenderModel);
 	pNode->setPosition(glm::vec3(20, 0, 0));
 	pRootNode->attachChild(pNode);
@@ -143,59 +159,91 @@ int main() {
 			if (y == 0)
 				continue;
 			for (int x = -c_n; x <= c_n; ++x) {
-				IGraphicsSceneNode *pNode = pRootNode->createChild();
+				IGraphicsSceneNode *pNode = pRenderScene->createNode();
 				pNode->setModel((rand() % 2) ? pRenderModel : pRenderModel2);
 				pNode->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 				pNode->setPosition((glm::vec3(x, y, z) + glm::vec3(0.4, -0.3, 0.7)) * c_coef);
+				pRootNode->attachChildNode(pNode);
 			}
 		}
 
 	
 	for (int z = -c_n; z <= c_n; ++z)
 		for (int x = -c_n; x <= c_n; ++x) {
-			IGraphicsSceneNode *pNode = pRootNode->createChild();
+			IGraphicsSceneNode *pNode = pRenderScene->createNode();
 			pNode->setModel(pColorModel[rand()%NUM_COLOR_MATS]);
 			pNode->setOrientation(glm::quat(glm::vec3(0.0f, random(0.0f, glm::pi<float>()), 0.0f)));
 			pNode->setPosition(glm::vec3(x + random(-0.2f, 0.2f), 0.0f, z + random(-0.2f, 0.2f)) * c_coef);
+			pRootNode->attachChildNode(pNode);
 		}
 	*/
+	
+	float c_step = 25.0f;
+	
+	pRootNode->setModel(pRenderModel);
+	
+	for (int i = 0; i < 15; ++i) {
+		IGraphicsSceneNode *pNode = pRenderScene->createNode();
+		pNode->setPosition(glm::vec3(0.0f, i, 0.0f)*c_step);
+		pNode->setModel(pRenderModel);
+		pRootNode->attachChildNode(pNode);
+	}
 
-	/*float c_step = 25.0f;
-	pNode01 = pRootNode->createChild();
+	pNode01 = pRenderScene->createNode();
 	pNode01->setPosition(glm::vec3(6.0f, -1.0f, -4.0f)*c_step);
-
-	pNode02 = pRootNode->createChild();
-	pNode02->setPosition(glm::vec3(-4.0, 1.0f, 4.0f)*c_step);
-
-	pNode011 = pNode01->createChild();
+	pRootNode->attachChildNode(pNode01);
+	
+	pNode011 = pRenderScene->createNode();
 	pNode011->setPosition(glm::vec3(1.0f, 0.0f, -1.0f) * c_step);
 	pNode011->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 	pNode011->setModel(pRenderModel);
+	pNode01->attachChildNode(pNode011);
 
-	pNode012 = pNode01->createChild();
+	pNode012 = pRenderScene->createNode();
 	pNode012->setPosition(glm::vec3(-1.0f, 0.0f, 0.0f) * c_step);
 	pNode012->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 	pNode012->setModel(pRenderModel);
+	pNode01->attachChildNode(pNode012);
 
-	pNode013 = pNode01->createChild();
+	pNode013 = pRenderScene->createNode();
 	pNode013->setPosition(glm::vec3(0.0f, 0.0f, 0.5f) * c_step);
 	pNode013->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 	pNode013->setModel(pRenderModel);
+	pNode01->attachChildNode(pNode013);
 
-	pNode021 = pNode02->createChild();
+	pNode014 = pRenderScene->createNode();
+	pNode014->setPosition(glm::vec3(-0.5f, 0.0f, 0.5f) * c_step);
+	pNode014->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
+	pNode014->setModel(pRenderModel);
+	pNode01->attachChildNode(pNode014);
+
+	pNode02 = pRenderScene->createNode();
+	pNode02->setPosition(glm::vec3(-4.0, 1.0f, 4.0f)*c_step);
+	pRootNode->attachChildNode(pNode02);
+
+	pNode021 = pRenderScene->createNode();
 	pNode021->setPosition(glm::vec3(1.0f, 0.0f, -1.0f) * c_step);
 	pNode021->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 	pNode021->setModel(pRenderModel2);
+	pNode02->attachChildNode(pNode021);
 
-	pNode022 = pNode02->createChild();
+	pNode022 = pRenderScene->createNode();
 	pNode022->setPosition(glm::vec3(-1.0f, 0.0f, 0.0f) * c_step);
 	pNode022->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 	pNode022->setModel(pRenderModel2);
+	pNode02->attachChildNode(pNode022);
 
-	pNode023 = pNode02->createChild();
+	pNode023 = pRenderScene->createNode();
 	pNode023->setPosition(glm::vec3(0.0f, 0.0f, 0.5f) * c_step);
 	pNode023->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
-	pNode023->setModel(pRenderModel2);*/
+	pNode023->setModel(pRenderModel2);
+	pNode02->attachChildNode(pNode023);
+
+	pNode024 = pRenderScene->createNode();
+	pNode024->setPosition(glm::vec3(-0.5f, 0.0f, 0.5f) * c_step);
+	pNode024->setOrientation(glm::quat(glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
+	pNode024->setModel(pRenderModel2);
+	pNode02->attachChildNode(pNode024);
 		
 	s1 = Utility::DateTime::current().time.seconds - s1;
 	if (s1 < 0)

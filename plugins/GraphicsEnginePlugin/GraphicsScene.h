@@ -1,7 +1,7 @@
 #ifndef __GRAPHICSSCENE__
 #define __GRAPHICSSCENE__
 
-#include <list>
+#include <vector>
 
 #include <math/MathTypes.h>
 
@@ -19,7 +19,7 @@ class KdTree;
 
 class GraphicsSceneNode : public IGraphicsSceneNode {
 public:
-	typedef std::list<GraphicsSceneNode*> ChildrenList;
+	typedef std::vector<GraphicsSceneNode*> ChildrenList;
 
 	GraphicsSceneNode(GraphicsScene *pScene);
 	~GraphicsSceneNode();
@@ -47,8 +47,6 @@ public:
 	KdNode *kdNode() const;
 	void setKdNode(KdNode *pKdNode);
 
-	void detachFromScene();
-
 private:
 	mutable glm::mat4x4 m_cacheWorldlTransform, m_cacheLocalTransform;
 	mutable Math::Sphere m_worldSphere;
@@ -62,12 +60,14 @@ private:
 
 	glm::quat m_orientation;
 	glm::vec3 m_position;
-	mutable bool m_needUpdateTransformation, m_needUpdateSphere;
+	mutable bool m_needUpdateTransformation, m_needUpdateBoundingVolumes;
 
-	void updateTransformationRecursiveDown() const; // пометить матрицы на обновление рекурсивно вниз по дереву
+	void updateTransformationRecursiveDown() const;
+	void updateBoundingVolumesRecursiveDown() const;
 	void recalcTransformation() const;
-	void recalcSphere() const;
+	void recalcBoundingVolumes() const;
 
+	void updateKdNodesRecursiveDown();
 };
 
 class GraphicsScene : public IGraphicsScene {
@@ -78,7 +78,7 @@ public:
 	std::string name() const;
 	
 	IGraphicsSceneNode *rootNode() const;
-	IGraphicsSceneNode *createNode(IGraphicsSceneNode *pParentNode, const glm::vec3& pos = glm::vec3(), const glm::quat& orient = glm::quat(), IGraphicsModel *pModel = nullptr);
+	IGraphicsSceneNode *createNode();
 	void destroyNode(IGraphicsSceneNode *pNode);
 
 	KdTree *kdTree() const;

@@ -37,8 +37,16 @@ inline void interpolate(const T1& v0, const T1& v1, const T2& coef, T1& result) 
 // Построить плоскость по трем точкам.
 Plane buildPlane(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
 
+// Построить пустой AABB.
 inline Aabb buildEmptyBoundingBox() {
 	return Aabb(glm::vec3(FLT_MAX), glm::vec3(-FLT_MAX));
+}
+
+inline bool isEmptyBoundingBox(const Aabb& box) {
+	return
+		(box.vMin.x > box.vMax.x) ||
+		(box.vMin.y > box.vMax.y) ||
+		(box.vMin.z > box.vMax.z);
 }
 
 // Расстояние от точки до плоскости со знаком.

@@ -22,7 +22,7 @@ public:
 
 	GLuint GLid() const;
 	
-	static GLenum toGLUsage(IGPUBufferUsage usage);
+	static GLenum GLUsage(IGPUBufferUsage usage);
 
 private:
 	GLuint m_id;

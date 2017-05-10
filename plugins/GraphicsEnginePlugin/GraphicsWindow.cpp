@@ -192,10 +192,11 @@ void GraphicsWindow::renderCallBack(IWindow *pWindow)
 	if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pScene->kdTree()->rootNode()->boundingBox()))
 		kdNodes.push_back(pScene->kdTree()->rootNode());
 
-	uint32 numDips = 0;
+	uint32 numDips = 0, numKdNodes = 0;
 	pThis->m_renderData.clear();
 
 	while (!kdNodes.empty()) {
+		++numKdNodes;
 		KdNode *pTreeNode = kdNodes.front();
 		kdNodes.pop_front();
 
@@ -240,7 +241,7 @@ void GraphicsWindow::renderCallBack(IWindow *pWindow)
 		pThis->renderData(beginIterator->first->tag(), beginIterator, endIterator);
 	}
 	
-	getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        FPS: " + std::to_string(pThis->fps()));
+	getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        kdNodes: " + std::to_string(numKdNodes) + ";        FPS: " + std::to_string(pThis->fps()));
 }
 
 void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow *pWindow)

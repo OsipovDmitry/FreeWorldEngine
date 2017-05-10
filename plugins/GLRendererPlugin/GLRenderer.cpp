@@ -4,7 +4,7 @@
 #include "GLTexture.h"
 #include "GLShader.h"
 #include "GLFrameBuffer.h"
-#include "GLOcclusionQuery.h"
+//#include "GLOcclusionQuery.h"
 
 namespace FreeWorldEngine {
 
@@ -61,7 +61,7 @@ IGPUBuffer *GLRenderer::createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage us
 	
 	if (size) {
 		bindBuffer(pBuffer, GL_ARRAY_BUFFER);
-		glBufferData(GL_ARRAY_BUFFER, size, pData, GLBuffer::toGLUsage(usage));
+		glBufferData(GL_ARRAY_BUFFER, size, pData, GLBuffer::GLUsage(usage));
 	}
 
 	return pBuffer;
@@ -69,7 +69,9 @@ IGPUBuffer *GLRenderer::createBuffer(uint64 size, IGPUBuffer::IGPUBufferUsage us
 
 void GLRenderer::destroyBuffer(IGPUBuffer *pBuffer)
 {
-	GLuint id = static_cast<GLBuffer*>(pBuffer)->GLid();
+	GLBuffer *pGLBuffer = static_cast<GLBuffer*>(pBuffer);
+	deleteBufferFromCache(pGLBuffer);
+	GLuint id = pGLBuffer->GLid();
 	glDeleteBuffers(1, &id);
 	delete pBuffer;
 }
@@ -250,7 +252,7 @@ IGPUFrameBuffer *GLRenderer::mainFrameBuffer() const
 	return m_pMainFrameBuffer;
 }
 
-IGPUOcclusionQuery * GLRenderer::createOcclusionQuery()
+/*IGPUOcclusionQuery * GLRenderer::createOcclusionQuery()
 {
 	GLuint id;
 	glGenQueries(1, &id);
@@ -266,7 +268,7 @@ void GLRenderer::destroyOcclusionQuery(IGPUOcclusionQuery *pQuery)
 	GLuint id = pGLQuery->GLid();
 	glDeleteQueries(1, &id);
 	delete pQuery;
-}
+}*/
 
 void GLRenderer::renderGeometry(const IGPUProgram *pProgram, const IGPUBufferContainer *pBufferContainer, const PrimitiveFormat primitiveFormat, const uint32 firstVertex, const uint32 numVertices) const
 {
@@ -426,25 +428,12 @@ IGPURenderer::CullFaceState GLRenderer::cullFaceState() const
 
 void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint32 bindingPoint) const
 {
-	int32 cacheIdx = -1;
-	switch (GLTarget) {
-	case GL_ARRAY_BUFFER : { cacheIdx = 0; break; }
-	case GL_COPY_READ_BUFFER : { cacheIdx = 1; break; }
-	case GL_COPY_WRITE_BUFFER : { cacheIdx = 2; break; }
-	case GL_ELEMENT_ARRAY_BUFFER: { cacheIdx = 3; break; }
-	case GL_PIXEL_PACK_BUFFER: { cacheIdx = 4; break; }
-	case GL_PIXEL_UNPACK_BUFFER: { cacheIdx = 5; break; }
-	case GL_TEXTURE_BUFFER: { cacheIdx = 6; break; }
-	case GL_TRANSFORM_FEEDBACK_BUFFER: { cacheIdx = 7; break; }
-	case GL_UNIFORM_BUFFER: { cacheIdx = 8 + bindingPoint; break; }
-	default: break;
-	}
-
+	/*int32 cacheIdx = bufferCacheIndex(GLTarget, bindingPoint);
 	if (cacheIdx >= 0) {
 		if (m_cachedBuffers[cacheIdx] == pBuffer)
 			return;
 		m_cachedBuffers[cacheIdx] = pBuffer;
-	}
+	}*/
 
 	GLuint id = pBuffer ? pBuffer->GLid() : 0;
 	switch (GLTarget) {
@@ -455,8 +444,8 @@ void GLRenderer::bindBuffer(const GLBuffer *pBuffer, GLenum GLTarget, const uint
 
 void GLRenderer::bindBufferContainer(const GLBufferContainer *pBufferContainer) const
 {
-	if (m_cachedBufferConatiner == pBufferContainer)
-		return;
+	//if (m_cachedBufferConatiner == pBufferContainer)
+		//return;
 	m_cachedBufferConatiner = pBufferContainer;
 	glBindVertexArray(pBufferContainer ? pBufferContainer->id() : 0);
 }
@@ -492,6 +481,16 @@ void GLRenderer::bindFrameBuffer(const GLFrameBuffer *pFrameBuffer) const
 		return;
 	m_cachedFrameBuffer = pFrameBuffer;
 	glBindFramebuffer(GL_FRAMEBUFFER, pFrameBuffer ? pFrameBuffer->GLid() : 0);
+}
+
+void GLRenderer::deleteBufferFromCache(const GLBuffer *pBuffer) const
+{
+	for (uint32 i = 0; i < BUFFER_UNITS_COUNT; ++i)
+		if (m_cachedBuffers[i] == pBuffer) {
+			uint32 bindingPoint;
+			GLenum GLtarget = GLBufferTarget(i, bindingPoint);
+			bindBuffer(nullptr, GLtarget, bindingPoint);
+		}
 }
 
 GLenum GLRenderer::GLPrimitiveFormat(PrimitiveFormat primitiveFormat)
@@ -568,6 +567,45 @@ GLenum GLRenderer::GLBlendEquation(BlendEquation func)
 	case BlendEquation_Max: return GL_MAX;
 	}
 	return 0;
+}
+
+GLenum GLRenderer::GLBufferTarget(int32 bufferIdx, uint32& bindingPoint)
+{
+	if (bufferIdx < 0 || bufferIdx >= BUFFER_UNITS_COUNT)
+		return 0;
+
+	switch (bufferIdx) {
+	case 0: return GL_ARRAY_BUFFER;
+	case 1: return GL_COPY_READ_BUFFER;
+	case 2: return GL_COPY_WRITE_BUFFER;
+	case 3: return GL_ELEMENT_ARRAY_BUFFER;
+	case 4: return GL_PIXEL_PACK_BUFFER;
+	case 5: return GL_PIXEL_UNPACK_BUFFER;
+	case 6: return GL_TEXTURE_BUFFER;
+	case 7: return GL_TRANSFORM_FEEDBACK_BUFFER;
+	default: {
+		bindingPoint = bufferIdx - 8;
+		return GL_UNIFORM_BUFFER;
+	}
+	}
+}
+
+int32 GLRenderer::bufferCacheIndex(GLenum GLBufferTarget, uint32 bindingPoint)
+{
+	int32 cacheIdx = -1;
+	switch (GLBufferTarget) {
+	case GL_ARRAY_BUFFER: { cacheIdx = 0; break; }
+	case GL_COPY_READ_BUFFER: { cacheIdx = 1; break; }
+	case GL_COPY_WRITE_BUFFER: { cacheIdx = 2; break; }
+	case GL_ELEMENT_ARRAY_BUFFER: { cacheIdx = 3; break; }
+	case GL_PIXEL_PACK_BUFFER: { cacheIdx = 4; break; }
+	case GL_PIXEL_UNPACK_BUFFER: { cacheIdx = 5; break; }
+	case GL_TEXTURE_BUFFER: { cacheIdx = 6; break; }
+	case GL_TRANSFORM_FEEDBACK_BUFFER: { cacheIdx = 7; break; }
+	case GL_UNIFORM_BUFFER: { cacheIdx = 8 + bindingPoint; break; }
+	default: break;
+	}
+	return cacheIdx;
 }
 
 } // namespace

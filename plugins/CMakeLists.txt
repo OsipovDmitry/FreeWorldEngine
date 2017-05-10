@@ -5,5 +5,6 @@ add_subdirectory(WindowManagerPlugin)
 
 add_subdirectory(GLRendererPlugin)
 add_subdirectory(ImageLoaderPlugin)
+add_subdirectory(FreeImageLoaderPlugin)
 add_subdirectory(SceneLoaderPlugin)
 add_subdirectory(GraphicsEnginePlugin)

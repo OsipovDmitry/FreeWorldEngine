@@ -24,7 +24,7 @@ GraphicsSceneNode::GraphicsSceneNode(GraphicsScene *pScene) :
 	m_position(),
 	m_orientation(),
 	m_needUpdateTransformation(true),
-	m_needUpdateSphere(true)
+	m_needUpdateBoundingVolumes(true)
 {
 }
 
@@ -41,10 +41,8 @@ void GraphicsSceneNode::setPosition(const glm::vec3& pos)
 {
 	m_position = pos;
 	updateTransformationRecursiveDown();
-	m_needUpdateSphere = true;
-
-	if (m_pKdNode)
-		m_pScene->kdTree()->reinsertSceneNode(this);
+	updateBoundingVolumesRecursiveDown();
+	updateKdNodesRecursiveDown();
 }
 
 glm::quat GraphicsSceneNode::orientation()
@@ -56,10 +54,8 @@ void GraphicsSceneNode::setOrientation(const glm::quat& orient)
 {
 	m_orientation = orient;
 	updateTransformationRecursiveDown();
-	m_needUpdateSphere = true;
-
-	if (m_pKdNode)
-		m_pScene->kdTree()->reinsertSceneNode(this);
+	updateBoundingVolumesRecursiveDown();
+	updateKdNodesRecursiveDown();
 }
 
 const glm::mat4x4& GraphicsSceneNode::localTransformation() const
@@ -80,16 +76,16 @@ const glm::mat4x4& GraphicsSceneNode::worldTransformation() const
 
 const Math::Sphere& GraphicsSceneNode::worldBoundingSphere() const
 {
-	if (m_needUpdateSphere)
-		recalcSphere();
+	if (m_needUpdateBoundingVolumes)
+		recalcBoundingVolumes();
 
 	return m_worldSphere;
 }
 
 const Math::Aabb& GraphicsSceneNode::worldBoundingBox() const
 {
-	if (m_needUpdateSphere)
-		recalcSphere();
+	if (m_needUpdateBoundingVolumes)
+		recalcBoundingVolumes();
 
 	return m_worldAabb;
 }
@@ -110,11 +106,23 @@ void GraphicsSceneNode::attachChildNode(IGraphicsSceneNode *pNode)
 		return;
 
 	GraphicsSceneNode *pGraphicsNode = static_cast<GraphicsSceneNode*>(pNode);
-	if (pGraphicsNode->m_pParentNode)
-		pGraphicsNode->m_pParentNode->detachChildNode(pGraphicsNode);
+
+	IGraphicsSceneNode *pParentNode = pGraphicsNode->parentNode();
+	if (pParentNode)
+		pParentNode->detachChildNode(pGraphicsNode);
 
 	m_childNodes.push_back(pGraphicsNode);
 	pGraphicsNode->m_pParentNode = this;
+
+	KdTree *pKdTree = m_pScene->kdTree();
+	std::list<GraphicsSceneNode*> nodes;
+	nodes.push_back(pGraphicsNode);
+	while (!nodes.empty()) {
+		GraphicsSceneNode *p = nodes.front();
+		nodes.pop_front();
+		std::copy(p->m_childNodes.cbegin(), p->m_childNodes.cend(), std::back_inserter(nodes));
+		pKdTree->reinsertSceneNode(p);
+	}
 }
 
 void GraphicsSceneNode::detachChildNode(IGraphicsSceneNode *pNode)
@@ -122,11 +130,19 @@ void GraphicsSceneNode::detachChildNode(IGraphicsSceneNode *pNode)
 	if (pNode->scene() != this->scene())
 		return;
 
-	GraphicsSceneNode *pGraphicsNode = static_cast<GraphicsSceneNode*>(pNode);
-	auto it = std::find(m_childNodes.begin(), m_childNodes.end(), pGraphicsNode);
-	if (it != m_childNodes.end()) {
+	auto it = std::find(m_childNodes.cbegin(), m_childNodes.cend(), static_cast<GraphicsSceneNode*>(pNode));
+	if (it != m_childNodes.cend()) {
 		m_childNodes.erase(it);
 		(*it)->m_pParentNode = nullptr;
+		KdTree *pKdTree = m_pScene->kdTree();
+		std::list<GraphicsSceneNode*> nodes;
+		nodes.push_back(*it);
+		while (!nodes.empty()) {
+			GraphicsSceneNode *p = nodes.front();
+			nodes.pop_front();
+			std::copy(p->m_childNodes.cbegin(), p->m_childNodes.cend(), std::back_inserter(nodes));
+			pKdTree->removeSceneNode(p);
+		}
 	}
 }
 
@@ -137,7 +153,7 @@ uint32 GraphicsSceneNode::numChildNodes() const
 
 IGraphicsSceneNode *GraphicsSceneNode::childNodeAt(const uint32 idx) const
 {
-	return m_childNodes.at(idx);
+	return m_childNodes[idx];
 }
 
 IGraphicsModel *GraphicsSceneNode::model() const
@@ -148,7 +164,7 @@ IGraphicsModel *GraphicsSceneNode::model() const
 void GraphicsSceneNode::setModel(IGraphicsModel *pModel)
 {
 	m_pModel = static_cast<GraphicsModel*>(pModel);
-	m_needUpdateSphere = true;
+	m_needUpdateBoundingVolumes = true;
 
 	if (m_pKdNode) {
 		m_pKdNode->removeSceneNode(this);
@@ -175,6 +191,15 @@ void GraphicsSceneNode::updateTransformationRecursiveDown() const
 	);
 }
 
+void GraphicsSceneNode::updateBoundingVolumesRecursiveDown() const
+{
+	m_needUpdateBoundingVolumes = false;
+
+	std::for_each(m_childNodes.begin(), m_childNodes.end(),
+		std::mem_fun(&GraphicsSceneNode::updateBoundingVolumesRecursiveDown)
+		);
+}
+
 void GraphicsSceneNode::recalcTransformation() const
 {
 	m_cacheLocalTransform = glm::translate(glm::mat4x4(), m_position) * glm::mat4_cast(m_orientation);
@@ -182,7 +207,7 @@ void GraphicsSceneNode::recalcTransformation() const
 	m_needUpdateTransformation = false;
 }
 
-void GraphicsSceneNode::recalcSphere() const
+void GraphicsSceneNode::recalcBoundingVolumes() const
 {
 	Math::Sphere localSphere = m_pModel ? m_pModel->boundingSphere() : Math::Sphere();
 	m_worldSphere = Math::Sphere(glm::vec3(worldTransformation() * glm::vec4(glm::vec3(localSphere), 1.0f)), localSphere.w);
@@ -190,13 +215,15 @@ void GraphicsSceneNode::recalcSphere() const
 		glm::vec3(m_worldSphere) - glm::vec3(m_worldSphere.w), 
 		glm::vec3(m_worldSphere) + glm::vec3(m_worldSphere.w)
 	);
-	m_needUpdateSphere = false;
+	m_needUpdateBoundingVolumes = false;
 }
 
-void GraphicsSceneNode::detachFromScene()
+void GraphicsSceneNode::updateKdNodesRecursiveDown()
 {
-	m_pParentNode->m_childNodes.remove(this);
-	m_pScene->kdTree()->removeSceneNode(this);
+	if (m_pKdNode) {
+		std::for_each(m_childNodes.begin(), m_childNodes.end(), std::mem_fun(&GraphicsSceneNode::updateKdNodesRecursiveDown));
+		m_pScene->kdTree()->reinsertSceneNode(this);
+	}
 }
 
 GraphicsScene::GraphicsScene(const std::string& name) :
@@ -210,7 +237,10 @@ GraphicsScene::GraphicsScene(const std::string& name) :
 
 GraphicsScene::~GraphicsScene()
 {
-	delete m_pRootNode;
+	delete m_pTree;
+	std::for_each(m_nodes.begin(), m_nodes.end(), [](GraphicsSceneNode *p) {
+		delete p;
+	});
 }
 
 std::string GraphicsScene::name() const
@@ -223,19 +253,10 @@ IGraphicsSceneNode *GraphicsScene::rootNode() const
 	return m_pRootNode;
 }
 
-IGraphicsSceneNode *GraphicsScene::createNode(IGraphicsSceneNode *pParentNode, const glm::vec3& pos, const glm::quat& orient, IGraphicsModel *pModel)
+IGraphicsSceneNode *GraphicsScene::createNode()
 {
 	GraphicsSceneNode *pNewNode = new GraphicsSceneNode(this);
-	pNewNode->setPosition(pos);
-	pNewNode->setOrientation(orient);
-	pNewNode->setModel(pModel);
-
 	m_nodes.push_back(pNewNode);
-
-	if (!pParentNode)
-		pParentNode = m_pRootNode;
-
-	pParentNode->attachChildNode(pNewNode);
 	return pNewNode;
 }
 
@@ -248,15 +269,21 @@ void GraphicsScene::destroyNode(IGraphicsSceneNode *pNode)
 	if (pGraphicsSceneNode->scene() != this)
 		return;
 
-	while (pNode->numChildNodes())
-		destroyNode(pNode->childNodeAt(0));
+	IGraphicsSceneNode *pParentNode = pGraphicsSceneNode->parentNode();
+	if (pParentNode)
+		pParentNode->detachChildNode(pGraphicsSceneNode);
 
-
-
-	m_pTree->removeSceneNode(pGraphicsSceneNode);
-	m_nodes.remove(pGraphicsSceneNode);
-	if (pGraphicsSceneNode->parentNode())
-		pGraphicsSceneNode->parentNode()->detachChildNode(pGraphicsSceneNode);
+	std::list<GraphicsSceneNode*> nodes;
+	nodes.push_back(pGraphicsSceneNode);
+	while (!nodes.empty()) {
+		GraphicsSceneNode *p = nodes.front();
+		nodes.pop_front();
+		uint32 numChildNodes = p->numChildNodes();
+		for (uint32 i = 0; i < numChildNodes; ++i)
+			nodes.push_back(static_cast<GraphicsSceneNode*>(p->childNodeAt(i)));
+		m_nodes.remove(p);
+		delete p;
+	}
 }
 
 KdTree *GraphicsScene::kdTree() const
