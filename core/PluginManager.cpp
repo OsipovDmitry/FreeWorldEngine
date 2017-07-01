@@ -1,9 +1,8 @@
 #include <utility/XML.h>
 #include <utility/File.h>
+#include <utility/Library.h>
 
-#include <ILibraryManager.h>
-#include <ILibrary.h>
-#include <IPlugin.h>
+#include <core/IPlugin.h>
 
 #include "Core.h"
 #include "PluginManager.h"
@@ -26,7 +25,7 @@ PluginManager::~PluginManager()
 
 IPlugin *PluginManager::loadPlugin(const std::string& libraryName, const std::string& startPluginFuncName, const std::string& getPluginFuncName, const std::string& endPluginFuncName)
 {
-	ILibrary *pLibrary = coreEngine->libraryManager()->loadLibrary(libraryName);
+	Utility::Library *pLibrary = new Utility::Library(libraryName);
 	if (!pLibrary) {
 		LOG_ERROR("Could not load plugin from \"" + libraryName + "\".");
 		return 0;
@@ -45,7 +44,12 @@ IPlugin *PluginManager::loadPlugin(const std::string& libraryName, const std::st
 	if (!pEndFunc)
 		LOG_WARNING("Could not get the function \"" + endPluginFuncName + "\" from \"" + libraryName + "\" plugin");
 
-	return loadPlugin(pStartFunc, pGetFunc, pEndFunc);
+	return loadPlugin(pStartFunc, pGetFunc, pEndFunc, pLibrary);
+}
+
+IPlugin *PluginManager::loadPlugin(void* startPluginFunc, void* getPluginFunc, void* endPluginFunc)
+{
+	return loadPlugin((StartPluginFunc)startPluginFunc, (GetPluginFunc)getPluginFunc, (EndPluginFunc)endPluginFunc, nullptr);
 }
 
 IPlugin *PluginManager::findPlugin(const std::string& pluginName) const
@@ -66,7 +70,7 @@ void PluginManager::unloadPlugin(const std::string& pluginName)
 {
 	PluginData pluginData;
 	if (findPluginData(pluginName, pluginData))
-		unloadPlugin(pluginData.getFunc, pluginData.endFunc);
+		unloadPlugin(pluginData.getFunc, pluginData.endFunc, pluginData.pLibrary);
 }
 
 void PluginManager::loadPlugins(const std::string& pluginsListFileName)
@@ -108,7 +112,7 @@ void PluginManager::unloadPlugins()
 {
 	while (m_plugins.size()) {
 		PluginData& data = m_plugins.back();
-		unloadPlugin(data.getFunc, data.endFunc);
+		unloadPlugin(data.getFunc, data.endFunc, data.pLibrary);
 	}
 }
 
@@ -127,7 +131,7 @@ bool PluginManager::findPluginData(const std::string& pluginName, PluginData& re
 	return false;
 }
 
-IPlugin *PluginManager::loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGetFunc, EndPluginFunc pEndFunc)
+IPlugin *PluginManager::loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGetFunc, EndPluginFunc pEndFunc, Utility::Library* pLib)
 {
 	if (!pStartFunc && !pGetFunc && !pEndFunc)
 		return 0;
@@ -147,7 +151,7 @@ IPlugin *PluginManager::loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGe
 		}
 	}
 
-	m_plugins.push_back(PluginData(pStartFunc, pGetFunc, pEndFunc));
+	m_plugins.push_back(PluginData(pStartFunc, pGetFunc, pEndFunc, pLib));
 
 	if (pPlugin) {
 		LOG("Load plugin \"" + pPlugin->name() + "\"");
@@ -159,7 +163,7 @@ IPlugin *PluginManager::loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGe
 	return pPlugin;
 }
 
-void PluginManager::unloadPlugin(GetPluginFunc pGetFunc, EndPluginFunc pEndFunc)
+void PluginManager::unloadPlugin(GetPluginFunc pGetFunc, EndPluginFunc pEndFunc, Utility::Library *pLib)
 {
 	IPlugin *pPlugin = 0;
 	if (pGetFunc)
@@ -181,6 +185,8 @@ void PluginManager::unloadPlugin(GetPluginFunc pGetFunc, EndPluginFunc pEndFunc)
 
 	if (pEndFunc)
 		pEndFunc();
+
+	delete pLib;
 }
 
 } // namespace

@@ -9,7 +9,7 @@ namespace Math {
 
 class MeshWrapper;
 
-class MATH_DLL MeshPainter {
+class MATH_EXPORT MeshPainter {
 public:
 	MeshPainter(Mesh *pTargetMesh = nullptr);
 	MeshPainter(const MeshWrapper& wrapper);

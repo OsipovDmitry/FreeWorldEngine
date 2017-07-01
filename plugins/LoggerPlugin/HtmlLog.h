@@ -1,8 +1,8 @@
 #ifndef __HTMLLOG__
 #define __HTMLLOG__
 
-#include <ILog.h>
-#include <ILogger.h>
+#include <core/ILog.h>
+#include <core/ILogger.h>
 #include <Types.h>
 
 namespace FreeWorldEngine {

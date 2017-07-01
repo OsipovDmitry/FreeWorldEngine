@@ -73,23 +73,25 @@ public:
 	class DepthIterator : public Iterator {
 	public:
 		DepthIterator& operator ++() {
-			if (!m_pNode->m_children.empty()) {
-				m_pNode = m_pNode->m_children.at(0);
+			if (!Iterator::m_pNode->m_children.empty()) {
+				Iterator::m_pNode = Iterator::m_pNode->m_children.at(0);
 			}
 			else {
 				int thisPos;
 				do {
-					thisPos = std::find(m_pNode->m_pParent->m_children.cbegin(), m_pNode->m_pParent->m_children.cend(), m_pNode) - m_pNode->m_pParent->m_children.cbegin();
-					m_pNode = m_pNode->m_pParent;
-				} while ((thisPos == m_pNode->m_children.size()-1) && (m_pNode != m_pTree->m_pRootNode));
-				m_pNode = (thisPos != m_pNode->m_children.size() - 1) ? m_pNode->m_children.at(thisPos + 1) : m_pTree->m_pEnd;
+					thisPos = std::find(Iterator::m_pNode->m_pParent->m_children.begin(),
+										Iterator::m_pNode->m_pParent->m_children.end(),
+										Iterator::m_pNode) - Iterator::m_pNode->m_pParent->m_children.begin();
+					Iterator::m_pNode = Iterator::m_pNode->m_pParent;
+				} while ((thisPos == Iterator::m_pNode->m_children.size()-1) && (Iterator::m_pNode != Iterator::m_pTree->m_pRootNode));
+				Iterator::m_pNode = (thisPos != Iterator::m_pNode->m_children.size() - 1) ? Iterator::m_pNode->m_children.at(thisPos + 1) : Iterator::m_pTree->m_pEnd;
 			}
 			return *this;
 		}
 		DepthIterator operator ++(int) {
-			Node *pOldNode = m_pNode;
+			Node *pOldNode = Iterator::m_pNode;
 			operator ++();
-			return DepthIterator(m_pTree, pOldNode);
+			return DepthIterator(Iterator::m_pTree, pOldNode);
 		}
 	private:
 		DepthIterator(const Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
@@ -103,9 +105,9 @@ public:
 			return *this;
 		}
 		WidthIterator operator ++(int) {
-			Node *pOldNode = m_pNode;
+			Node *pOldNode = Iterator::m_pNode;
 			operator ++();
-			return WidthIterator(m_pTree, pOldNode);
+			return WidthIterator(Iterator::m_pTree, pOldNode);
 		}
 	private:
 		WidthIterator(Tree<T> *pTree, Node *pNode) : Iterator(pTree, pNode) {}
@@ -149,7 +151,7 @@ inline void TreeNode<T>::copyFrom(const TreeNode *pNode)
 	m_data = pNode->m_data;
 	m_children.reserve(pNode->m_children.size());
 	std::transform(pNode->m_children.cbegin(), pNode->m_children.cend(), std::back_inserter(m_children),
-		[this](const TreeNode<T> *p) { TreeNode<T> *pNewNode = new TreeNode<T>(this); pNewNode->copyFrom(p); return pNewNode; })
+		[this](const TreeNode<T> *p) { TreeNode<T> *pNewNode = new TreeNode<T>(this); pNewNode->copyFrom(p); return pNewNode; });
 }
 
 template<class T>

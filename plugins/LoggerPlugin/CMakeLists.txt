@@ -10,8 +10,8 @@ set(HEADERS
 	LoggerPlugin.h)
 
 set(INTERFACE_HEADERS
-	../../include/ILog.h
-    ../../include/ILogger.h)
+	../../include/core/ILog.h
+	../../include/core/ILogger.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 

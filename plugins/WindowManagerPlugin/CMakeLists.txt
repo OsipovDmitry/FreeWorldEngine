@@ -4,8 +4,8 @@ include_directories(../../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
-			../../include/IWindow.h
-            ../../include/IWindowManager.h)
+			../../include/core/IWindow.h
+			../../include/core/IWindowManager.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 

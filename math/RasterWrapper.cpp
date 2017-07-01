@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <math/RasterWrapper.h>
 
 namespace FreeWorldEngine {

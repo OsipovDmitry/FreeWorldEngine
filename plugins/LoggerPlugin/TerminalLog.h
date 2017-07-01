@@ -1,7 +1,7 @@
 #ifndef __TERMINALLOG__
 #define __TERMINALLOG__
 
-#include <ILog.h>
+#include <core/ILog.h>
 
 namespace FreeWorldEngine {
 

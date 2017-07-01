@@ -1,7 +1,7 @@
 #ifndef __CONTENT__
 #define __CONTENT__
 
-#include <IContent.h>
+#include <core/IContent.h>
 
 namespace FreeWorldEngine {
 

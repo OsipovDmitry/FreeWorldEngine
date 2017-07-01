@@ -2,6 +2,7 @@
 #define __MATHUTILS__
 
 #include <3rdparty/glm/gtx/component_wise.hpp>
+#include <float.h>
 
 #include "../Types.h"
 #include "MathTypes.h"

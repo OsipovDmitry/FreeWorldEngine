@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "utility/DateTime.h"
-#include "ILog.h"
+#include <core/ILog.h>
+#include <utility/DateTime.h>
 
 #include "Logger.h"
 #include "Core.h"
@@ -9,14 +9,14 @@
 namespace FreeWorldEngine {
 
 Logger::Logger() :
-	m_pResourceManager(coreEngine->createResourceManager("ResourceManagerForLogger"))
+	m_pResourceManager(Core::s_instance->createResourceManager("ResourceManagerForLogger"))
 {
 }
 
 Logger::~Logger()
 {
 	destroyAllLogs();
-	coreEngine->destroyResourceManager(m_pResourceManager);
+	Core::s_instance->destroyResourceManager(m_pResourceManager);
 }
 
 

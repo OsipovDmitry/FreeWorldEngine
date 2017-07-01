@@ -1,7 +1,7 @@
 #ifndef __IGRAPHICRESOURCE__
 #define __IGRAPHICRESOURCE__
 
-#include <IResource.h>
+#include <core/IResource.h>
 
 namespace FreeWorldEngine {
 

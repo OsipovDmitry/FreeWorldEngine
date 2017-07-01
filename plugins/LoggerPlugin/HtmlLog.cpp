@@ -40,7 +40,7 @@ std::string HtmlLog::name() const
 
 void HtmlLog::printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const
 {
-	std::string typeStr = getCoreEngine()->logger()->messageTypeString(type);
+	std::string typeStr = ICore::instance()->logger()->messageTypeString(type);
 	std::string color = m_messageColors.at(type);
 	std::string messageStr = "<p><font color=\"" + color + "\">" + time + " (" + typeStr + "): " + message + "</font></p>";
 

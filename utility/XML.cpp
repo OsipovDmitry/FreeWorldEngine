@@ -148,7 +148,8 @@ XMLRoot *XMLRoot::openFromData(const char *xmlData)
 	XMLRoot *ans = new XMLRoot;
 
 	ans->m->xmlBuffer.resize(strlen(xmlData) + 1, 0);
-	strcpy_s(ans->m->xmlBuffer.data(), ans->m->xmlBuffer.size(), xmlData);
+	//strcpy_s(ans->m->xmlBuffer.data(), ans->m->xmlBuffer.size(), xmlData); // Не собралось на линуксе
+	strcpy(ans->m->xmlBuffer.data(), xmlData);
 
 	if (!ans->parseBuffer())
 		return nullptr;

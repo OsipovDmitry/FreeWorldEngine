@@ -1,20 +1,22 @@
 cmake_minimum_required(VERSION 3.4.0)
 project(FreeWorldEngine)
 
-set(FWE_3RDPARTY OFF CACHE BOOL "Build 3rdparty libraries")
-set(FWE_TESTS OFF CACHE BOOL "Build tests")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /UMBCS /D_UNICODE /DUNICODE")
 endif ()
 
-if (FWE_3RDPARTY)
-    add_subdirectory(3rdparty)
-endif ()
+if (UNIX)
+	add_definitions(-DPLATFORM_UNIX)
+elseif (WIN32)
+	add_definitions(-DPLATFORM_WINDOWS)
+endif()
 
 add_subdirectory(utility)
 add_subdirectory(math)
 add_subdirectory(core)
 add_subdirectory(plugins)
 #add_subdirectory(demo)
-add_subdirectory(demo2)
+#add_subdirectory(demo2)
+add_subdirectory(demo3)

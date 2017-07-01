@@ -1,7 +1,7 @@
 #ifndef __THREADMANAGER__
 #define __THREADMANAGER__
 
-#include "IThreadManager.h"
+#include <core/IThreadManager.h>
 
 namespace FreeWorldEngine {
 

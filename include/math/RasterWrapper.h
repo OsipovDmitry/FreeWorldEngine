@@ -8,7 +8,7 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
-class MATH_DLL RasterWrapper {
+class MATH_EXPORT RasterWrapper {
 public:
 	RasterWrapper(Raster *pTargetRaster);
 	~RasterWrapper();

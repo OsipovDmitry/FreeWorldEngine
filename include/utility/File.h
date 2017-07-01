@@ -11,7 +11,7 @@ namespace FreeWorldEngine {
 namespace Utility {
 
 struct FilePrivate;
-class UTILITY_DLL File {
+class UTILITY_EXPORT File {
 public:
 	enum OpenMode { OpenMode_ReadOnly, OpenMode_WriteOnly, OpenMode_Append };
 

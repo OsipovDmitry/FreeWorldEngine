@@ -1,21 +1,25 @@
+#include <Platform.h>
+
 #include "LoggerPlugin.h"
 
-static FreeWorldEngine::IPlugin *pPlugin = 0;
+namespace {
+	FreeWorldEngine::IPlugin *pPlugin = 0;
+}
 
 extern "C" {
 
-__declspec(dllexport) void startLibrary()
+LIBRARY_EXPORT void startLibrary()
 {
 	if (!pPlugin)
 		pPlugin = new FreeWorldEngine::LoggerPlugin();
 }
 
-__declspec(dllexport) FreeWorldEngine::IPlugin *getLibrary()
+LIBRARY_EXPORT FreeWorldEngine::IPlugin *getLibrary()
 {
 	return pPlugin;
 }
 
-__declspec(dllexport) void endLibrary()
+LIBRARY_EXPORT void endLibrary()
 {
 	delete pPlugin;
 	pPlugin = 0;

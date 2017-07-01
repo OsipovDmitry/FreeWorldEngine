@@ -1,4 +1,5 @@
 #include <queue>
+#include <cstring>
 
 #include <math/BspTree.h>
 #include <math/MeshWrapper.h>

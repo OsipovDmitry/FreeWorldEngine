@@ -2,6 +2,10 @@
 
 #include <utility/DateTime.h>
 
+#ifndef _ULonglong
+#define _ULonglong unsigned long long
+#endif
+
 namespace FreeWorldEngine {
 
 namespace Utility {

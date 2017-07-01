@@ -4,35 +4,29 @@ include_directories(../include)
 link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
-    ../include/ICamera.h
-    ../include/ICore.h
-    ../include/ILibrary.h
-    ../include/ILibraryManager.h
-    ../include/ILog.h
-    ../include/ILogger.h
-    ../include/IPhysicsBody.h
-    ../include/IPhysicsGeometry.h
-    ../include/IPhysicsManager.h
-    ../include/IPhysicsMaterial.h
-    ../include/IPhysicsMaterialManager.h
-    ../include/IPhysicsSpace.h
-    ../include/IPlugin.h
-    ../include/IPluginManager.h
-    ../include/IResource.h
-    ../include/IResourceManager.h
-    ../include/IThread.h
-    ../include/IThreadManager.h
-    ../include/IWindow.h
-    ../include/IWindowManager.h
-    ../include/IContent.h
-    ../include/IContentLoader.h
+	../include/core/ICore.h
+	../include/core/ILibrary.h
+	../include/core/ILibraryManager.h
+	../include/core/ILog.h
+	../include/core/ILogger.h
+	../include/core/IPlugin.h
+	../include/core/IPluginManager.h
+	../include/core/IResource.h
+	../include/core/IResourceManager.h
+	../include/core/IThread.h
+	../include/core/IThreadManager.h
+	../include/core/IWindow.h
+	../include/core/IWindowManager.h
+	../include/core/IContent.h
+	../include/core/IContentLoader.h
+	../include/core/CoreSettings.h
 )
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
 set(COMMON_HEADERS
-    ../include/CoreSettings.h
     ../include/FreeWorldEngine.h
+	../include/Platform.h
     ../include/Types.h
 )
 
@@ -40,8 +34,8 @@ source_group("Common Headers" FILES ${COMMON_HEADERS})
 
 set(HEADERS
     Core.h
-    Library.h
-    LibraryManager.h
+	Library.h
+	LibraryManager.h
     Logger.h
     PluginManager.h
     ResourceManager.h
@@ -54,8 +48,8 @@ set(HEADERS
 
 set(SOURCES
     Core.cpp
-    Library.cpp
-    LibraryManager.cpp
+	Library.cpp
+	LibraryManager.cpp
     Logger.cpp
     PluginManager.cpp
     ResourceManager.cpp

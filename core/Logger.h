@@ -1,8 +1,8 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#include "ILogger.h"
-#include "IResourceManager.h"
+#include <core/ILogger.h>
+#include <core/IResourceManager.h>
 
 namespace FreeWorldEngine {
 

@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include <IContentLoader.h>
-#include <IResourceManager.h>
+#include <core/IContentLoader.h>
+#include <core/IResourceManager.h>
 
 #include "ContentLoader.h"
 #include "Content.h"
@@ -35,7 +35,7 @@ private:
 
 template<class DataType>
 inline ContentLoader<DataType>::ContentLoader(const std::string & resourceManagerName) :
-	m_pResourceManager(coreEngine->createResourceManager(resourceManagerName)),
+	m_pResourceManager(Core::s_instance->createResourceManager(resourceManagerName)),
 	m_pDataLoader(new DataLoader<DataType>())
 {
 }
@@ -44,7 +44,7 @@ template<class DataType>
 inline ContentLoader<DataType>::~ContentLoader()
 {
 	delete m_pDataLoader;
-	coreEngine->destroyResourceManager(m_pResourceManager);
+	Core::s_instance->destroyResourceManager(m_pResourceManager);
 }
 
 template<class DataType>

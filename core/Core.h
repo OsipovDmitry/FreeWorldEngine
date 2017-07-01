@@ -1,26 +1,27 @@
 #ifndef __CORE__
 #define __CORE__
 
-#include "ICore.h"
+#include <memory>
+#include <core/ICore.h>
 
 #include "Logger.h"
-#define LOG_INFO(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Info))
-#define LOG_WARNING(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Warning))
-#define LOG_ERROR(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Error))
-#define LOG_CRITICAL(text) (coreEngine->logger()->printMessage(std::string(text), ILogger::MessageType_Critical))
+#define LOG_INFO(text) (Core::s_instance->logger()->printMessage(std::string(text), ILogger::MessageType_Info))
+#define LOG_WARNING(text) (Core::s_instance->logger()->printMessage(std::string(text), ILogger::MessageType_Warning))
+#define LOG_ERROR(text) (Core::s_instance->logger()->printMessage(std::string(text), ILogger::MessageType_Error))
+#define LOG_CRITICAL(text) (Core::s_instance->logger()->printMessage(std::string(text), ILogger::MessageType_Critical))
 #define LOG(text) LOG_INFO(text)
 
 namespace FreeWorldEngine {
 
 class Core : public ICore {
 public:
-	Core(int argc, char **argv);
+	Core();
 	~Core();
 
 	int argc() const;
 	char** argv() const;
 	
-	void initialize();
+	void initialize(int argc, char **argv);
 	void deinitialize();
 
 	IResourceManager *createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType = IResourceManager::StorageType_Hash);
@@ -51,6 +52,8 @@ public:
 
 	ILogger *logger();
 
+	static std::unique_ptr<Core> s_instance;
+
 private:
 	int m_argc;
 	char **m_argv;
@@ -74,8 +77,6 @@ private:
 	IWindow *m_pMainWindow;
 
 }; // class Core
-
-extern Core *coreEngine;
 
 } // namespace
 

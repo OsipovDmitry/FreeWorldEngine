@@ -5,13 +5,13 @@
 namespace FreeWorldEngine {
 
 ThreadManager::ThreadManager() :
-	m_pResourceManager(coreEngine->createResourceManager("ResourceManagerForThreadManager"))
+	m_pResourceManager(Core::s_instance->createResourceManager("ResourceManagerForThreadManager"))
 {
 }
 
 ThreadManager::~ThreadManager()
 {
-	coreEngine->destroyResourceManager(m_pResourceManager);
+	Core::s_instance->destroyResourceManager(m_pResourceManager);
 }
 
 IThread *ThreadManager::findThread(const std::string& name) const

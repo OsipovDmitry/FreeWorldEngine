@@ -1,21 +1,21 @@
 #ifndef __FREEWORLDENGINE__
 #define __FREEWORLDENGINE__
 
-#include "ICore.h"
-#include "ILogger.h"
-#include "ILog.h"
-#include "IResource.h"
-#include "IResourceManager.h"
-#include "ILibraryManager.h"
-#include "ILibrary.h"
-#include "IPluginManager.h"
-#include "IPlugin.h"
-#include "IThreadManager.h"
-#include "IThread.h"
-#include "IWindowManager.h"
-#include "IWindow.h"
-#include "IContent.h"
-#include "IContentLoader.h"
+#include "core/ICore.h"
+#include "core/ILogger.h"
+#include "core/ILog.h"
+#include "core/IResource.h"
+#include "core/IResourceManager.h"
+#include "core/ILibraryManager.h"
+#include "core/ILibrary.h"
+#include "core/IPluginManager.h"
+#include "core/IPlugin.h"
+#include "core/IThreadManager.h"
+#include "core/IThread.h"
+#include "core/IWindowManager.h"
+#include "core/IWindow.h"
+#include "core/IContent.h"
+#include "core/IContentLoader.h"
 
 #include "renderer/IGPURenderer.h"
 
@@ -31,15 +31,14 @@
 #include "graphics_engine/IGraphicsWindow.h"
 
 #include "Types.h"
-#include "CoreSettings.h"
 
-namespace FreeWorldEngine {
+//namespace FreeWorldEngine {
 
-CORE_FUNC_DLL bool initCoreEngine(int argc = 0, char **argv = nullptr); // Инициализация движка
-CORE_FUNC_DLL ICore *getCoreEngine(); // Поучение синглтона движка
-CORE_FUNC_DLL void destroyCoreEngine(); // Уничтожение движка
+//CORE_EXPORT bool initCoreEngine(); // Инициализация движка
+//CORE_EXPORT ICore *getCoreEngine(); // Поучение синглтона движка
+//CORE_EXPORT void destroyCoreEngine(); // Уничтожение движка
 
-}
+//}
 
 
 #endif // __FREEWORLDENGINE__

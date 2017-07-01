@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <math/MathUtils.h>
 #include <math/MeshWrapper.h>
 

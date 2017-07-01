@@ -1,7 +1,7 @@
 #ifndef __TEXTFILELOG__
 #define __TEXTFILELOG__
 
-#include <ILog.h>
+#include <core/ILog.h>
 
 namespace FreeWorldEngine {
 

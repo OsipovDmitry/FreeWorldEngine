@@ -18,9 +18,12 @@ namespace {
 
 namespace FreeWorldEngine {
 
-Core::Core(int argc, char **argv) :
-	m_argc(argc),
-	m_argv(argv),
+// singletoon
+std::unique_ptr<Core> Core::s_instance(new Core);
+
+Core::Core() :
+	m_argc(0),
+	m_argv(nullptr),
 	m_pLogger(0),
 	m_pManagerForOtherManagers(0),
 	m_pLibraryManager(0),
@@ -37,6 +40,7 @@ Core::Core(int argc, char **argv) :
 
 Core::~Core()
 {
+	deinitialize();
 }
 
 int Core::argc() const
@@ -49,8 +53,11 @@ char **Core::argv() const
 	return m_argv;
 }
 
-void Core::initialize()
+void Core::initialize(int argc, char **argv)
 {
+	m_argc = argc;
+	m_argv = argv;
+
 	m_pManagerForOtherManagers = FreeWorldEngine::createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
 
 	m_pLogger = new Logger;
@@ -75,7 +82,8 @@ void Core::initialize()
 
 void Core::deinitialize()
 {
-	m_pPluginManager->unloadPlugins();
+	if (m_pPluginManager)
+		m_pPluginManager->unloadPlugins();
 
 	delete m_pGPURenderer;
 	m_pGPURenderer = 0;
@@ -130,7 +138,7 @@ void Core::destroyResourceManager(const std::string& resourceManagerName)
 	m_pManagerForOtherManagers->destroyResource(resourceManagerName);
 }
 
-ILibraryManager *Core::libraryManager() const
+ILibraryManager*Core::libraryManager() const
 {
 	return m_pLibraryManager;
 }
@@ -205,28 +213,10 @@ ILogger *Core::logger()
 	return m_pLogger;
 }
 
-Core *coreEngine = 0;
-
-bool initCoreEngine(int argc, char **argv)
+ICore *ICore::instance()
 {
-	if (!coreEngine)
-		coreEngine = new Core(argc, argv);
-	return true;
+	return static_cast<ICore*>(Core::s_instance.get());
 }
-
-ICore *getCoreEngine()
-{
-	return coreEngine;
-}
-
-void destroyCoreEngine()
-{
-	delete coreEngine;
-	coreEngine = 0;
-
-	//dCloseODE();
-}
-
 
 
 } // namespace

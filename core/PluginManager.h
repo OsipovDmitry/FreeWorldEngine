@@ -3,9 +3,13 @@
 
 #include <list>
 
-#include "IPluginManager.h"
+#include <core/IPluginManager.h>
 
 namespace FreeWorldEngine {
+
+namespace Utility {
+	class Library;
+}
 
 class PluginManager : public IPluginManager {
 public:
@@ -17,6 +21,7 @@ public:
 	~PluginManager();
 
 	IPlugin *loadPlugin(const std::string& libraryName, const std::string& startPluginFuncName, const std::string& getPluginFuncName, const std::string& endPluginFuncName);
+	IPlugin *loadPlugin(void *startPluginFunc, void *getPluginFunc, void *endPluginFunc);
 	IPlugin *findPlugin(const std::string& pluginName) const;
 	void unloadPlugin(IPlugin *pPlugin);
 	void unloadPlugin(const std::string& pluginName);
@@ -29,15 +34,17 @@ private:
 		StartPluginFunc startFunc;
 		GetPluginFunc getFunc;
 		EndPluginFunc endFunc;
+		Utility::Library *pLibrary;
 
-		PluginData(StartPluginFunc start = 0, GetPluginFunc get = 0, EndPluginFunc end = 0) : startFunc(start), getFunc(get), endFunc(end) {}
+		PluginData(StartPluginFunc start = nullptr, GetPluginFunc get = nullptr, EndPluginFunc end = nullptr, Utility::Library *pLib = nullptr) :
+			startFunc(start), getFunc(get), endFunc(end), pLibrary(pLib) {}
 	};
 
 	std::list<PluginData> m_plugins;
 
 	bool findPluginData(const std::string& pluginName, PluginData& resultData) const;
-	IPlugin *loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGetFunc, EndPluginFunc pEndFunc);
-	void unloadPlugin(GetPluginFunc pGetFunc, EndPluginFunc pEndFunc);
+	IPlugin *loadPlugin(StartPluginFunc pStartFunc, GetPluginFunc pGetFunc, EndPluginFunc pEndFunc, Utility::Library *pLib);
+	void unloadPlugin(GetPluginFunc pGetFunc, EndPluginFunc pEndFunc, Utility::Library *pLib);
 
 }; // class PluginManager
 

@@ -26,7 +26,7 @@ void TextFileLog::printMessage(const ILogger::MessageType type, const std::strin
 {
 	FILE *file = fopen(m_filename.c_str(), "a");
 	if (file) {
-		fprintf(file, "%s (%s): %s\n", time.c_str(), getCoreEngine()->logger()->messageTypeString(type).c_str(), message.c_str());
+		fprintf(file, "%s (%s): %s\n", time.c_str(), ICore::instance()->logger()->messageTypeString(type).c_str(), message.c_str());
 		fclose(file);
 	}
 }

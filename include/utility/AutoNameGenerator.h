@@ -10,7 +10,7 @@ namespace FreeWorldEngine {
 namespace Utility {
 
 struct AutoNameGeneratorPrivate;
-class UTILITY_DLL AutoNameGenerator {
+class UTILITY_EXPORT AutoNameGenerator {
 public:
 	AutoNameGenerator(const std::string& prefix = "@utoname");
 	~AutoNameGenerator();

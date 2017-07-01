@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <map>
 
-#include <IResourceManager.h>
+#include <core/IResourceManager.h>
 
 namespace FreeWorldEngine {
 

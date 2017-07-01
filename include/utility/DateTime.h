@@ -10,7 +10,7 @@ namespace FreeWorldEngine {
 
 namespace Utility {
 
-struct UTILITY_DLL Time {
+struct UTILITY_EXPORT Time {
 	Time(uint8 h = 0, uint8 m = 0, uint8 s = 0);
 	
 	std::string toString() const;
@@ -19,7 +19,7 @@ struct UTILITY_DLL Time {
 	uint8 hours, minutes, seconds;
 };
 
-struct UTILITY_DLL Date {
+struct UTILITY_EXPORT Date {
 	enum Month { Jan, Feb, Mar, Apr, May, June, July, Aug, Sept, Oct, Nov, Dec };
 
 	// d >= 1, m = [Jan..Dec], y >= 0
@@ -33,7 +33,7 @@ struct UTILITY_DLL Date {
 	uint8 day;
 };
 
-struct UTILITY_DLL DateTime {
+struct UTILITY_EXPORT DateTime {
 	DateTime(const Time t = Time(), const Date& d = Date());
 	
 	std::string toString() const;

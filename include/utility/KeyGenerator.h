@@ -9,7 +9,7 @@ namespace FreeWorldEngine {
 namespace Utility {
 
 struct KeyGeneratorPrivate;
-class UTILITY_DLL KeyGenerator {
+class UTILITY_EXPORT KeyGenerator {
 public:
 	KeyGenerator(const uint32 startId = 1);
 	~KeyGenerator();

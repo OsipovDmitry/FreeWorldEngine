@@ -21,7 +21,7 @@ std::string TerminalLog::name() const
 
 void TerminalLog::printMessage(const ILogger::MessageType type, const std::string& time, const std::string message) const
 {
-	std::cout << time << " (" << getCoreEngine()->logger()->messageTypeString(type) << "): " << message << std::endl;
+	std::cout << time << " (" << ICore::instance()->logger()->messageTypeString(type) << "): " << message << std::endl;
 }
 
 } // namespace

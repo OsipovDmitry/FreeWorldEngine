@@ -9,7 +9,7 @@ namespace FreeWorldEngine {
 
 namespace Math {
 
-class MATH_DLL MeshWrapper {
+class MATH_EXPORT MeshWrapper {
 public:
 	MeshWrapper(Mesh *pTargetMesh);
 	~MeshWrapper();

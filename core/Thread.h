@@ -5,7 +5,7 @@
 //#include <mutex>
 //#include <thread>
 
-#include <IThread.h>
+#include <core/IThread.h>
 
 namespace FreeWorldEngine {
 

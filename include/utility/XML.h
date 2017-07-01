@@ -13,7 +13,7 @@ namespace Utility {
 class File;
 
 struct XMLNodePrivate;
-class UTILITY_DLL XMLNode {
+class UTILITY_EXPORT XMLNode {
 	friend class XMLRoot;
 
 public:
@@ -43,7 +43,7 @@ private:
 };
 
 struct XMLRootPrivate;
-class UTILITY_DLL XMLRoot : public XMLNode {
+class UTILITY_EXPORT XMLRoot : public XMLNode {
 public:
 	static XMLRoot *openFromFile(const File& file);
 	static XMLRoot *openFromData(const char *xmlData);

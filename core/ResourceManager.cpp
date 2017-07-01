@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "IResource.h"
+#include <core/IResource.h>
 
 #include "ResourceManager.h"
 
@@ -15,7 +15,7 @@ namespace {
 
 class ResourceIteratorPrivate {
 public:
-	virtual ~ResourceIteratorPrivate() = 0 {}
+	virtual ~ResourceIteratorPrivate() {}
 
 	virtual ResourceIteratorPrivate *clone() const = 0;
 
@@ -34,7 +34,7 @@ public:
 	bool operator !=(const ResourceIteratorPrivate *other) const { return m_iter != static_cast<const ResourceIteratorPrivateImpl<Iter>*>(other)->m_iter; }
 	IResource *operator *() { return m_iter->second; }
 	void operator ++() { ++m_iter; }
-	void operator --() { --m_iter; }
+	void operator --() { m_iter; }
 private:
 	Iter m_iter;
 };
@@ -190,15 +190,15 @@ IResourceManager *createResourceManager(const std::string & resourceManagerName,
 	IResourceManager *pResourceManager = 0;
 	switch (storageType) {
 	case IResourceManager::StorageType_List: {
-		pResourceManager = new ResourceManager<typename list>(resourceManagerName);
+		pResourceManager = new ResourceManager</*typename*/ list>(resourceManagerName);
 		break;
 	}
 	case IResourceManager::StorageType_Hash: {
-		pResourceManager = new ResourceManager<typename hash>(resourceManagerName);
+		pResourceManager = new ResourceManager</*typename*/ hash>(resourceManagerName);
 		break;
 	}
 	case IResourceManager::StorageType_Map: {
-		pResourceManager = new ResourceManager<typename map>(resourceManagerName);
+		pResourceManager = new ResourceManager</*typename*/ map>(resourceManagerName);
 		break;
 	}
 	default:
@@ -209,20 +209,20 @@ IResourceManager *createResourceManager(const std::string & resourceManagerName,
 
 // Частичная специализация методов для list реализации
 template <>
-IResourceManager::StorageType ResourceManager<typename list>::storageType() const
+IResourceManager::StorageType ResourceManager</*typename*/ list>::storageType() const
 {
 	return IResourceManager::StorageType_List;
 }
 
 template <>
-IResource *ResourceManager<typename list>::findResource(const std::string& name) const
+IResource *ResourceManager</*typename*/ list>::findResource(const std::string& name) const
 {
 	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
 	return (it != m_data.end()) ? *it : 0;
 }
 
 template <>
-void ResourceManager<typename list>::addResource(IResource *pResource)
+void ResourceManager</*typename*/ list>::addResource(IResource *pResource)
 {
 	const std::string name = pResource->name();
 	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
@@ -235,7 +235,7 @@ void ResourceManager<typename list>::addResource(IResource *pResource)
 }
 
 template <>
-void ResourceManager<typename list>::destroyResource(const std::string& name)
+void ResourceManager</*typename*/ list>::destroyResource(const std::string& name)
 {
 	auto it = std::find_if(m_data.begin(), m_data.end(), [&name](IResource *p) { return p->name() == name; });
 	if (it != m_data.end()) {
@@ -246,7 +246,7 @@ void ResourceManager<typename list>::destroyResource(const std::string& name)
 }
 
 template <>
-void ResourceManager<typename list>::destroyAllResources()
+void ResourceManager</*typename*/ list>::destroyAllResources()
 {
 	std::for_each(m_data.begin(), m_data.end(), [](IResource *p) { delete p; });
 	m_data.clear();
@@ -254,14 +254,14 @@ void ResourceManager<typename list>::destroyAllResources()
 
 // Частичная специализация методов для hash реализации
 template <>
-IResourceManager::StorageType ResourceManager<typename hash>::storageType() const
+IResourceManager::StorageType ResourceManager</*typename*/ hash>::storageType() const
 {
 	return IResourceManager::StorageType_Hash;
 }
 
 // Частичная специализация методов для map реализации
 template <>
-IResourceManager::StorageType ResourceManager<typename map>::storageType() const
+IResourceManager::StorageType ResourceManager</*typename*/ map>::storageType() const
 {
 	return IResourceManager::StorageType_Map;
 }
