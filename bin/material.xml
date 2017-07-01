@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<material>
+	
+	<program  vert_shader="vertex.txt" frag_shader="fragment.txt"/>
+	
+	<texture variable="diffuseMap" image="brick.jpg" />
+	<uniform variable="coef1" value="0.7" />
+	<auto_uniform variable="mvp", value="ModelViewProjectionMatrix" />
+	
+	<depth_check state="true" />
+	<depth_write state="false" />
+	
+	<blend state="alpha" />
+	
+</material>

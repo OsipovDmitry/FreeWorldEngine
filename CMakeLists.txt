@@ -18,7 +18,3 @@ add_subdirectory(core)
 add_subdirectory(plugins)
 #add_subdirectory(demo)
 add_subdirectory(demo2)
-
-if (FWE_TESTS)
-    add_subdirectory(test/xml)
-endif ()
