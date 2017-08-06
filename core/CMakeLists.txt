@@ -34,8 +34,6 @@ source_group("Common Headers" FILES ${COMMON_HEADERS})
 
 set(HEADERS
     Core.h
-	Library.h
-	LibraryManager.h
     Logger.h
     PluginManager.h
     ResourceManager.h
@@ -48,8 +46,6 @@ set(HEADERS
 
 set(SOURCES
     Core.cpp
-	Library.cpp
-	LibraryManager.cpp
     Logger.cpp
     PluginManager.cpp
     ResourceManager.cpp
