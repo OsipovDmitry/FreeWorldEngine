@@ -1,7 +1,7 @@
 #ifndef __GLRENDERERPLUGIN__
 #define __GLRENDERERPLUGIN__
 
-#include "IPlugin.h"
+#include <core/IPlugin.h>
 
 namespace FreeWorldEngine {
 

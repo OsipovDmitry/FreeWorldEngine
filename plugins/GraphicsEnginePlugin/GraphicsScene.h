@@ -2,6 +2,7 @@
 #define __GRAPHICSSCENE__
 
 #include <vector>
+#include <map>
 
 #include <math/MathTypes.h>
 
@@ -9,13 +10,19 @@
 
 namespace FreeWorldEngine {
 
+class IResourceManager;
+
+namespace Utility {
+	class AutoNameGenerator;
+} // namespace
+
 namespace GraphicsEngine {
 
 class GraphicsModel;
 class GraphicsScene;
+class GraphicsLight;
 class GPUMesh;
-class KdNode;
-class KdTree;
+class AbstractSceneOptimizer;
 
 class GraphicsSceneNode : public IGraphicsSceneNode {
 public:
@@ -30,8 +37,6 @@ public:
 	void setOrientation(const glm::quat& orient);
 	const glm::mat4x4& localTransformation() const;
 	const glm::mat4x4& worldTransformation() const;
-	const Math::Sphere& worldBoundingSphere() const;
-	const Math::Aabb& worldBoundingBox() const;
 
 	IGraphicsSceneNode *parentNode() const;
 	IGraphicsScene *scene() const;
@@ -44,35 +49,40 @@ public:
 	IGraphicsModel *model() const;
 	void setModel(IGraphicsModel *pModel);
 
-	KdNode *kdNode() const;
-	void setKdNode(KdNode *pKdNode);
+	const Math::Sphere& worldBoundingSphere() const;
+
+	GraphicsModel *modelImpl() const;
+	GraphicsScene *sceneImpl() const;
+	GraphicsSceneNode *parentSceneNodeImpl() const;
+	const ChildrenList& chilNodesImpl() const;
+
+	void setOptimizerData(void *pData);
+	void *optimizerData() const;
 
 private:
 	mutable glm::mat4x4 m_cacheWorldlTransform, m_cacheLocalTransform;
 	mutable Math::Sphere m_worldSphere;
-	mutable Math::Aabb m_worldAabb;
 
 	ChildrenList m_childNodes;
 	GraphicsScene *m_pScene;
 	GraphicsSceneNode *m_pParentNode;
 	GraphicsModel *m_pModel;
-	KdNode *m_pKdNode;
+
+	void *m_pOptimizerData;
 
 	glm::quat m_orientation;
 	glm::vec3 m_position;
-	mutable bool m_needUpdateTransformation, m_needUpdateBoundingVolumes;
+	mutable bool m_needUpdateTransformation, m_needUpdateBoundingSphere;
 
-	void updateTransformationRecursiveDown() const;
-	void updateBoundingVolumesRecursiveDown() const;
+	void updateTransformationRecursiveDown();
+	void updateBoundingSpheresRecursiveDown() const;
 	void recalcTransformation() const;
-	void recalcBoundingVolumes() const;
-
-	void updateKdNodesRecursiveDown();
+	void recalcBoundingSphere() const;
 };
 
 class GraphicsScene : public IGraphicsScene {
 public:
-	GraphicsScene(const std::string& name);
+	GraphicsScene(const std::string& name, IGraphicsScene::SceneOptimizerType optimizerType);
 	~GraphicsScene();
 
 	std::string name() const;
@@ -81,12 +91,24 @@ public:
 	IGraphicsSceneNode *createNode();
 	void destroyNode(IGraphicsSceneNode *pNode);
 
-	KdTree *kdTree() const;
+	IGraphicsLight *findLight(const std::string& name) const;
+	IGraphicsLight *createLight(IGraphicsLight::Type type, const std::string& name = "@utoname");
+	void destroyLight(const std::string& name);
+	void destroyLight(IGraphicsLight *pLight);
+
+	SceneOptimizerType optimizerType() const;
+
+	AbstractSceneOptimizer *optimizer() const;
+
+	GraphicsSceneNode *rootNodeImpl() const;
+	IResourceManager *lightsImpl() const;
 
 private:
 	std::string m_name;
 	GraphicsSceneNode *m_pRootNode;
-	KdTree *m_pTree;
+	AbstractSceneOptimizer *m_pOptimizer;
+	IResourceManager *m_pLightManager;
+	Utility::AutoNameGenerator *m_pLightNameGenerator;
 
 	std::list<GraphicsSceneNode*> m_nodes;
 

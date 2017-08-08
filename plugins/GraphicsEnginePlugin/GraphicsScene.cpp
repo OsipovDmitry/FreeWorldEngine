@@ -3,13 +3,20 @@
 
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
 
+#include <utility/AutoNameGenerator.h>
+
 #include <math/MeshWrapper.h>
 #include <math/MeshPainter.h>
+#include <math/MathUtils.h>
+
+#include <core/IResourceManager.h>
+#include <core/ICore.h>
 
 #include "GraphicsScene.h"
 #include "GraphicsModel.h"
+#include "GraphicsLight.h"
 #include "GPUMesh.h"
-#include "KdTree.h"
+#include "AbstractSceneOptimizer.h"
 
 namespace FreeWorldEngine {
 
@@ -19,17 +26,19 @@ GraphicsSceneNode::GraphicsSceneNode(GraphicsScene *pScene) :
 	m_pScene(pScene),
 	m_pParentNode(nullptr),
 	m_pModel(nullptr),
-	m_pKdNode(nullptr),
+	m_pOptimizerData(nullptr),
 	m_childNodes(),
 	m_position(),
 	m_orientation(),
 	m_needUpdateTransformation(true),
-	m_needUpdateBoundingVolumes(true)
+	m_needUpdateBoundingSphere(true)
 {
+	m_pScene->optimizer()->nodeCreated(this);
 }
 
 GraphicsSceneNode::~GraphicsSceneNode()
 {
+	m_pScene->optimizer()->nodeDestroyed(this);
 }
 
 glm::vec3 GraphicsSceneNode::position() const
@@ -40,9 +49,8 @@ glm::vec3 GraphicsSceneNode::position() const
 void GraphicsSceneNode::setPosition(const glm::vec3& pos)
 {
 	m_position = pos;
+	updateBoundingSpheresRecursiveDown();
 	updateTransformationRecursiveDown();
-	updateBoundingVolumesRecursiveDown();
-	updateKdNodesRecursiveDown();
 }
 
 glm::quat GraphicsSceneNode::orientation()
@@ -53,9 +61,8 @@ glm::quat GraphicsSceneNode::orientation()
 void GraphicsSceneNode::setOrientation(const glm::quat& orient)
 {
 	m_orientation = orient;
+	updateBoundingSpheresRecursiveDown();
 	updateTransformationRecursiveDown();
-	updateBoundingVolumesRecursiveDown();
-	updateKdNodesRecursiveDown();
 }
 
 const glm::mat4x4& GraphicsSceneNode::localTransformation() const
@@ -76,128 +83,126 @@ const glm::mat4x4& GraphicsSceneNode::worldTransformation() const
 
 const Math::Sphere& GraphicsSceneNode::worldBoundingSphere() const
 {
-	if (m_needUpdateBoundingVolumes)
-		recalcBoundingVolumes();
+	if (m_needUpdateBoundingSphere)
+		recalcBoundingSphere();
 
 	return m_worldSphere;
 }
 
-const Math::Aabb& GraphicsSceneNode::worldBoundingBox() const
-{
-	if (m_needUpdateBoundingVolumes)
-		recalcBoundingVolumes();
-
-	return m_worldAabb;
-}
-
 IGraphicsSceneNode *GraphicsSceneNode::parentNode() const
 {
-	return m_pParentNode;
+	return parentSceneNodeImpl();
 }
 
 IGraphicsScene *GraphicsSceneNode::scene() const
 {
-	return m_pScene;
+	return sceneImpl();
 }
 
 void GraphicsSceneNode::attachChildNode(IGraphicsSceneNode *pNode)
 {
-	if (pNode->scene() != this->scene())
-		return;
-
 	GraphicsSceneNode *pGraphicsNode = static_cast<GraphicsSceneNode*>(pNode);
 
-	IGraphicsSceneNode *pParentNode = pGraphicsNode->parentNode();
+	if (pGraphicsNode->sceneImpl() != this->sceneImpl())
+		return;
+
+	GraphicsSceneNode *pParentNode = pGraphicsNode->parentSceneNodeImpl();
+
+	if (pParentNode == this)
+		return;
+
 	if (pParentNode)
 		pParentNode->detachChildNode(pGraphicsNode);
 
 	m_childNodes.push_back(pGraphicsNode);
 	pGraphicsNode->m_pParentNode = this;
-
-	KdTree *pKdTree = m_pScene->kdTree();
-	std::list<GraphicsSceneNode*> nodes;
-	nodes.push_back(pGraphicsNode);
-	while (!nodes.empty()) {
-		GraphicsSceneNode *p = nodes.front();
-		nodes.pop_front();
-		std::copy(p->m_childNodes.cbegin(), p->m_childNodes.cend(), std::back_inserter(nodes));
-		pKdTree->reinsertSceneNode(p);
-	}
+	m_pScene->optimizer()->nodeAttached(pGraphicsNode);
 }
 
 void GraphicsSceneNode::detachChildNode(IGraphicsSceneNode *pNode)
 {
-	if (pNode->scene() != this->scene())
+	GraphicsSceneNode *pGraphicsNode = static_cast<GraphicsSceneNode*>(pNode);
+
+	if (pGraphicsNode->sceneImpl() != this->sceneImpl())
 		return;
 
-	auto it = std::find(m_childNodes.cbegin(), m_childNodes.cend(), static_cast<GraphicsSceneNode*>(pNode));
+	auto it = std::find(m_childNodes.cbegin(), m_childNodes.cend(), pGraphicsNode);
 	if (it != m_childNodes.cend()) {
+		m_pScene->optimizer()->nodeDetached(pGraphicsNode);
 		m_childNodes.erase(it);
 		(*it)->m_pParentNode = nullptr;
-		KdTree *pKdTree = m_pScene->kdTree();
-		std::list<GraphicsSceneNode*> nodes;
-		nodes.push_back(*it);
-		while (!nodes.empty()) {
-			GraphicsSceneNode *p = nodes.front();
-			nodes.pop_front();
-			std::copy(p->m_childNodes.cbegin(), p->m_childNodes.cend(), std::back_inserter(nodes));
-			pKdTree->removeSceneNode(p);
-		}
 	}
 }
 
 uint32 GraphicsSceneNode::numChildNodes() const
 {
-	return m_childNodes.size();
+	return chilNodesImpl().size();
 }
 
 IGraphicsSceneNode *GraphicsSceneNode::childNodeAt(const uint32 idx) const
 {
-	return m_childNodes[idx];
+	return chilNodesImpl()[idx];
 }
 
 IGraphicsModel *GraphicsSceneNode::model() const
 {
-	return m_pModel;
+	return modelImpl();
 }
 
 void GraphicsSceneNode::setModel(IGraphicsModel *pModel)
 {
 	m_pModel = static_cast<GraphicsModel*>(pModel);
-	m_needUpdateBoundingVolumes = true;
-
-	if (m_pKdNode) {
-		m_pKdNode->removeSceneNode(this);
-		m_pScene->kdTree()->reinsertSceneNode(this);
-	}
+	m_needUpdateBoundingSphere = true;
+	m_pScene->optimizer()->nodeModelChanged(this);
 }
 
-KdNode *GraphicsSceneNode::kdNode() const
+GraphicsModel *GraphicsSceneNode::modelImpl() const
 {
-	return m_pKdNode;
+	return m_pModel;
 }
 
-void GraphicsSceneNode::setKdNode(KdNode *pKdNode)
+GraphicsScene *GraphicsSceneNode::sceneImpl() const
 {
-	m_pKdNode = pKdNode;
+	return m_pScene;
 }
 
-void GraphicsSceneNode::updateTransformationRecursiveDown() const
+GraphicsSceneNode*GraphicsSceneNode::parentSceneNodeImpl() const
+{
+	return m_pParentNode;
+}
+
+const GraphicsSceneNode::ChildrenList& GraphicsSceneNode::chilNodesImpl() const
+{
+	return m_childNodes;
+}
+
+void GraphicsSceneNode::setOptimizerData(void* pData)
+{
+	m_pOptimizerData = pData;
+}
+
+void *GraphicsSceneNode::optimizerData() const
+{
+	return m_pOptimizerData;
+}
+
+void GraphicsSceneNode::updateTransformationRecursiveDown()
 {
 	m_needUpdateTransformation = true;
+	m_pScene->optimizer()->nodeTransformationChanged(this);
 	
 	std::for_each(m_childNodes.begin(), m_childNodes.end(),
 		std::mem_fun(&GraphicsSceneNode::updateTransformationRecursiveDown)
 	);
 }
 
-void GraphicsSceneNode::updateBoundingVolumesRecursiveDown() const
+void GraphicsSceneNode::updateBoundingSpheresRecursiveDown() const
 {
-	m_needUpdateBoundingVolumes = false;
+	m_needUpdateBoundingSphere = true;
 
 	std::for_each(m_childNodes.begin(), m_childNodes.end(),
-		std::mem_fun(&GraphicsSceneNode::updateBoundingVolumesRecursiveDown)
-		);
+		std::mem_fun(&GraphicsSceneNode::updateBoundingSpheresRecursiveDown)
+				  );
 }
 
 void GraphicsSceneNode::recalcTransformation() const
@@ -207,40 +212,34 @@ void GraphicsSceneNode::recalcTransformation() const
 	m_needUpdateTransformation = false;
 }
 
-void GraphicsSceneNode::recalcBoundingVolumes() const
+void GraphicsSceneNode::recalcBoundingSphere() const
 {
-	Math::Sphere localSphere = m_pModel ? m_pModel->boundingSphere() : Math::Sphere();
+	Math::Sphere localSphere = m_pModel ? m_pModel->boundingSphere() : Math::buildEmptySphere();
 	m_worldSphere = Math::Sphere(glm::vec3(worldTransformation() * glm::vec4(glm::vec3(localSphere), 1.0f)), localSphere.w);
-	m_worldAabb = Math::Aabb(
-		glm::vec3(m_worldSphere) - glm::vec3(m_worldSphere.w), 
-		glm::vec3(m_worldSphere) + glm::vec3(m_worldSphere.w)
-	);
-	m_needUpdateBoundingVolumes = false;
+	m_needUpdateBoundingSphere = false;
 }
 
-void GraphicsSceneNode::updateKdNodesRecursiveDown()
-{
-	if (m_pKdNode) {
-		std::for_each(m_childNodes.begin(), m_childNodes.end(), std::mem_fun(&GraphicsSceneNode::updateKdNodesRecursiveDown));
-		m_pScene->kdTree()->reinsertSceneNode(this);
-	}
-}
-
-GraphicsScene::GraphicsScene(const std::string& name) :
+GraphicsScene::GraphicsScene(const std::string& name, SceneOptimizerType optimizerType) :
 	m_name(name),
-	m_pTree(new KdTree),
-	m_nodes()
+	m_nodes(),
+	m_pOptimizer(nullptr),
+	m_pRootNode(nullptr),
+	m_pLightManager(ICore::instance()->createResourceManager("ResourceManagerForLights_"+name)),
+	m_pLightNameGenerator(new Utility::AutoNameGenerator("Scene:"+name+"_Light:"))
 {
+	m_pOptimizer = AbstractSceneOptimizer::createSceneOptimizer(optimizerType, this);
 	m_pRootNode = static_cast<GraphicsSceneNode*>(createNode());
-	m_pTree->reinsertSceneNode(m_pRootNode);
+	m_pOptimizer->nodeAttached(m_pRootNode); // Насильно вызываем метод nodeAttached у оптимизатора, так как root-node никогда не будет никуда приаттачен
 }
 
 GraphicsScene::~GraphicsScene()
 {
-	delete m_pTree;
-	std::for_each(m_nodes.begin(), m_nodes.end(), [](GraphicsSceneNode *p) {
-		delete p;
-	});
+	delete m_pLightNameGenerator;
+	ICore::instance()->destroyResourceManager(m_pLightManager);
+
+	// TODO: Правильно отсоединение и удаление всех SceneNode из m_nodes
+
+	delete m_pOptimizer;
 }
 
 std::string GraphicsScene::name() const
@@ -250,7 +249,7 @@ std::string GraphicsScene::name() const
 
 IGraphicsSceneNode *GraphicsScene::rootNode() const
 {
-	return m_pRootNode;
+	return rootNodeImpl();
 }
 
 IGraphicsSceneNode *GraphicsScene::createNode()
@@ -262,14 +261,15 @@ IGraphicsSceneNode *GraphicsScene::createNode()
 
 void GraphicsScene::destroyNode(IGraphicsSceneNode *pNode)
 {
-	if (pNode == m_pRootNode)
-		return;
-
 	GraphicsSceneNode *pGraphicsSceneNode = static_cast<GraphicsSceneNode*>(pNode);
-	if (pGraphicsSceneNode->scene() != this)
+
+	if (pGraphicsSceneNode->sceneImpl() != this)
 		return;
 
-	IGraphicsSceneNode *pParentNode = pGraphicsSceneNode->parentNode();
+	if (pGraphicsSceneNode == m_pRootNode)
+		return;
+
+	GraphicsSceneNode *pParentNode = pGraphicsSceneNode->parentSceneNodeImpl();
 	if (pParentNode)
 		pParentNode->detachChildNode(pGraphicsSceneNode);
 
@@ -278,17 +278,65 @@ void GraphicsScene::destroyNode(IGraphicsSceneNode *pNode)
 	while (!nodes.empty()) {
 		GraphicsSceneNode *p = nodes.front();
 		nodes.pop_front();
-		uint32 numChildNodes = p->numChildNodes();
-		for (uint32 i = 0; i < numChildNodes; ++i)
-			nodes.push_back(static_cast<GraphicsSceneNode*>(p->childNodeAt(i)));
+		std::copy(p->chilNodesImpl().cbegin(), p->chilNodesImpl().cend(), std::back_inserter(nodes));
 		m_nodes.remove(p);
 		delete p;
 	}
 }
 
-KdTree *GraphicsScene::kdTree() const
+IGraphicsLight *GraphicsScene::findLight(const std::string& name) const
 {
-	return m_pTree;
+	return static_cast<IGraphicsLight*>(m_pLightManager->findResource(name));
+}
+
+IGraphicsLight *GraphicsScene::createLight(IGraphicsLight::Type type, const std::string& name)
+{
+	const std::string resName = (name == "@utoname") ? m_pLightNameGenerator->generateName() : name;
+	IGraphicsLight *pLight = findLight(resName);
+	if (pLight)
+		return pLight;
+
+	pLight = new GraphicsLight(this, type, resName);
+	m_pLightManager->addResource(pLight);
+	return pLight;
+}
+
+void GraphicsScene::destroyLight(const std::string& name)
+{
+	GraphicsLight *pGraphicsLight = static_cast<GraphicsLight*>(m_pLightManager->findResource(name));
+
+	if (!pGraphicsLight)
+		return;
+
+	if (pGraphicsLight->sceneImpl() != this)
+		return;
+
+	m_pLightManager->destroyResource(name);
+}
+
+void GraphicsScene::destroyLight(IGraphicsLight* pLight)
+{
+	return destroyLight(pLight->name());
+}
+
+IGraphicsScene::SceneOptimizerType GraphicsScene::optimizerType() const
+{
+	return m_pOptimizer->type();
+}
+
+AbstractSceneOptimizer *GraphicsScene::optimizer() const
+{
+	return m_pOptimizer;
+}
+
+GraphicsSceneNode*GraphicsScene::rootNodeImpl() const
+{
+	return m_pRootNode;
+}
+
+IResourceManager*GraphicsScene::lightsImpl() const
+{
+	return m_pLightManager;
 }
 
 } // namespace

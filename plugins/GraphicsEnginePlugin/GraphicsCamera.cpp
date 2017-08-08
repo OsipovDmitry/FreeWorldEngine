@@ -11,7 +11,6 @@ GraphicsCamera::GraphicsCamera(const std::string & name) :
 	m_frustum(),
 	m_cacheProjMatrix(),
 	m_cacheViewMatrix(),
-	m_cacheViewProjMatrix(),
 	m_orientQuat(),
 	m_orientAngles(0.0f, 0.0f, 0.0f),
 	m_orientMatrix(),
@@ -23,7 +22,8 @@ GraphicsCamera::GraphicsCamera(const std::string & name) :
 	m_halfHeight(1.0f),
 	m_projType(ProjectionType_Perspective),
 	m_needUpProjMatrix(true),
-	m_needUpViewMatrix(true)
+	m_needUpViewMatrix(true),
+	m_needUpFrustum(true)
 {
 }
 
@@ -38,35 +38,41 @@ std::string GraphicsCamera::name() const
 
 glm::mat4x4 GraphicsCamera::viewMatrix() const
 {
+	if (m_needUpViewMatrix) {
+		recalcViewMatrix();
+		m_needUpViewMatrix = false;
+	}
 	return m_cacheViewMatrix;
 }
 
 glm::mat4x4 GraphicsCamera::projectionMatrix() const
 {
+	if (m_needUpProjMatrix) {
+		recalcProjMatrix();
+		m_needUpProjMatrix = false;
+	}
 	return m_cacheProjMatrix;
 }
 
-glm::mat4x4 GraphicsCamera::viewProjectionMatrix() const
-{
-	return m_cacheViewProjMatrix;
-}
-
-void GraphicsCamera::setViewMatrix(const glm::mat4x4 & value)
+void GraphicsCamera::setViewMatrix(const glm::mat4x4& value)
 {
 	m_cacheViewMatrix = value;
 	m_needUpViewMatrix = false;
+	m_needUpFrustum = true;
 }
 
-void GraphicsCamera::setProjectionMatrix(const glm::mat4x4 & value)
+void GraphicsCamera::setProjectionMatrix(const glm::mat4x4& value)
 {
 	m_cacheProjMatrix = value;
 	m_needUpProjMatrix = false;
+	m_needUpFrustum = true;
 }
 
 void GraphicsCamera::setAspectRatio(const float aspectRatio)
 {
 	m_aspectRatio = aspectRatio;
 	m_needUpProjMatrix = true;
+	m_needUpFrustum = true;
 }
 
 float GraphicsCamera::aspectRatio() const
@@ -79,9 +85,10 @@ void GraphicsCamera::setDepthRange(const float zNear, const float zFar)
 	m_zNear = zNear;
 	m_zFar = zFar;
 	m_needUpProjMatrix = true;
+	m_needUpFrustum = true;
 }
 
-void GraphicsCamera::depthRange(float & zNear, float & zFar) const
+void GraphicsCamera::depthRange(float& zNear, float& zFar) const
 {
 	zNear = m_zNear;
 	zFar = m_zFar;
@@ -92,6 +99,7 @@ void GraphicsCamera::setPerspectiveProjection(const float fov)
 	m_fov = fov;
 	m_projType = ProjectionType_Perspective;
 	m_needUpProjMatrix = true;
+	m_needUpFrustum = true;
 }
 
 void GraphicsCamera::setOrthoProjection(const float halfHeight)
@@ -99,12 +107,14 @@ void GraphicsCamera::setOrthoProjection(const float halfHeight)
 	m_halfHeight = halfHeight;
 	m_projType = ProjectionType_Ortho;
 	m_needUpProjMatrix = true;
+	m_needUpFrustum = true;
 }
 
 void GraphicsCamera::setPosition(const glm::vec3 & pos)
 {
 	m_position = pos;
 	m_needUpViewMatrix = true;
+	m_needUpFrustum = true;
 }
 
 glm::vec3 GraphicsCamera::position() const
@@ -112,18 +122,20 @@ glm::vec3 GraphicsCamera::position() const
 	return m_position;
 }
 
-void GraphicsCamera::setOrientation(const glm::mat3x3 & rotateMatrix)
+void GraphicsCamera::setOrientation(const glm::mat3x3& rotateMatrix)
 {
 	m_orientMatrix = rotateMatrix;
 	m_orientType = OrientType_Dirs;
 	m_needUpViewMatrix = true;
+	m_needUpFrustum = true;
 }
 
-void GraphicsCamera::setOrientation(const glm::vec3 & right, const glm::vec3 & up, const glm::vec3 & back)
+void GraphicsCamera::setOrientation(const glm::vec3& right, const glm::vec3& up, const glm::vec3& back)
 {
 	m_orientMatrix = glm::mat3x3(glm::normalize(right), glm::normalize(up), glm::normalize(back));
 	m_orientType = OrientType_Dirs;
 	m_needUpViewMatrix = true;
+	m_needUpFrustum = true;
 }
 
 void GraphicsCamera::setOrientation(const float yaw, const float pitch, const float roll)
@@ -131,115 +143,216 @@ void GraphicsCamera::setOrientation(const float yaw, const float pitch, const fl
 	m_orientAngles = glm::vec3(yaw, pitch, roll);
 	m_orientType = OrientType_Angles;
 	m_needUpViewMatrix = true;
+	m_needUpFrustum = true;
 }
 
-void GraphicsCamera::setOrientation(const glm::quat & orient)
+void GraphicsCamera::setOrientation(const glm::quat& orient)
 {
 	m_orientQuat = orient;
 	m_orientType = OrientType_Quat;
 	m_needUpViewMatrix = true;
+	m_needUpFrustum = true;
 }
 
 glm::quat GraphicsCamera::orientation() const
 {
+	if (m_needUpViewMatrix) {
+		recalcViewMatrix();
+		m_needUpViewMatrix = false;
+	}
 	return m_orientQuat;
 }
 
 glm::vec3 GraphicsCamera::rightDirection() const
 {
+	if (m_needUpViewMatrix) {
+		recalcViewMatrix();
+		m_needUpViewMatrix = false;
+	}
 	return glm::vec3(m_orientMatrix[0][0], m_orientMatrix[1][0], m_orientMatrix[2][0]);
 }
 
 glm::vec3 GraphicsCamera::upDirection() const
 {
+	if (m_needUpViewMatrix) {
+		recalcViewMatrix();
+		m_needUpViewMatrix = false;
+	}
 	return glm::vec3(m_orientMatrix[0][1], m_orientMatrix[1][1], m_orientMatrix[2][1]);
 }
 
 glm::vec3 GraphicsCamera::backwardDirection() const
 {
+	if (m_needUpViewMatrix) {
+		recalcViewMatrix();
+		m_needUpViewMatrix = false;
+	}
 	return glm::vec3(m_orientMatrix[0][2], m_orientMatrix[1][2], m_orientMatrix[2][2]);
 }
 
-const Math::Frustum & GraphicsCamera::frustum() const
+const Math::Frustum& GraphicsCamera::frustum() const
 {
+	if (m_needUpFrustum) {
+		recalcFrustum();
+		m_needUpFrustum = false;
+	}
 	return m_frustum;
 }
 
-void GraphicsCamera::update()
+//void GraphicsCamera::update()
+//{
+//	if (m_needUpProjMatrix) {
+//		switch (m_projType) {
+//		case ProjectionType_Perspective: m_cacheProjMatrix = glm::perspective(m_fov, m_aspectRatio, m_zNear, m_zFar); break;
+//		case ProjectionType_Ortho: m_cacheProjMatrix = glm::ortho(-m_halfHeight*m_aspectRatio, m_halfHeight*m_aspectRatio, -m_halfHeight, m_halfHeight, m_zNear, m_zFar); break;
+//		default: break;
+//		}
+//	}
+
+//	if (m_needUpViewMatrix) {
+//		switch (m_orientType) {
+//		case OrientType_Dirs: {
+//			m_orientQuat = glm::quat(m_orientMatrix);
+//			m_orientAngles = glm::eulerAngles(m_orientQuat);
+//			break;
+//		}
+//		case OrientType_Quat: {
+//			m_orientAngles = glm::eulerAngles(m_orientQuat);
+//			m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
+//			break;
+//		}
+//		case OrientType_Angles: {
+//			m_orientQuat = glm::quat(m_orientAngles);
+//			m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
+//			break;
+//		}
+//		default: break;
+//		}
+//		m_cacheViewMatrix = glm::translate(glm::mat4x4(m_orientMatrix), -m_position);
+//	}
+
+//	if (m_needUpProjMatrix || m_needUpViewMatrix) {
+//		m_cacheViewProjMatrix = m_cacheProjMatrix * m_cacheViewMatrix;
+//		glm::mat4& vp = m_cacheViewProjMatrix;
+//		// right plane
+//		m_frustum[0].x = vp[0][3] - vp[0][0];
+//		m_frustum[0].y = vp[1][3] - vp[1][0];
+//		m_frustum[0].z = vp[2][3] - vp[2][0];
+//		m_frustum[0].w = vp[3][3] - vp[3][0];
+//		// left plane
+//		m_frustum[1].x = vp[0][3] + vp[0][0];
+//		m_frustum[1].y = vp[1][3] + vp[1][0];
+//		m_frustum[1].z = vp[2][3] + vp[2][0];
+//		m_frustum[1].w = vp[3][3] + vp[3][0];
+//		// top plane
+//		m_frustum[2].x = vp[0][3] - vp[0][1];
+//		m_frustum[2].y = vp[1][3] - vp[1][1];
+//		m_frustum[2].z = vp[2][3] - vp[2][1];
+//		m_frustum[2].w = vp[3][3] - vp[3][1];
+//		// bottom plane
+//		m_frustum[3].x = vp[0][3] + vp[0][1];
+//		m_frustum[3].y = vp[1][3] + vp[1][1];
+//		m_frustum[3].z = vp[2][3] + vp[2][1];
+//		m_frustum[3].w = vp[3][3] + vp[3][1];
+//		// far plane
+//		m_frustum[4].x = vp[0][3] - vp[0][2];
+//		m_frustum[4].y = vp[1][3] - vp[1][2];
+//		m_frustum[4].z = vp[2][3] - vp[2][2];
+//		m_frustum[4].w = vp[3][3] - vp[3][2];
+//		// near plane
+//		m_frustum[5].x = vp[0][3] + vp[0][2];
+//		m_frustum[5].y = vp[1][3] + vp[1][2];
+//		m_frustum[5].z = vp[2][3] + vp[2][2];
+//		m_frustum[5].w = vp[3][3] + vp[3][2];
+//		// normalize
+//		for (int32 i = 0; i < 6; i++) {
+//			float len = glm::length(glm::vec3(m_frustum[i]));
+//			if (len > Math::eps)
+//				m_frustum[i] /= len;
+//		}
+//	}
+
+//	m_needUpViewMatrix = false;
+//	m_needUpProjMatrix = false;
+//}
+
+void GraphicsCamera::recalcViewMatrix() const
 {
-	if (m_needUpProjMatrix) {
-		switch (m_projType) {
-		case ProjectionType_Perspective: m_cacheProjMatrix = glm::perspective(m_fov, m_aspectRatio, m_zNear, m_zFar); break;
-		case ProjectionType_Ortho: m_cacheProjMatrix = glm::ortho(-m_halfHeight*m_aspectRatio, m_halfHeight*m_aspectRatio, -m_halfHeight, m_halfHeight, m_zNear, m_zFar); break;
-		default: break;
-		}
+	switch (m_orientType) {
+	case OrientType_Dirs: {
+		m_orientQuat = glm::quat(m_orientMatrix);
+		m_orientAngles = glm::eulerAngles(m_orientQuat);
+		break;
 	}
-
-	if (m_needUpViewMatrix) {
-		switch (m_orientType) {
-		case OrientType_Dirs: {
-			m_orientQuat = glm::quat(m_orientMatrix);
-			m_orientAngles = glm::eulerAngles(m_orientQuat);
-			break;
-		}
-		case OrientType_Quat: {
-			m_orientAngles = glm::eulerAngles(m_orientQuat);
-			m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
-			break;
-		}
-		case OrientType_Angles: {
-			m_orientQuat = glm::quat(m_orientAngles);
-			m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
-			break;
-		}
-		default: break;
-		}
-		m_cacheViewMatrix = glm::translate(glm::mat4x4(m_orientMatrix), -m_position);
+	case OrientType_Quat: {
+		m_orientAngles = glm::eulerAngles(m_orientQuat);
+		m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
+		break;
 	}
-
-	if (m_needUpProjMatrix || m_needUpViewMatrix) {
-		m_cacheViewProjMatrix = m_cacheProjMatrix * m_cacheViewMatrix;
-		glm::mat4& vp = m_cacheViewProjMatrix;
-		// right plane
-		m_frustum[0].x = vp[0][3] - vp[0][0];
-		m_frustum[0].y = vp[1][3] - vp[1][0];
-		m_frustum[0].z = vp[2][3] - vp[2][0];
-		m_frustum[0].w = vp[3][3] - vp[3][0];
-		// left plane
-		m_frustum[1].x = vp[0][3] + vp[0][0];
-		m_frustum[1].y = vp[1][3] + vp[1][0];
-		m_frustum[1].z = vp[2][3] + vp[2][0];
-		m_frustum[1].w = vp[3][3] + vp[3][0];
-		// top plane
-		m_frustum[2].x = vp[0][3] - vp[0][1];
-		m_frustum[2].y = vp[1][3] - vp[1][1];
-		m_frustum[2].z = vp[2][3] - vp[2][1];
-		m_frustum[2].w = vp[3][3] - vp[3][1];
-		// bottom plane
-		m_frustum[3].x = vp[0][3] + vp[0][1];
-		m_frustum[3].y = vp[1][3] + vp[1][1];
-		m_frustum[3].z = vp[2][3] + vp[2][1];
-		m_frustum[3].w = vp[3][3] + vp[3][1];
-		// far plane
-		m_frustum[4].x = vp[0][3] - vp[0][2];
-		m_frustum[4].y = vp[1][3] - vp[1][2];
-		m_frustum[4].z = vp[2][3] - vp[2][2];
-		m_frustum[4].w = vp[3][3] - vp[3][2];
-		// near plane
-		m_frustum[5].x = vp[0][3] + vp[0][2];
-		m_frustum[5].y = vp[1][3] + vp[1][2];
-		m_frustum[5].z = vp[2][3] + vp[2][2];
-		m_frustum[5].w = vp[3][3] + vp[3][2];
-		// normalize
-		for (int32 i = 0; i < 6; i++) {
-			float len = glm::length(glm::vec3(m_frustum[i]));
-			if (len > Math::eps)
-				m_frustum[i] /= len;
-		}
+	case OrientType_Angles: {
+		m_orientQuat = glm::quat(m_orientAngles);
+		m_orientMatrix = m_orientQuat.operator glm::tmat3x3<float, glm::highp>();
+		break;
 	}
+	default: break;
+	}
+	m_cacheViewMatrix = glm::translate(glm::mat4x4(m_orientMatrix), -m_position);
+}
 
-	m_needUpViewMatrix = false;
-	m_needUpProjMatrix = false;
+void GraphicsCamera::recalcProjMatrix() const
+{
+	switch (m_projType) {
+	case ProjectionType_Perspective: {
+		m_cacheProjMatrix = glm::perspective(m_fov, m_aspectRatio, m_zNear, m_zFar);
+		break;
+	}
+	case ProjectionType_Ortho: {
+		m_cacheProjMatrix = glm::ortho(-m_halfHeight*m_aspectRatio, m_halfHeight*m_aspectRatio, -m_halfHeight, m_halfHeight, m_zNear, m_zFar);
+		break;
+	}
+	default: break;
+	}
+}
+
+void GraphicsCamera::recalcFrustum() const
+{
+	glm::mat4 vp = projectionMatrix() * viewMatrix();
+	// right plane
+	m_frustum[0].x = vp[0][3] - vp[0][0];
+	m_frustum[0].y = vp[1][3] - vp[1][0];
+	m_frustum[0].z = vp[2][3] - vp[2][0];
+	m_frustum[0].w = vp[3][3] - vp[3][0];
+	// left plane
+	m_frustum[1].x = vp[0][3] + vp[0][0];
+	m_frustum[1].y = vp[1][3] + vp[1][0];
+	m_frustum[1].z = vp[2][3] + vp[2][0];
+	m_frustum[1].w = vp[3][3] + vp[3][0];
+	// top plane
+	m_frustum[2].x = vp[0][3] - vp[0][1];
+	m_frustum[2].y = vp[1][3] - vp[1][1];
+	m_frustum[2].z = vp[2][3] - vp[2][1];
+	m_frustum[2].w = vp[3][3] - vp[3][1];
+	// bottom plane
+	m_frustum[3].x = vp[0][3] + vp[0][1];
+	m_frustum[3].y = vp[1][3] + vp[1][1];
+	m_frustum[3].z = vp[2][3] + vp[2][1];
+	m_frustum[3].w = vp[3][3] + vp[3][1];
+	// far plane
+	m_frustum[4].x = vp[0][3] - vp[0][2];
+	m_frustum[4].y = vp[1][3] - vp[1][2];
+	m_frustum[4].z = vp[2][3] - vp[2][2];
+	m_frustum[4].w = vp[3][3] - vp[3][2];
+	// near plane
+	m_frustum[5].x = vp[0][3] + vp[0][2];
+	m_frustum[5].y = vp[1][3] + vp[1][2];
+	m_frustum[5].z = vp[2][3] + vp[2][2];
+	m_frustum[5].w = vp[3][3] + vp[3][2];
+	// normalize
+	for (int32 i = 0; i < 6; i++) {
+		float len = glm::length(glm::vec3(m_frustum[i]));
+		if (len > Math::eps)
+			m_frustum[i] /= len;
+	}
 }
 
 } // namespace

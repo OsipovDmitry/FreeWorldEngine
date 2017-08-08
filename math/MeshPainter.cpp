@@ -228,28 +228,55 @@ void MeshPainter::paintQuad(const float lenX, const float lenY)
 
 	const float size[2] = { 0.5f*lenX, 0.5f*lenY };
 
-	bool generateTexCoord = m_pMesh->attributes.count(VertexAttributeType_TexCoord0) != 0;
+	const bool generatePosition = m_pMesh->attributes.count(VertexAttributeType_Position) != 0;
+	const bool generateTangent = m_pMesh->attributes.count(VertexAttributeType_Tangent) != 0;
+	const bool generateBinormal = m_pMesh->attributes.count(VertexAttributeType_Binormal) != 0;
+	const bool generateNormal= m_pMesh->attributes.count(VertexAttributeType_Normal) != 0;
+	const bool generateTexCoord = m_pMesh->attributes.count(VertexAttributeType_TexCoord0) != 0;
 
 	MeshWrapper wrapper(m_pMesh);
 	uint32 numVertices = wrapper.numVertices();
 	wrapper.addVertices(4);
 
-	const float verts[4][3] = {
-		{ -size[0], -size[1], 0.0f },
-		{ +size[0], -size[1], 0.0f },
-		{ +size[0], +size[1], 0.0f },
-		{ -size[0], +size[1], 0.0f },
+	const float verts[4][4] = {
+		{ -size[0], -size[1], 0.0f, 0.0f },
+		{ +size[0], -size[1], 0.0f, 0.0f },
+		{ +size[0], +size[1], 0.0f, 0.0f },
+		{ -size[0], +size[1], 0.0f, 0.0f },
 	};
 
-	const float texcoord[4][2] = {
-		{ 0.0f, 0.0f },
-		{ 1.0f, 0.0f },
-		{ 1.0f, 1.0f },
-		{ 0.0f, 1.0f },
+	const float texcoord[4][4] = {
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f },
 	};
 
-	for (int i = 0; i < 4; ++i)
-		wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + i, (float*)verts[i]);
+	const float tbn[3][4] = {
+		{ 1.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f, 0.0f },
+	};
+
+	if (generatePosition) {
+		for (int i = 0; i < 4; ++i)
+			wrapper.setAttributeValue(VertexAttributeType_Position, numVertices + i, (float*)verts[i]);
+	}
+
+	if (generateTangent) {
+		for (int i = 0; i < 4; ++i)
+			wrapper.setAttributeValue(VertexAttributeType_Tangent, numVertices + i, (float*)tbn[0]);
+	}
+
+	if (generateBinormal) {
+		for (int i = 0; i < 4; ++i)
+			wrapper.setAttributeValue(VertexAttributeType_Binormal, numVertices + i, (float*)tbn[1]);
+	}
+
+	if (generateNormal) {
+		for (int i = 0; i < 4; ++i)
+			wrapper.setAttributeValue(VertexAttributeType_Normal, numVertices + i, (float*)tbn[2]);
+	}
 
 	if (generateTexCoord) {
 		for (int i = 0; i < 4; ++i)

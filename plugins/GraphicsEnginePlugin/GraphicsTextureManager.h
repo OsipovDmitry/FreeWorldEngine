@@ -2,6 +2,7 @@
 #define __GRAPHICSTEXTUREMANAGER__
 
 #include <graphics_engine/IGraphicsTextureManager.h>
+#include <Types.h>
 
 namespace FreeWorldEngine {
 

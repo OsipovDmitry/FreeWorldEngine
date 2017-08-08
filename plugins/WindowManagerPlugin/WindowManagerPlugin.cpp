@@ -28,7 +28,7 @@ std::string WindowManagerPlugin::info() const
 
 bool WindowManagerPlugin::initialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 	if (!pCore)
 		return false;
 
@@ -45,7 +45,7 @@ bool WindowManagerPlugin::initialize()
 
 void WindowManagerPlugin::deinitialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 
 	if (pCore->windowManager() == pWindowManager)
 		pCore->setWindowManager(0);

@@ -1,7 +1,7 @@
 #ifndef __GRAPHICSENGINEPLUGIN__
 #define __GRAPHICSENGINEPLUGIN__
 
-#include "IPlugin.h"
+#include <core/IPlugin.h>
 
 namespace FreeWorldEngine {
 

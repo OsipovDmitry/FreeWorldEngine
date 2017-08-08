@@ -27,7 +27,7 @@ std::string GLRendererPlugin::info() const
 
 bool GLRendererPlugin::initialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 	if (!pCore)
 		return false;
 
@@ -59,7 +59,7 @@ bool GLRendererPlugin::initialize()
 
 void GLRendererPlugin::deinitialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 
 	if (pCore->renderer() == pGLRenderer)
 		pCore->setRenderer(0);

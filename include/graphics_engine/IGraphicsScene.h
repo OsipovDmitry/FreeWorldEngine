@@ -6,6 +6,7 @@
 #include <3rdparty/glm/gtc/quaternion.hpp>
 
 #include "IGraphicsResource.h"
+#include "IGraphicsLight.h"
 #include "Types.h"
 
 namespace FreeWorldEngine {
@@ -40,11 +41,24 @@ public:
 
 class IGraphicsScene : public IGraphicsResource {
 public:
+	enum SceneOptimizerType {
+		SceneOptimizerType_None,
+		SceneOptimizerType_FrustumCulling,
+		SceneOptimizerType_Octree,
+	};
+
 	virtual ~IGraphicsScene() {}
 	
 	virtual IGraphicsSceneNode *rootNode() const = 0;
 	virtual IGraphicsSceneNode *createNode() = 0;
 	virtual void destroyNode(IGraphicsSceneNode *pNode) = 0;
+
+	virtual IGraphicsLight *findLight(const std::string& name) const = 0;
+	virtual IGraphicsLight *createLight(IGraphicsLight::Type type, const std::string& name = "@utoname") = 0;
+	virtual void destroyLight(const std::string& name) = 0;
+	virtual void destroyLight(IGraphicsLight *pLight) = 0;
+
+	virtual SceneOptimizerType optimizerType() const = 0;
 
 }; // class IGraphicsModel
 

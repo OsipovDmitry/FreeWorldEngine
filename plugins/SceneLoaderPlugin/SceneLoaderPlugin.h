@@ -5,7 +5,7 @@
 
 #include <3rdparty/assimp/Importer.hpp>
 
-#include <IPlugin.h>
+#include <core/IPlugin.h>
 
 namespace FreeWorldEngine {
 

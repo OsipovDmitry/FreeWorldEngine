@@ -2,27 +2,28 @@
 
 #include <3rdparty/glm/gtc/matrix_transform.hpp>
 
-#include <IWindow.h>
+#include <core/IWindow.h>
 #include <renderer/IGPURenderer.h>
-#include <math/MathUtils.h>
 
 #include "GraphicsWindow.h"
-#include "GraphicsCamera.h"
-#include "GraphicsModel.h"
 #include "GraphicsScene.h"
 #include "GraphicsEngine.h"
 #include "GPUMesh.h"
-#include "KdTree.h"
+#include "AbstractSceneOptimizer.h"
 
 //
 #include <FreeWorldEngine.h>
 #include <utility/File.h>
 //
 
+#include <math/MathTypes.h>
+#include <math/MeshWrapper.h>
+#include <math/MeshPainter.h>
+
 namespace FreeWorldEngine {
-	
+
 namespace GraphicsEngine {
-	
+
 struct GraphicsWindowUserData {
 	GraphicsWindow *pThis;
 
@@ -55,7 +56,7 @@ GraphicsWindow::GraphicsWindow(const std::string& name, IWindow *pTargetWindow) 
 	pColorMaterial->setAutoUniform(pProgram->uniformLocationByName("modelViewProjMatrix"), IGraphicsMaterial::AutoUniform_ModelViewProjectionMatrix);
 	pColorMaterial->setUniform(pProgram->uniformLocationByName("color"), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	if (!logString.empty())
-		getCoreEngine()->logger()->printMessage(logString, ILogger::MessageType_Error);
+		ICore::instance()->logger()->printMessage(logString, ILogger::MessageType_Error);
 }
 
 GraphicsWindow::~GraphicsWindow()
@@ -86,9 +87,9 @@ const IGraphicsCamera * GraphicsWindow::camera() const
 	return m_pCamera;
 }
 
-void GraphicsWindow::setScene(IGraphicsScene * pGraphicsScene)
+void GraphicsWindow::setScene(IGraphicsScene *pGraphicsScene)
 {
-	m_pScene = pGraphicsScene;
+	m_pScene = static_cast<GraphicsScene*>(pGraphicsScene);
 }
 
 const IGraphicsScene * GraphicsWindow::scene() const
@@ -121,24 +122,26 @@ void GraphicsWindow::switchRenderNodeBoxes()
 	m_renderKdNodesBoxes = !m_renderKdNodesBoxes;
 }
 
-void GraphicsWindow::renderSolid(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+template <class Iter>
+void GraphicsWindow::renderSolid(Iter itBegin, Iter itEnd)
 {
 	while (itBegin != itEnd) {
-		itBegin->first->bind(m_pCamera, itBegin->second.modelMatrix);
+		itBegin->first->bind(m_pCamera, itBegin->second);
 		const GPUMesh *pGpuMesh = itBegin->second.pGpuMesh;
 		pGPURenderer->renderIndexedGeometry(itBegin->first->program(), pGpuMesh->bufferContainer(), pGpuMesh->primitiveFormat(), TYPE_UNSIGNED_INT_32, pGpuMesh->numIndices());
 		++itBegin;
 	}
 }
 
-void GraphicsWindow::renderTransparent(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+template <class Iter>
+void GraphicsWindow::renderTransparent(Iter itBegin, Iter itEnd)
 {
 	glm::vec3 cameraPos = m_pCamera->position();
 
-	typedef std::pair<float, const RenderDataContainer::value_type*> SortedDataItem;
+	typedef std::pair<float, const typename Iter::value_type*> SortedDataItem;
 	std::vector<SortedDataItem> sortedData;
 	sortedData.reserve(std::distance(itBegin, itEnd));
-	std::transform(itBegin, itEnd, std::back_inserter(sortedData), [&cameraPos](const RenderDataContainer::value_type& val) {
+	std::transform(itBegin, itEnd, std::back_inserter(sortedData), [&cameraPos](const typename Iter::value_type& val) {
 		glm::vec3 v = cameraPos - glm::vec3(val.second.modelMatrix[3]);
 		return std::make_pair(glm::dot(v, v), &val);
 	});
@@ -148,22 +151,24 @@ void GraphicsWindow::renderTransparent(RenderDataContainer::const_iterator itBeg
 	});
 
 	for (const auto& it : sortedData) {
-		it.second->first->bind(m_pCamera, it.second->second.modelMatrix);
+		it.second->first->bind(m_pCamera, it.second->second);
 		const GPUMesh *pGpuMesh = it.second->second.pGpuMesh;
 		pGPURenderer->renderIndexedGeometry(it.second->first->program(), pGpuMesh->bufferContainer(), pGpuMesh->primitiveFormat(), TYPE_UNSIGNED_INT_32, pGpuMesh->numIndices());
 	}
 }
 
-void GraphicsWindow::renderHud(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+template <class Iter>
+void GraphicsWindow::renderHud(Iter itBegin, Iter itEnd)
 {
 	while (itBegin != itEnd) {
 		++itBegin;
 	}
 }
 
-void GraphicsWindow::renderData(const IGraphicsMaterial::Tag tag, RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd)
+template <class Iter>
+void GraphicsWindow::renderData(const IGraphicsMaterial::Tag tag, Iter itBegin, Iter itEnd)
 {
-	typedef void (GraphicsWindow::*RenderFunc)(RenderDataContainer::const_iterator itBegin, RenderDataContainer::const_iterator itEnd);
+	typedef void (GraphicsWindow::*RenderFunc)(Iter, Iter);
 	static RenderFunc funcs[IGraphicsMaterial::Tag_Count] = {
 		&GraphicsWindow::renderSolid,
 		&GraphicsWindow::renderTransparent,
@@ -172,97 +177,73 @@ void GraphicsWindow::renderData(const IGraphicsMaterial::Tag tag, RenderDataCont
 	(this->*funcs[tag])(itBegin, itEnd);
 }
 
+void GraphicsWindow::resize(int32 width, int32 height)
+{
+	if (m_pCamera)
+		m_pCamera->setAspectRatio((float)m_pTargetWindow->width() / (float)m_pTargetWindow->height());
+	pGPURenderer->setViewport(0, 0, width, height);
+}
+
+void GraphicsWindow::render()
+{
+	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.5f, 0.5f, 0.5f, 1.0f);
+	pGPURenderer->mainFrameBuffer()->clearDepthBuffer(1.0f);
+
+	if (!m_pScene || !m_pCamera)
+		return;
+
+	const AbstractSceneOptimizer::RenderDataContainer& renderDataCont = m_pScene->optimizer()->renderDataContainer();
+
+	AbstractSceneOptimizer::RenderDataContainer::const_iterator beginIterator, endIterator = renderDataCont.cbegin();
+	while (endIterator != renderDataCont.cend()) {
+		beginIterator = endIterator;
+		endIterator = std::upper_bound(beginIterator, renderDataCont.cend(), *beginIterator,
+			[](const AbstractSceneOptimizer::RenderDataContainer::value_type& val1, const AbstractSceneOptimizer::RenderDataContainer::value_type& val2) {
+			return val1.first->tag() != val2.first->tag();
+		});
+		renderData(beginIterator->first->tag(), beginIterator, endIterator);
+	}
+
+	ICore::instance()->logger()->printMessage("FPS: " + std::to_string(fps()));
+}
+
+void GraphicsWindow::update(uint32 time, uint32 dt)
+{
+	++m_frameNumber;
+
+	m_pScene->optimizer()->updateRenderData(m_pCamera, m_frameNumber);
+
+	if (m_frameCounter < 0) {
+		m_lastFpsTime = time;
+		m_frameCounter = 0;
+		m_fps = -1.0f;
+	}
+	else {
+		++m_frameCounter;
+		if (time - m_lastFpsTime > 1000) {
+			m_fps = (float)(m_frameCounter) / (float)(time - m_lastFpsTime) * 1000.0f;
+			m_frameCounter = 0;
+			m_lastFpsTime = time;
+		}
+	}
+}
+
 void GraphicsWindow::resizeCallBack(int32 width, int32 height, IWindow * pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
-
-	pThis->m_pCamera->setAspectRatio((float)pThis->m_pTargetWindow->width() / (float)pThis->m_pTargetWindow->height());
-	pGPURenderer->setViewport(0, 0, width, height);
+	pThis->resize(width, height);
 }
 
 void GraphicsWindow::renderCallBack(IWindow *pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
-	GraphicsScene *pScene = static_cast<GraphicsScene*>(pThis->m_pScene);
-	IGraphicsCamera *pCamera = pThis->m_pCamera;
-	const Math::Frustum& frustum = pCamera->frustum();
-	IGraphicsMaterial *pColorMaterial = pGraphicsEngine->materialManager()->findMaterial("ColorMaterial");
-
-	std::list<KdNode*> kdNodes;
-	if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pScene->kdTree()->rootNode()->boundingBox()))
-		kdNodes.push_back(pScene->kdTree()->rootNode());
-
-	uint32 numDips = 0, numKdNodes = 0;
-	pThis->m_renderData.clear();
-
-	while (!kdNodes.empty()) {
-		++numKdNodes;
-		KdNode *pTreeNode = kdNodes.front();
-		kdNodes.pop_front();
-
-		if (!pTreeNode->isLeaf()) {
-			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pTreeNode->firstChild()->boundingBox()))
-				kdNodes.push_back(pTreeNode->firstChild());
-			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, pTreeNode->secondChild()->boundingBox()))
-				kdNodes.push_back(pTreeNode->secondChild());
-		}
-
-		for (const auto& it : pTreeNode->sceneNodes())
-			if (!pThis->m_frustumCulling || Math::geomInFrustum(frustum, it->worldBoundingSphere())) {
-				GraphicsModel *pModel = static_cast<GraphicsModel*>(it->model());
-				if (!pModel)
-					continue;
-
-				++numDips;
-
-				pThis->m_renderData.insert(std::make_pair(
-					static_cast<GraphicsMaterial*>(pModel->material()), ModelRenderData(pModel->gpuMesh(), it->worldTransformation())));
-
-				if (pThis->m_renderSpheres)
-					pThis->m_renderData.insert(std::make_pair(
-						static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pModel->gpuMeshBoundSphere(), it->worldTransformation())));
-			}
-
-		if (pThis->m_renderKdNodesBoxes)
-			pThis->m_renderData.insert(std::make_pair(
-				static_cast<GraphicsMaterial*>(pColorMaterial), ModelRenderData(pTreeNode->boundingBoxGpuMesh(), glm::mat4x4())));
-	}
-
-	pGPURenderer->mainFrameBuffer()->clearColorBuffer(0, 0.3f, 0.3f, 0.3f, 1.0f);
-	pGPURenderer->mainFrameBuffer()->clearDepthBuffer(1.0f);
-
-	RenderDataContainer::const_iterator beginIterator, endIterator = pThis->m_renderData.cbegin();
-	while (endIterator != pThis->m_renderData.cend()) {
-		beginIterator = endIterator;
-		endIterator = std::upper_bound(beginIterator, pThis->m_renderData.cend(), *beginIterator,
-			[](const RenderDataContainer::value_type& val1, const RenderDataContainer::value_type& val2) {
-			return val1.first->tag() != val2.first->tag();
-		});
-		pThis->renderData(beginIterator->first->tag(), beginIterator, endIterator);
-	}
-	
-	getCoreEngine()->logger()->printMessage("Models: " + std::to_string(numDips) + ";        kdNodes: " + std::to_string(numKdNodes) + ";        FPS: " + std::to_string(pThis->fps()));
+	pThis->render();
 }
 
 void GraphicsWindow::updateCallBack(uint32 time, uint32 dt, IWindow *pWindow)
 {
 	GraphicsWindow *pThis = static_cast<GraphicsWindowUserData*>(pWindow->userData())->pThis;
-	static_cast<GraphicsCamera*>(pThis->m_pCamera)->update();
-
-	++(pThis->m_frameNumber);
-	if (pThis->m_frameCounter < 0) { // только при первом вызове updateCallBack
-		pThis->m_lastFpsTime = time;
-		pThis->m_frameCounter = 0;
-		pThis->m_fps = -1.0f;
-	}
-	else {
-		++pThis->m_frameCounter;
-		if (time - pThis->m_lastFpsTime > 1000) {
-			pThis->m_fps = (float)(pThis->m_frameCounter) / (float)(time - pThis->m_lastFpsTime) * 1000.0f;
-			pThis->m_frameCounter = 0;
-			pThis->m_lastFpsTime = time;
-		}
-	}
+	pThis->update(time, dt);
 }
 
 void GraphicsWindow::closeCallBack(IWindow *pWindow)

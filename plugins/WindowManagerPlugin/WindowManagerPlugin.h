@@ -1,7 +1,7 @@
 #ifndef __WINDOWMANAGERPLUGIN__
 #define __WINDOWMANAGERPLUGIN__
 
-#include "IPlugin.h"
+#include "core/IPlugin.h"
 
 namespace FreeWorldEngine {
 

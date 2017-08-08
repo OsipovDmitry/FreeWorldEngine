@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <renderer/IGPURenderer.h>
 
 #include "GPUMesh.h"

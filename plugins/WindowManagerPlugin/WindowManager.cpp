@@ -7,7 +7,7 @@
 namespace FreeWorldEngine {
 
 WindowManager::WindowManager() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForWindowManager", IResourceManager::StorageType_List)),
+	m_pResourceManager(ICore::instance()->createResourceManager("ResourceManagerForWindowManager", IResourceManager::StorageType_List)),
 	m_pNameGenerator(new Utility::AutoNameGenerator("WindowName"))
 {
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -20,7 +20,7 @@ WindowManager::WindowManager() :
 WindowManager::~WindowManager()
 {
 	destroyAllWindows();
-	getCoreEngine()->destroyResourceManager(m_pResourceManager);
+	ICore::instance()->destroyResourceManager(m_pResourceManager);
 	delete m_pNameGenerator;
 }
 

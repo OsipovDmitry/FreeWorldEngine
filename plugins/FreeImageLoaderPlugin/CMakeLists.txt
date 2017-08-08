@@ -14,5 +14,5 @@ set(SOURCES
 add_library(FreeImageLoaderPlugin SHARED ${HEADERS} ${SOURCES})
 	
 target_link_libraries(FreeImageLoaderPlugin CoreEngine)
-target_link_libraries(FreeImageLoaderPlugin FreeImaged)
+target_link_libraries(FreeImageLoaderPlugin freeimage)
 

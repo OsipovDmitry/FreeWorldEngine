@@ -8,4 +8,3 @@ set(SOURCES main.cpp)
 add_executable(Demo3 ${SOURCES})
 
 target_link_libraries(Demo3 CoreEngine)
-

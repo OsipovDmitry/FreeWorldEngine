@@ -27,7 +27,7 @@ std::string GraphicsEnginePlugin::info() const
 
 bool GraphicsEnginePlugin::initialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 	if (!pCore)
 		return false;
 
@@ -45,7 +45,7 @@ bool GraphicsEnginePlugin::initialize()
 
 void GraphicsEnginePlugin::deinitialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 
 	if (pCore->graphicsEngine() == pGraphicsEngine)
 		pCore->setGraphicsEngine(0);

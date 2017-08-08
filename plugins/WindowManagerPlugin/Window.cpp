@@ -34,7 +34,7 @@ Window::Window(const std::string& name, const std::string& title, const int32 wi
 		height,
 		SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN | (resizable ? SDL_WINDOW_RESIZABLE : 0));
 	if (!m_window)
-		getCoreEngine()->logger()->printMessage("Don't create window.", ILogger::MessageType_Error);
+		ICore::instance()->logger()->printMessage("Don't create window.", ILogger::MessageType_Error);
 
 	m_glContext = SDL_GL_CreateContext(m_window);
 	if (!m_glContext) {
@@ -42,7 +42,7 @@ Window::Window(const std::string& name, const std::string& title, const int32 wi
 			SDL_DestroyWindow(m_window);
 			m_window = 0;
 		}
-		getCoreEngine()->logger()->printMessage("Don't create window gl context.", ILogger::MessageType_Error);
+		ICore::instance()->logger()->printMessage("Don't create window gl context.", ILogger::MessageType_Error);
 	}
 }
 

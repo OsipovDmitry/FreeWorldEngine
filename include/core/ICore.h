@@ -12,7 +12,6 @@ class IWindowManager;
 class IPhysicsManager;
 class IWindow;
 class ILogger;
-class ILibraryManager;
 class IThreadManager;
 
 template <class DataType>
@@ -40,11 +39,8 @@ namespace GraphicsEngine {
 class ICore {
 public:
 	virtual ~ICore() {}
-
-	virtual int argc() const = 0;
-	virtual char **argv() const = 0;
 	
-	virtual void initialize(int argc, char **argv) = 0;
+	virtual void initialize() = 0;
 	virtual void deinitialize() = 0;
 
 	virtual IResourceManager *createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType = IResourceManager::StorageType_Hash) = 0;
@@ -52,7 +48,6 @@ public:
 	virtual void destroyResourceManager(IResourceManager *pResourceManager) = 0;
 	virtual void destroyResourceManager(const std::string& resourceManagerName) = 0;
 
-	virtual ILibraryManager  *libraryManager() const = 0;
 	virtual IPluginManager *pluginManager() const = 0;
 	virtual IThreadManager *threadManager() const = 0;
 

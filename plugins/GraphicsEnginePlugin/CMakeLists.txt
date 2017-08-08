@@ -14,7 +14,8 @@ set(INTERFACE_HEADERS
 	../../include/graphics_engine/IGraphicsTextureManager.h
 	../../include/graphics_engine/IGraphicsScene.h
 	../../include/graphics_engine/IGraphicsSceneManager.h
-	../../include/graphics_engine/IGraphicsWindow.h)
+	../../include/graphics_engine/IGraphicsWindow.h
+	../../include/graphics_engine/IGraphicsLight.h)
 
 source_group("Interface Headers" FILES ${INTERFACE_HEADERS})
 
@@ -23,6 +24,7 @@ set(HEADERS
 	GraphicsCamera.h
 	GraphicsModel.h
 	GraphicsMaterial.h
+	GraphicsLight.h
 	GraphicsScene.h
 	GraphicsSceneManager.h
 	GraphicsWindow.h
@@ -31,7 +33,11 @@ set(HEADERS
 	GraphicsTextureManager.h
 	ShaderManager.h
 	GPUMesh.h
-	KdTree.h
+#	KdTree.h
+	AbstractSceneOptimizer.h
+	NoneSceneOptimizer.h
+	FrustumCullingSceneOptimizer.h
+	OctreeSceneOptimizer.h
 	GraphicsEnginePlugin.h)
 
 set(SOURCES
@@ -39,6 +45,7 @@ set(SOURCES
 	GraphicsCamera.cpp
 	GraphicsModel.cpp
 	GraphicsMaterial.cpp
+	GraphicsLight.cpp
 	GraphicsScene.cpp
 	GraphicsSceneManager.cpp
 	GraphicsWindow.cpp
@@ -47,7 +54,11 @@ set(SOURCES
 	GraphicsTextureManager.cpp
 	ShaderManager.cpp
 	GPUMesh.cpp
-	KdTree.cpp
+#	KdTree.cpp
+	AbstractSceneOptimizer.cpp
+	NoneSceneOptimizer.cpp
+	FrustumCullingSceneOptimizer.cpp
+	OctreeSceneOptimizer.cpp
 	GraphicsEnginePlugin.cpp
 	main.cpp)
 

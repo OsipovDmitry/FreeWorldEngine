@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <3rdparty/sdl/SDL.h>
-#include <IWindow.h>
+#include <core/IWindow.h>
 
 namespace FreeWorldEngine {
 

@@ -36,5 +36,5 @@ set(SOURCES
 add_library(GLRendererPlugin SHARED ${INTERFACE_HEADERS} ${HEADERS} ${SOURCES})
 	
 target_link_libraries(GLRendererPlugin CoreEngine)
-target_link_libraries(GLRendererPlugin glew)
-target_link_libraries(GLRendererPlugin OpenGL32)
+target_link_libraries(GLRendererPlugin GLEW)
+target_link_libraries(GLRendererPlugin GL)

@@ -39,14 +39,14 @@ private:
 };
 
 ShaderManager::ShaderManager() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForShaderManager"))
+	m_pResourceManager(ICore::instance()->createResourceManager("ResourceManagerForShaderManager"))
 {
 }
 
 ShaderManager::~ShaderManager()
 {
 	destroyAllShaders();
-	getCoreEngine()->destroyResourceManager(m_pResourceManager);
+	ICore::instance()->destroyResourceManager(m_pResourceManager);
 }
 
 Renderer::IGPUShader * ShaderManager::findShader(const std::string& name) const
@@ -118,14 +118,14 @@ void ShaderManager::destroyAllShaders()
 
 
 ProgramManager::ProgramManager() :
-	m_pResourceManager(getCoreEngine()->createResourceManager("ResourceManagerForProgramManager"))
+	m_pResourceManager(ICore::instance()->createResourceManager("ResourceManagerForProgramManager"))
 {
 }
 
 ProgramManager::~ProgramManager()
 {
 	destroyAllPrograms();
-	getCoreEngine()->destroyResourceManager(m_pResourceManager);
+	ICore::instance()->destroyResourceManager(m_pResourceManager);
 }
 
 Renderer::IGPUProgram * ProgramManager::findProgram(const std::string& name) const

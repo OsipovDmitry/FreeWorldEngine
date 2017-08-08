@@ -34,7 +34,7 @@ std::string SceneLoaderPlugin::info() const
 
 bool SceneLoaderPlugin::initialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 	if (!pCore)
 		return false;
 
@@ -59,7 +59,7 @@ bool SceneLoaderPlugin::initialize()
 
 void SceneLoaderPlugin::deinitialize()
 {
-	ICore *pCore = getCoreEngine();
+	ICore *pCore = ICore::instance();
 
 	std::for_each(m_supportExtensions.cbegin(), m_supportExtensions.cend(),
 		[pCore](const std::string& s) { pCore->sceneLoader()->unregisterDataLoader(s); });
@@ -75,11 +75,18 @@ void assimpColorToUint8Array(const aiColor4D& src, uint8 *pDst)
 	pDst[3] = (uint8)(src.a * 255.0f + 0.5f);
 }
 
+void assimpColorToUint8Array(const aiColor3D& src, uint8 *pDst)
+{
+	pDst[0] = (uint8)(src.r * 255.0f + 0.5f);
+	pDst[1] = (uint8)(src.g * 255.0f + 0.5f);
+	pDst[2] = (uint8)(src.b * 255.0f + 0.5f);
+}
+
 SceneData *SceneLoaderPlugin::loadScene(const std::string& filename)
 {
 	const aiScene *pAssimpScene = m_assimpImporter.ReadFile(filename, aiProcess_Triangulate);
 	if (!pAssimpScene) {
-		getCoreEngine()->logger()->printMessage("Failed open file \"" + filename + "\".", ILogger::MessageType_Error);
+		ICore::instance()->logger()->printMessage("Failed open file \"" + filename + "\".", ILogger::MessageType_Error);
 		return 0;
 	}
 
@@ -222,6 +229,38 @@ SceneData *SceneLoaderPlugin::loadScene(const std::string& filename)
 			pSceneMaterial->name = assimpMaterialName.C_Str();
 			pSceneMaterial->pMaterialData = pMaterial;
 		}
+
+	if (pAssimpScene->HasLights()) {
+		for (uint32 lIdx = 0; lIdx < pAssimpScene->mNumLights; ++lIdx) {
+			aiLight *pAssimpLight = pAssimpScene->mLights[lIdx];
+
+			if (pAssimpLight->mType == aiLightSource_UNDEFINED || pAssimpLight->mType == aiLightSource_AMBIENT)
+				continue;
+
+			Light *pLight = new Light;
+
+			switch (pAssimpLight->mType) {
+			case aiLightSource_DIRECTIONAL: { pLight->type = Light::Type_Directional; break; }
+			case aiLightSource_POINT: { pLight->type = Light::Type_Point; break; }
+			case aiLightSource_SPOT: { pLight->type = Light::Type_Spot; break; }
+			}
+
+			pLight->position = glm::vec3(pAssimpLight->mPosition.x, pAssimpLight->mPosition.y, pAssimpLight->mPosition.z);
+			pLight->direction = glm::vec3(pAssimpLight->mDirection.x, pAssimpLight->mDirection.y, pAssimpLight->mDirection.z);
+			pLight->attenuationCoefficent = glm::vec3(pAssimpLight->mAttenuationConstant, pAssimpLight->mAttenuationLinear, pAssimpLight->mAttenuationQuadratic);
+			pLight->innerCone = pAssimpLight->mAngleInnerCone;
+			pLight->outerCone = pAssimpLight->mAngleOuterCone;
+			assimpColorToUint8Array(pAssimpLight->mColorAmbient, pLight->ambientColor);
+			assimpColorToUint8Array(pAssimpLight->mColorDiffuse, pLight->diffuseColor);
+			assimpColorToUint8Array(pAssimpLight->mColorSpecular, pLight->specularColor);
+
+			SceneData::Ligth *pSceneLight = new SceneData::Ligth;
+			pScene->lights.push_back(pSceneLight);
+
+			pSceneLight->name = pAssimpLight->mName.C_Str();
+			pSceneLight->pLightData = pLight;
+		}
+	}
 
 	if (pAssimpScene->mRootNode) {
 		std::queue<std::pair<aiNode*, Utility::Tree<SceneData::NodeData*>::Node*> > nodesQueue;

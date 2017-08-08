@@ -19,7 +19,7 @@ public:
 	~GraphicsSceneManager();
 
 	IGraphicsScene *findScene(const std::string& name) const;
-	IGraphicsScene *createScene(const std::string& name = "@utoname");
+	IGraphicsScene *createScene(const std::string& name = "@utoname", IGraphicsScene::SceneOptimizerType optimizerType = IGraphicsScene::SceneOptimizerType_None);
 
 	void destroyScene(const std::string& name);
 	void destroyScene(IGraphicsScene *pScene);

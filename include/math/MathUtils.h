@@ -50,9 +50,41 @@ inline bool isEmptyBoundingBox(const Aabb& box) {
 		(box.vMin.z > box.vMax.z);
 }
 
+// Построить пустую Sphere.
+inline Sphere buildEmptySphere() {
+	return Sphere(0.0f, 0.0f, 0.0f, -FLT_MAX);
+}
+
+inline bool isEmptySphere(const Sphere& sphere) {
+	return sphere.w < 0.0f;
+}
+
+inline Math::Aabb sphereToAabb(const Sphere& sphere) {
+	const glm::vec3 pos(sphere);
+	const glm::vec3 halfSize(sphere.w);
+	return Math::Aabb(pos-halfSize, pos+halfSize);
+}
+
 // Расстояние от точки до плоскости со знаком.
 inline float distToPlane(const Plane& plane, const glm::vec3& v) {
 	return plane.x*v.x + plane.y*v.y + plane.z*v.z + plane.w;
+}
+
+// Расстояние от точки до сферы
+inline float distToSphere(const Sphere& sphere, const glm::vec3& v) {
+	return glm::max(glm::distance(v, glm::vec3(sphere)) - sphere.w, 0.0f);
+}
+
+// Расстояние от точки до Aabb
+inline float distToBoundingBox(const Aabb& box, const glm::vec3& v) {
+	float distSq = 0.0f;
+	for (int32 i = 0; i < 3; ++i) {
+		if (v[i] > box.vMax[i])
+			distSq += (v[i] - box.vMax[i]) * (v[i] - box.vMax[i]);
+		else if (v[i] < box.vMin[i])
+			distSq += (box.vMin[i] - v[i]) * (box.vMin[i] - v[i]);
+	}
+	return glm::sqrt(distSq);
 }
 
 // Классификация полигона относительно плоскости. verts - массив указателей на точки. Полигон может содержать 1,2,3 или более точек.

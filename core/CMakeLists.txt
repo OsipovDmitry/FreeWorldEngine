@@ -5,8 +5,6 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 
 set(INTERFACE_HEADERS
 	../include/core/ICore.h
-	../include/core/ILibrary.h
-	../include/core/ILibraryManager.h
 	../include/core/ILog.h
 	../include/core/ILogger.h
 	../include/core/IPlugin.h
@@ -33,7 +31,7 @@ set(COMMON_HEADERS
 source_group("Common Headers" FILES ${COMMON_HEADERS})
 
 set(HEADERS
-    Core.h
+	Core.h
     Logger.h
     PluginManager.h
     ResourceManager.h
@@ -45,7 +43,7 @@ set(HEADERS
 )
 
 set(SOURCES
-    Core.cpp
+	Core.cpp
     Logger.cpp
     PluginManager.cpp
     ResourceManager.cpp

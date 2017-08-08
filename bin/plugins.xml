@@ -2,24 +2,24 @@
 <plugins_list>
 
 	<log>
-		<plugin library="LoggerPlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libLoggerPlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
 	</log>
 	
 	<window_manager>
-		<plugin library="WindowManagerPlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libWindowManagerPlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
 	</window_manager>
 	
 	<renderer>
-		<plugin library="GLRendererPlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libGLRendererPlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
 	</renderer>
 	
 	<graphics_engine>
-		<plugin library="GraphicsEnginePlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libGraphicsEnginePlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
 	</graphics_engine>
 	
 	<other>
-		<plugin library="ImageLoaderPlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
-		<plugin library="SceneLoaderPlugin" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libFreeImageLoaderPlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
+		<plugin library="./libSceneLoaderPlugin.so" startFunc="startLibrary" getFunc="getLibrary" endFunc="endLibrary" />
 	</other>
 	
 </plugins_list>

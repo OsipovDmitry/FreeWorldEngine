@@ -1,10 +1,13 @@
+#include <3rdparty/glm/gtc/matrix_inverse.hpp>
+
 #include <renderer/IGPURenderer.h>
 #include <graphics_engine/IGraphicsWindow.h>
 #include <graphics_engine/IGraphicsCamera.h>
 
-
 #include "GraphicsEngine.h"
 #include "GraphicsMaterial.h"
+#include "GraphicsLight.h"
+#include "AbstractSceneOptimizer.h"
 
 namespace FreeWorldEngine {
 
@@ -12,7 +15,7 @@ namespace {
 	const int32 g_uniformSize[] = {
 		sizeof(float),     sizeof(int32),      sizeof(uint32),
 		sizeof(glm::vec2), sizeof(glm::ivec2), sizeof(glm::uvec2),
-		sizeof(glm::vec3), sizeof(glm::ivec3), sizeof(glm::uvec3), 
+		sizeof(glm::vec3), sizeof(glm::ivec3), sizeof(glm::uvec3),
 		sizeof(glm::vec4), sizeof(glm::ivec4), sizeof(glm::uvec4),
 		sizeof(glm::mat2), sizeof(glm::mat3),  sizeof(glm::mat4)
 	};
@@ -273,7 +276,7 @@ IGraphicsMaterial::Tag GraphicsMaterial::tag() const
 	return m_tag;
 }
 
-void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const
+void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const ModelRenderData& modelData) const
 {
 	for (auto it = m_uniformData.cbegin(); it != m_uniformData.cend(); ++it) {
 		int32 location = it->first;
@@ -304,12 +307,39 @@ void GraphicsMaterial::bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMa
 		int32 location = it->second;
 
 		switch (value) {
-		case AutoUniform_ModelMatrix: { m_pProgram->setUniform(location, modelMatrix); break; }
+		case AutoUniform_NormalMatrix: { m_pProgram->setUniform(location, glm::inverseTranspose(glm::mat3x3(modelData.modelMatrix))); break; }
+		case AutoUniform_ModelMatrix: { m_pProgram->setUniform(location, modelData.modelMatrix); break; }
 		case AutoUniform_ViewMatrix: { m_pProgram->setUniform(location, pCamera->viewMatrix()); break; }
-		case AutoUniform_ModelViewMatrix: { m_pProgram->setUniform(location, pCamera->viewMatrix()*modelMatrix); break; }
+		case AutoUniform_ModelViewMatrix: { m_pProgram->setUniform(location, pCamera->viewMatrix()*modelData.modelMatrix); break; }
 		case AutoUniform_ProjectionMatrix: { m_pProgram->setUniform(location, pCamera->projectionMatrix()); break; }
-		case AutoUniform_ViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->viewProjectionMatrix()); break; }
-		case AutoUniform_ModelViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->viewProjectionMatrix()*modelMatrix); break; }
+		case AutoUniform_ViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->projectionMatrix()*pCamera->viewMatrix()); break; }
+		case AutoUniform_ModelViewProjectionMatrix: { m_pProgram->setUniform(location, pCamera->projectionMatrix()*pCamera->viewMatrix()*modelData.modelMatrix); break; }
+		case AutoUniform_CameraPosition: { m_pProgram->setUniform(location, pCamera->position()); break; }
+		case AutoUniform_ActiveLightsCount: { m_pProgram->setUniform(location, (int32)modelData.lights.size()); break; }
+		case AutoUniform_Light0: { 
+				m_pProgram->setUniform(location, (modelData.lights.size() >= 1) ?
+					modelData.lights[0]->packedData() :
+					GraphicsLight::noneLightPackedData());
+				break;
+			}
+		case AutoUniform_Light1: {
+				m_pProgram->setUniform(location, (modelData.lights.size() >= 2) ?
+					modelData.lights[1]->packedData() :
+					GraphicsLight::noneLightPackedData());
+				break;
+			}
+		case AutoUniform_Light2: {
+				m_pProgram->setUniform(location, (modelData.lights.size() >= 3) ?
+					modelData.lights[2]->packedData() :
+					GraphicsLight::noneLightPackedData());
+				break;
+			}
+		case AutoUniform_Light3: {
+				m_pProgram->setUniform(location, (modelData.lights.size() >= 4) ?
+					modelData.lights[3]->packedData() :
+					GraphicsLight::noneLightPackedData());
+				break;
+			}
 		default: break;
 		}
 	}
@@ -395,7 +425,7 @@ void GraphicsMaterial::clearUniforms()
 	m_uniformBuffers.clear();
 }
 
-bool GraphicsMaterial::Comparator::operator()(GraphicsMaterial *p1, GraphicsMaterial *p2)
+bool GraphicsMaterial::Comparator::operator()(GraphicsMaterial *p1, GraphicsMaterial *p2) const
 {
 	Tag tag1 = p1->tag();
 	Tag tag2 = p2->tag();

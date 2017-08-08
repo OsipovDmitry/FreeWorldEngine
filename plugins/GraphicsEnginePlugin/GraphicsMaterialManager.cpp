@@ -12,7 +12,7 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 
 GraphicsMaterialManager::GraphicsMaterialManager() :
-	m_pMaterialManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsMaterials")),
+	m_pMaterialManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicsMaterials")),
 	m_pMaterialNameGenerator(new Utility::AutoNameGenerator("MaterialName"))
 {
 }
@@ -20,7 +20,7 @@ GraphicsMaterialManager::GraphicsMaterialManager() :
 GraphicsMaterialManager::~GraphicsMaterialManager()
 {
 	delete m_pMaterialNameGenerator;
-	getCoreEngine()->destroyResourceManager(m_pMaterialManager);
+	ICore::instance()->destroyResourceManager(m_pMaterialManager);
 }
 
 IGraphicsMaterial *GraphicsMaterialManager::loadMaterial(const Utility::File& fileVertShader, const Utility::File& fileFragShader, const std::string& name, std::string *pLogString)

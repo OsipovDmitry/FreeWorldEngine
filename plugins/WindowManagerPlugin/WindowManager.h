@@ -2,7 +2,7 @@
 #define __WINDOWMANAGER__
 
 #include <3rdparty/sdl/SDL.h>
-#include <IWindowManager.h>
+#include <core/IWindowManager.h>
 
 namespace FreeWorldEngine {
 

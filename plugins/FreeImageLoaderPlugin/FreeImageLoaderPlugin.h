@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <IPlugin.h>
+#include <core/IPlugin.h>
 
 namespace FreeWorldEngine {
 

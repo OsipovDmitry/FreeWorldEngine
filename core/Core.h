@@ -17,11 +17,8 @@ class Core : public ICore {
 public:
 	Core();
 	~Core();
-
-	int argc() const;
-	char** argv() const;
 	
-	void initialize(int argc, char **argv);
+	void initialize();
 	void deinitialize();
 
 	IResourceManager *createResourceManager(const std::string& resourceManagerName, const IResourceManager::StorageType storageType = IResourceManager::StorageType_Hash);
@@ -29,7 +26,6 @@ public:
 	void destroyResourceManager(IResourceManager *pResourceManager);
 	void destroyResourceManager(const std::string& resourceManagerName);
 
-	ILibraryManager *libraryManager() const;
 	IPluginManager *pluginManager() const;
 	IThreadManager *threadManager() const;
 
@@ -55,14 +51,10 @@ public:
 	static std::unique_ptr<Core> s_instance;
 
 private:
-	int m_argc;
-	char **m_argv;
-	
 	ILogger *m_pLogger;
 
 	IResourceManager *m_pManagerForOtherManagers;
 
-	ILibraryManager *m_pLibraryManager;
 	IPluginManager *m_pPluginManager;
 	IThreadManager *m_pThreadManager;
 	IWindowManager *m_pWindowManager;

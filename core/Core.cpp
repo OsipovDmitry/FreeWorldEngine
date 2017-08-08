@@ -22,11 +22,8 @@ namespace FreeWorldEngine {
 std::unique_ptr<Core> Core::s_instance(new Core);
 
 Core::Core() :
-	m_argc(0),
-	m_argv(nullptr),
 	m_pLogger(0),
 	m_pManagerForOtherManagers(0),
-	m_pLibraryManager(0),
 	m_pPluginManager(0),
 	m_pThreadManager(0),
 	m_pImageLoader(0),
@@ -43,28 +40,13 @@ Core::~Core()
 	deinitialize();
 }
 
-int Core::argc() const
+void Core::initialize()
 {
-	return m_argc;
-}
-
-char **Core::argv() const
-{
-	return m_argv;
-}
-
-void Core::initialize(int argc, char **argv)
-{
-	m_argc = argc;
-	m_argv = argv;
-
 	m_pManagerForOtherManagers = FreeWorldEngine::createResourceManager("ResourceManagerForOtherManagers", IResourceManager::StorageType_Hash);
 
 	m_pLogger = new Logger;
 
 	m_pThreadManager = new ThreadManager();
-
-	m_pLibraryManager = new LibraryManager();
 
 	m_pImageLoader = new ContentLoader<Raster>("ResourceManagerForImageLoader");
 	m_pSceneLoader = new ContentLoader<SceneData>("ResourceManagerForSceneLoader");
@@ -75,7 +57,7 @@ void Core::initialize(int argc, char **argv)
 	
 	// FIXME: убрать этот костыль
 	if (m_pWindowManager) {
-		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 1024, 768);
+		m_pMainWindow = m_pWindowManager->createWindow("Free World Engine Demo", 64, 64);
 		m_pMainWindow->show();
 	}
 }
@@ -99,9 +81,6 @@ void Core::deinitialize()
 
 	delete m_pPluginManager;
 	m_pPluginManager = 0;
-
-	delete m_pLibraryManager;
-	m_pLibraryManager = 0;
 
 	delete m_pThreadManager;
 	m_pThreadManager = 0;
@@ -136,11 +115,6 @@ void Core::destroyResourceManager(IResourceManager *pResourceManager)
 void Core::destroyResourceManager(const std::string& resourceManagerName)
 {
 	m_pManagerForOtherManagers->destroyResource(resourceManagerName);
-}
-
-ILibraryManager*Core::libraryManager() const
-{
-	return m_pLibraryManager;
 }
 
 IPluginManager *Core::pluginManager() const

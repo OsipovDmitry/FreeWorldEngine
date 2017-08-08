@@ -6,6 +6,7 @@
 #include "GraphicsModel.h"
 #include "GraphicsEngine.h"
 #include "GraphicsMaterialManager.h"
+#include "GraphicsMaterial.h"
 #include "GPUMesh.h"
 
 namespace FreeWorldEngine {
@@ -16,7 +17,7 @@ GraphicsModel::GraphicsModel(const std::string& name) :
 	m_name(name),
 	m_boundSphere(),
 	m_aabb(),
-	m_pMaterial(pGraphicsEngine->materialManager()->findMaterial("StandardMaterial")),
+	m_pMaterial(static_cast<GraphicsMaterial*>(pGraphicsEngine->materialManager()->findMaterial("StandardMaterial"))),
 	m_pGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Triangles)),
 	m_pBoudSphereGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Lines)),
 	m_pAabbGPUMesh(new GPUMesh(nullptr, nullptr, nullptr, 0, PrimitiveFormat_Triangles))
@@ -42,12 +43,12 @@ std::string GraphicsModel::name() const
 
 IGraphicsMaterial *GraphicsModel::material() const
 {
-	return m_pMaterial;
+	return materialImpl();
 }
 
 void GraphicsModel::setMaterial(IGraphicsMaterial *pMaterial)
 {
-	m_pMaterial = pMaterial;
+	m_pMaterial = static_cast<GraphicsMaterial*>(pMaterial);
 }
 
 void GraphicsModel::setMesh(Mesh *pMesh)
@@ -86,19 +87,24 @@ GPUMesh *GraphicsModel::gpuMeshBoundSphere() const
 	return m_pBoudSphereGPUMesh;
 }
 
-GPUMesh * GraphicsModel::gpuMeshAabb() const
+GPUMesh *GraphicsModel::gpuMeshAabb() const
 {
 	return m_pAabbGPUMesh;
 }
 
-const Math::Sphere &GraphicsModel::boundingSphere() const
+const Math::Sphere& GraphicsModel::boundingSphere() const
 {
 	return m_boundSphere;
 }
 
-const Math::Aabb & GraphicsModel::aabb() const
+const Math::Aabb& GraphicsModel::aabb() const
 {
 	return m_aabb;
+}
+
+GraphicsMaterial *GraphicsModel::materialImpl() const
+{
+	return m_pMaterial;
 }
 
 } // namespace

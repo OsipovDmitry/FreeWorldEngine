@@ -23,9 +23,9 @@ GraphicsEngine::GraphicsEngine() :
 	m_pMaterialManager(new GraphicsMaterialManager),
 	m_pTextureManager(new GraphicsTextureManager),
 	m_pSceneManager(new GraphicsSceneManager),
-	m_pCameraManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsCameras")),
-	m_pModelManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsModels")),
-	m_pWindowManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsWindows")),
+	m_pCameraManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicsCameras")),
+	m_pModelManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicsModels")),
+	m_pWindowManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicsWindows")),
 	m_pCameraNameGenerator(new Utility::AutoNameGenerator("CameraName")),
 	m_pModelNameGenerator(new Utility::AutoNameGenerator("ModelName")),
 	m_pWindowNameGenerator(new Utility::AutoNameGenerator("WindowName"))
@@ -37,9 +37,9 @@ GraphicsEngine::~GraphicsEngine()
 	delete m_pModelNameGenerator;
 	delete m_pWindowNameGenerator;
 	delete m_pCameraNameGenerator;
-	getCoreEngine()->destroyResourceManager(m_pWindowManager);
-	getCoreEngine()->destroyResourceManager(m_pModelManager);
-	getCoreEngine()->destroyResourceManager(m_pCameraManager);
+	ICore::instance()->destroyResourceManager(m_pWindowManager);
+	ICore::instance()->destroyResourceManager(m_pModelManager);
+	ICore::instance()->destroyResourceManager(m_pCameraManager);
 	delete m_pSceneManager;
 	delete m_pTextureManager;
 	delete m_pMaterialManager;

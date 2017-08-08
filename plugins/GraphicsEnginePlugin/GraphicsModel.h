@@ -14,6 +14,7 @@ namespace Renderer {
 namespace GraphicsEngine {
 
 class GPUMesh;
+class GraphicsMaterial;
 
 class GraphicsModel : public IGraphicsModel {
 public:
@@ -34,11 +35,13 @@ public:
 	const Math::Sphere& boundingSphere() const;
 	const Math::Aabb& aabb() const;
 
+	GraphicsMaterial *materialImpl() const;
+
 private:
 	std::string m_name;
 	Math::Sphere m_boundSphere;
 	Math::Aabb m_aabb;
-	IGraphicsMaterial *m_pMaterial;
+	GraphicsMaterial *m_pMaterial;
 
 	GPUMesh *m_pGPUMesh, *m_pBoudSphereGPUMesh, *m_pAabbGPUMesh;
 

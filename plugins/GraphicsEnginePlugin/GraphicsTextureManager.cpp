@@ -11,7 +11,7 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 
 GraphicsTextureManager::GraphicsTextureManager() :
-	m_pResoureManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicstextures")),
+	m_pResoureManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicstextures")),
 	m_pTextureNameGenerator(new Utility::AutoNameGenerator("TextureName"))
 {
 }
@@ -19,7 +19,7 @@ GraphicsTextureManager::GraphicsTextureManager() :
 GraphicsTextureManager::~GraphicsTextureManager()
 {
 	delete m_pTextureNameGenerator;
-	getCoreEngine()->destroyResourceManager(m_pResoureManager);
+	ICore::instance()->destroyResourceManager(m_pResoureManager);
 }
 	
 IGraphicsTexture *GraphicsTextureManager::createTexture(Renderer::IGPUTexture *pTexture, const std::string& name, std::string *pLogString)

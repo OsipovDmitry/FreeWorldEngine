@@ -33,13 +33,20 @@ enum Type {
 const uint32 TypeSize[TYPE_COUNT] = { sizeof(int8), sizeof(int16), sizeof(int32), sizeof(uint8), sizeof(uint16), sizeof(uint32), sizeof(float) };
 const bool TypeIsFloatingPoint[TYPE_COUNT] = { false, false, false, false, false, false, true };
 
+enum ColorChannel {
+	ColorChannel_Red,
+	ColorChannel_Green,
+	ColorChannel_Blue,
+	ColorChannel_Alpha
+}; // enum ColorChannel
+
 struct Raster {
-    uint32 size[3]; // width, height, depth
-    uint32 numComponents;
+	uint32 size[3]; // width, height, depth
+	uint32 numComponents;
 	void *pData;
     Type type;
 
-    Raster() : numComponents(0), type(TYPE_UNSIGNED_INT_8), pData(0) { size[0] = 0; size[1] = size[2] = 1; }
+	Raster() : numComponents(0), type(TYPE_UNSIGNED_INT_8), pData(0) { size[0] = 0; size[1] = size[2] = 1; }
 	~Raster() { delete pData; }
 }; // struct Raster
 
@@ -103,6 +110,22 @@ struct Material {
 	~Material() {}
 }; // struct Material
 
+struct Light {
+	glm::vec3 position;
+	glm::vec3 direction;
+	glm::vec3 attenuationCoefficent;
+	float innerCone, outerCone;
+
+	uint8 ambientColor[4]; // глобальный
+	uint8 diffuseColor[4]; // поглощенный
+	uint8 specularColor[4]; // отраженный
+
+	enum Type { Type_Directional, Type_Point, Type_Spot };
+	Type type;
+
+	Light() : type(Type_Point), attenuationCoefficent(0.0f, 1.0f, 0.0f) {}
+};
+
 struct SceneData {
 
 	struct Material {
@@ -110,6 +133,12 @@ struct SceneData {
 		FreeWorldEngine::Material *pMaterialData;
 	};
 	typedef std::vector<Material*> MaterialList;
+
+	struct Ligth {
+		std::string name;
+		FreeWorldEngine::Light *pLightData;
+	};
+	typedef std::vector<Ligth*> LightList;
 
 	struct Mesh {
 		std::string name;
@@ -126,11 +155,13 @@ struct SceneData {
 	};
 
 	MaterialList materials;
+	LightList lights;
 	MeshList meshes;
 	Utility::Tree<NodeData*> treeNodes;
 
-	SceneData() : materials(), meshes(), treeNodes() {}
+	SceneData() : materials(), lights(), meshes(), treeNodes() {}
 	~SceneData() {
+		for (LightList::iterator it = lights.begin(); it != lights.end(); delete *(it++)) ;
 		for (MeshList::iterator it = meshes.begin(); it != meshes.end(); delete *(it++)) ;
 		for (MaterialList::iterator it = materials.begin(); it != materials.end(); delete *(it++)) ;
 		for (Utility::Tree<NodeData*>::DepthIterator it = treeNodes.beginDepth(); it != treeNodes.endDepth(); delete (*(it++))->data()) ;
@@ -151,7 +182,7 @@ struct SoundData {
 	uint32 frequency;
 	SoundFormat format;
 
-	SoundData(void *d = nullptr, uint32 s = 0, uint32 fr = 0, SoundFormat fmt = SoundFormat_Mono8) : pData(d), size(s), frequency(fr), format(fmt) {}
+	SoundData(void *d = nullptr, uint32 sz = 0, uint32 fr = 0, SoundFormat fmt = SoundFormat_Mono8) : pData(d), size(sz), frequency(fr), format(fmt) {}
 	~SoundData() { delete pData; }
 }; // struct SoundData
 

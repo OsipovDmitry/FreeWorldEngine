@@ -26,9 +26,9 @@ PluginManager::~PluginManager()
 IPlugin *PluginManager::loadPlugin(const std::string& libraryName, const std::string& startPluginFuncName, const std::string& getPluginFuncName, const std::string& endPluginFuncName)
 {
 	Utility::Library *pLibrary = new Utility::Library(libraryName);
-	if (!pLibrary) {
+	if (!pLibrary->isLoaded()) {
 		LOG_ERROR("Could not load plugin from \"" + libraryName + "\".");
-		return 0;
+		return nullptr;
 	}
 	
 	StartPluginFunc pStartFunc = (StartPluginFunc)pLibrary->resolve(startPluginFuncName);

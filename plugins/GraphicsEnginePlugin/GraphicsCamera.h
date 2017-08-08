@@ -16,7 +16,6 @@ public:
 
 	glm::mat4x4 viewMatrix() const;
 	glm::mat4x4 projectionMatrix() const;
-	glm::mat4x4 viewProjectionMatrix() const;
 
 	void setViewMatrix(const glm::mat4x4& value);
 	void setProjectionMatrix(const glm::mat4x4& value);
@@ -44,17 +43,17 @@ public:
 
 	const Math::Frustum& frustum() const;
 
-	void update();
+//	void update();
 
 private:
 	std::string m_name;
 
-	Math::Frustum m_frustum;
+	mutable Math::Frustum m_frustum;
 
-	glm::mat4x4 m_cacheViewMatrix, m_cacheProjMatrix, m_cacheViewProjMatrix;
-	glm::quat m_orientQuat;
-	glm::mat3x3 m_orientMatrix;
-	glm::vec3 m_orientAngles;
+	mutable glm::mat4x4 m_cacheViewMatrix, m_cacheProjMatrix;
+	mutable glm::quat m_orientQuat;
+	mutable glm::mat3x3 m_orientMatrix;
+	mutable glm::vec3 m_orientAngles;
 	glm::vec3 m_position;
 	
 	float m_aspectRatio, m_zNear, m_zFar;
@@ -66,7 +65,11 @@ private:
 	enum OrientType { OrientType_Quat, OrientType_Dirs, OrientType_Angles };
 	OrientType m_orientType;
 
-	bool m_needUpViewMatrix, m_needUpProjMatrix;
+	mutable bool m_needUpViewMatrix, m_needUpProjMatrix, m_needUpFrustum;
+
+	void recalcViewMatrix() const;
+	void recalcProjMatrix() const;
+	void recalcFrustum() const;
 
 }; // class GraphicsModel
 

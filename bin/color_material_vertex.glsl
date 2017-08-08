@@ -4,7 +4,7 @@
 
 layout(location = 0) in vec3 pos;
 
-layout(location = 0) uniform mat4 modelViewProjMatrix;
+uniform mat4 modelViewProjMatrix;
 
 void main(void)
 {

@@ -9,6 +9,7 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 
 class IGraphicsCamera;
+struct ModelRenderData;
 
 class GraphicsMaterial : public IGraphicsMaterial {
 public:
@@ -66,11 +67,11 @@ public:
 	void setTag(const Tag tag);
 	Tag tag() const;
 
-	void bind(IGraphicsCamera *pCamera, const glm::mat4x4& modelMatrix) const;
+	void bind(IGraphicsCamera *pCamera, const ModelRenderData& modelData) const;
 
 	class Comparator {
 	public:
-		bool operator ()(GraphicsMaterial *p1, GraphicsMaterial *p2);
+		bool operator ()(GraphicsMaterial *p1, GraphicsMaterial *p2) const;
 	};
 
 private:

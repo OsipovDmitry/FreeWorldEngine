@@ -166,8 +166,8 @@ Sphere MeshWrapper::computeBoundingSphere() const
 void MeshWrapper::computeAabbAndBoundingSphere(Aabb& resAabb, Sphere& resBoundingSphere) const
 {
 	if ((m_pMesh->numVertices == 0) || (m_pMesh->attributes.count(VertexAttributeType_Position) == 0)) {
-		resAabb = Aabb(glm::vec3(), glm::vec3());
-		resBoundingSphere = Sphere(0.0f, 0.0f, 0.0f, 0.0f);
+		resAabb = Math::buildEmptyBoundingBox();
+		resBoundingSphere = Math::buildEmptySphere();
 		return;
 	}
 

@@ -9,7 +9,7 @@ namespace FreeWorldEngine {
 namespace GraphicsEngine {
 
 GraphicsSceneManager::GraphicsSceneManager() :
-	m_pSceneManager(getCoreEngine()->createResourceManager("ResourceManagerForGraphicsScenes")),
+	m_pSceneManager(ICore::instance()->createResourceManager("ResourceManagerForGraphicsScenes")),
 	m_pSceneNameGenerator(new Utility::AutoNameGenerator("SceneName"))
 {
 }
@@ -17,7 +17,7 @@ GraphicsSceneManager::GraphicsSceneManager() :
 GraphicsSceneManager::~GraphicsSceneManager()
 {
 	delete m_pSceneNameGenerator;
-	getCoreEngine()->destroyResourceManager(m_pSceneManager);
+	ICore::instance()->destroyResourceManager(m_pSceneManager);
 }
 
 
@@ -26,14 +26,14 @@ IGraphicsScene *GraphicsSceneManager::findScene(const std::string& name) const
 	return static_cast<IGraphicsScene*>(m_pSceneManager->findResource(name));
 }
 
-IGraphicsScene *GraphicsSceneManager::createScene(const std::string& name)
+IGraphicsScene *GraphicsSceneManager::createScene(const std::string& name, IGraphicsScene::SceneOptimizerType optimizerType)
 {
 	const std::string resName = (name == "@utoname") ? m_pSceneNameGenerator->generateName() : name;
 	IGraphicsScene *pScene = findScene(resName);
 	if (pScene)
 		return pScene;
 
-	pScene = new GraphicsScene(resName);
+	pScene = new GraphicsScene(resName, optimizerType);
 	m_pSceneManager->addResource(pScene);
 	return pScene;
 }

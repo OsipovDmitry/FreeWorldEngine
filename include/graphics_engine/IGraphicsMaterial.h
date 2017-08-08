@@ -25,12 +25,19 @@ namespace GraphicsEngine {
 class IGraphicsMaterial : public IGraphicsResource {
 public:
 	enum AutoUniform {
+		AutoUniform_NormalMatrix,
 		AutoUniform_ModelMatrix,
 		AutoUniform_ViewMatrix,
 		AutoUniform_ProjectionMatrix,
 		AutoUniform_ModelViewMatrix,
 		AutoUniform_ViewProjectionMatrix,
 		AutoUniform_ModelViewProjectionMatrix,
+		AutoUniform_CameraPosition,
+		AutoUniform_Light0,
+		AutoUniform_Light1,
+		AutoUniform_Light2,
+		AutoUniform_Light3,
+		AutoUniform_ActiveLightsCount,
 	};
 
 	enum DepthTestFunc {
