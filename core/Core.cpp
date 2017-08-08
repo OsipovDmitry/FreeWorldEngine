@@ -8,7 +8,6 @@
 #include "Core.h"
 #include "PluginManager.h"
 #include "ResourceManager.h"
-#include "LibraryManager.h"
 #include "ThreadManager.h"
 #include "ContentLoader.h"
 

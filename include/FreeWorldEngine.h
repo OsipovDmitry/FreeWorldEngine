@@ -6,8 +6,6 @@
 #include "core/ILog.h"
 #include "core/IResource.h"
 #include "core/IResourceManager.h"
-#include "core/ILibraryManager.h"
-#include "core/ILibrary.h"
 #include "core/IPluginManager.h"
 #include "core/IPlugin.h"
 #include "core/IThreadManager.h"
